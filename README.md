@@ -4,6 +4,53 @@
 
 `go get github.com/bborbe/auth_http_proxy/bin/auth_http_proxy_server`
 
+`go get github.com/bborbe/auth/bin/auth_server`
+
+`go get go get github.com/siddontang/ledisdb/cmd/ledis-server`
+
+`go get github.com/bborbe/server/bin/file_server`
+
+## Usage
+
+Start ledis database
+
+```
+ledis-server \
+-databases=1 \
+-addr=localhost:5555
+```
+
+Start auth-server
+
+```
+auth_server \
+-loglevel=debug \
+-port=6666 \
+-ledisdb-address=localhost:5555 \
+-auth-application-password=test123
+```
+
+Start sample you want protect
+
+```
+file_server \
+-loglevel=debug \
+-port=7777 \
+-root=/tmp
+```
+
+Start auth-http-proxy
+
+```
+auth_http_proxy_server \
+-loglevel=debug \
+-port=8888 \
+-target-address=localhost=7777 \
+-auth-address=localhost:6666 \
+-auth-application-name=auth \
+-auth-application-password=test123
+```
+
 ## Continuous integration
 
 [Jenkins](https://www.benjamin-borbe.de/jenkins/job/Go-Auth-Http-Proxy/)
