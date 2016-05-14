@@ -10,6 +10,8 @@ import (
 	http_requestbuilder "github.com/bborbe/http/requestbuilder"
 	"github.com/bborbe/log"
 
+	"net"
+
 	auth_api "github.com/bborbe/auth/api"
 	auth_client "github.com/bborbe/auth/client"
 	"github.com/bborbe/auth_http_proxy/auth"
@@ -77,8 +79,15 @@ func createServer(port int, authAddress string, authApplicationName string, auth
 	httpRequestBuilderProvider := http_requestbuilder.NewHttpRequestBuilderProvider()
 	httpClient := http_client_builder.New().WithoutProxy().Build()
 	authClient := auth_client.New(httpClient.Do, httpRequestBuilderProvider, authAddress, auth_api.ApplicationName(authApplicationName), auth_api.ApplicationPassword(authApplicationPassword))
+	dialer := (&net.Dialer{
+		Timeout: http_client_builder.DEFAULT_TIMEOUT,
+	})
 
-	forwardHandler := forward.New(targetAddress)
+	forwardHandler := forward.New(targetAddress, func(address string, req *http.Request) (resp *http.Response, err error) {
+		return http_client_builder.New().WithoutProxy().WithDialFunc(func(network, address string) (net.Conn, error) {
+			return dialer.Dial(network, targetAddress)
+		}).Build().Do(req)
+	})
 	authHandler := auth.New(forwardHandler, authClient.Auth)
 
 	return &http.Server{Addr: fmt.Sprintf(":%d", port), Handler: authHandler}, nil
