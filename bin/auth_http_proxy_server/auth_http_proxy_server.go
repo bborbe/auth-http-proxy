@@ -43,8 +43,8 @@ var (
 	authApplicationNamePtr     = flag.String(PARAMETER_AUTH_APPLICATION_NAME, "", "auth application name")
 	authApplicationPasswordPtr = flag.String(PARAMETER_AUTH_APPLICATION_PASSWORD, "", "auth application password")
 	authRealmPtr               = flag.String(PARAMETER_AUTH_REALM, "", "basic auth realm")
-	targetAddressPtr           = flag.String(PARAMETER_TARGET_ADDRESS, "", "target address")
 	authGroupsPtr              = flag.String(PARAMETER_AUTH_GROUPS, "", "required groups reperated by comma")
+	targetAddressPtr           = flag.String(PARAMETER_TARGET_ADDRESS, "", "target address")
 )
 
 func main() {
@@ -105,9 +105,12 @@ func createServer(port int, authAddress string, authApplicationName string, auth
 
 func createGroups(groupNames string) []auth_api.GroupName {
 	parts := strings.Split(groupNames, ",")
-	groups := make([]auth_api.GroupName, len(parts))
-	for i, groupName := range parts {
-		groups[i] = auth_api.GroupName(groupName)
+	groups := make([]auth_api.GroupName, 0)
+	for _, groupName := range parts {
+		if len(groupName) > 0 {
+			groups = append(groups, auth_api.GroupName(groupName))
+		}
 	}
+	logger.Debugf("required groups: %v", groups)
 	return groups
 }

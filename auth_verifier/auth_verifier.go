@@ -3,7 +3,10 @@ package auth_verifier
 import (
 	"github.com/bborbe/auth/api"
 	"github.com/bborbe/http/header"
+	"github.com/bborbe/log"
 )
+
+var logger = log.DefaultLogger
 
 type Check func(authToken api.AuthToken, requiredGroups []api.GroupName) (*api.UserName, error)
 
@@ -20,10 +23,14 @@ func New(check Check, requiredGroups []api.GroupName) *auth {
 }
 
 func (a *auth) Verify(username string, password string) (bool, error) {
+	logger.Debugf("verify user %s has groups %v", username, a.requiredGroups)
 	token := header.CreateAuthorizationToken(username, password)
 	user, err := a.check(api.AuthToken(token), a.requiredGroups)
 	if err != nil {
+		logger.Debugf("verify failed: %v", err)
 		return false, err
 	}
-	return len(*user) > 0, nil
+	result := len(*user) > 0
+	logger.Debugf("verify user %s => %v", username, result)
+	return result, nil
 }
