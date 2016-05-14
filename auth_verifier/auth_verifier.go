@@ -8,18 +8,20 @@ import (
 type Check func(authToken api.AuthToken, requiredGroups []api.GroupName) (*api.UserName, error)
 
 type auth struct {
-	check Check
+	check          Check
+	requiredGroups []api.GroupName
 }
 
-func New(check Check) *auth {
+func New(check Check, requiredGroups []api.GroupName) *auth {
 	a := new(auth)
 	a.check = check
+	a.requiredGroups = requiredGroups
 	return a
 }
 
 func (a *auth) Verify(username string, password string) (bool, error) {
 	token := header.CreateAuthorizationToken(username, password)
-	user, err := a.check(api.AuthToken(token), make([]api.GroupName, 0))
+	user, err := a.check(api.AuthToken(token), a.requiredGroups)
 	if err != nil {
 		return false, err
 	}

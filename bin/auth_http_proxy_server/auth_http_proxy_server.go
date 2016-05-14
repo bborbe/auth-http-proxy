@@ -12,6 +12,8 @@ import (
 
 	"net"
 
+	"strings"
+
 	auth_api "github.com/bborbe/auth/api"
 	auth_client "github.com/bborbe/auth/client"
 	"github.com/bborbe/auth_http_proxy/auth_verifier"
@@ -31,6 +33,7 @@ const (
 	PARAMETER_AUTH_APPLICATION_PASSWORD     = "auth-application-password"
 	PARAMETER_TARGET_ADDRESS                = "target-address"
 	PARAMETER_AUTH_REALM                    = "auth-realm"
+	PARAMETER_AUTH_GROUPS                   = "auth-groups"
 )
 
 var (
@@ -41,6 +44,7 @@ var (
 	authApplicationPasswordPtr = flag.String(PARAMETER_AUTH_APPLICATION_PASSWORD, "", "auth application password")
 	authRealmPtr               = flag.String(PARAMETER_AUTH_REALM, "", "basic auth realm")
 	targetAddressPtr           = flag.String(PARAMETER_TARGET_ADDRESS, "", "target address")
+	authGroupsPtr              = flag.String(PARAMETER_AUTH_GROUPS, "", "required groups reperated by comma")
 )
 
 func main() {
@@ -50,7 +54,7 @@ func main() {
 	logger.SetLevelThreshold(log.LogStringToLevel(*logLevelPtr))
 	logger.Debugf("set log level to %s", *logLevelPtr)
 
-	server, err := createServer(*portPtr, *authAddressPtr, *authApplicationNamePtr, *authApplicationPasswordPtr, *authRealmPtr, *targetAddressPtr)
+	server, err := createServer(*portPtr, *authAddressPtr, *authApplicationNamePtr, *authApplicationPasswordPtr, *authRealmPtr, *authGroupsPtr, *targetAddressPtr)
 	if err != nil {
 		logger.Fatal(err)
 		logger.Close()
@@ -60,7 +64,7 @@ func main() {
 	gracehttp.Serve(server)
 }
 
-func createServer(port int, authAddress string, authApplicationName string, authApplicationPassword string, authRealm string, targetAddress string) (*http.Server, error) {
+func createServer(port int, authAddress string, authApplicationName string, authApplicationPassword string, authRealm string, authGroups string, targetAddress string) (*http.Server, error) {
 	if port <= 0 {
 		return nil, fmt.Errorf("parameter %s missing", PARAMETER_PORT)
 	}
@@ -93,8 +97,17 @@ func createServer(port int, authAddress string, authApplicationName string, auth
 			return dialer.Dial(network, targetAddress)
 		}).Build().Do(req)
 	})
-	authVerifier := auth_verifier.New(authClient.Auth)
+	authVerifier := auth_verifier.New(authClient.Auth, createGroups(authGroups))
 	authHandler := auth_basic.New(forwardHandler.ServeHTTP, authVerifier.Verify, authRealm)
 
 	return &http.Server{Addr: fmt.Sprintf(":%d", port), Handler: authHandler}, nil
+}
+
+func createGroups(groupNames string) []auth_api.GroupName {
+	parts := strings.Split(groupNames, ",")
+	groups := make([]auth_api.GroupName, len(parts))
+	for i, groupName := range parts {
+		groups[i] = auth_api.GroupName(groupName)
+	}
+	return groups
 }
