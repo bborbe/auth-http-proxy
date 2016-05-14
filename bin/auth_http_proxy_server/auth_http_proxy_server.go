@@ -14,30 +14,33 @@ import (
 
 	auth_api "github.com/bborbe/auth/api"
 	auth_client "github.com/bborbe/auth/client"
-	"github.com/bborbe/auth_http_proxy/auth"
 	"github.com/bborbe/auth_http_proxy/forward"
 	"github.com/facebookgo/grace/gracehttp"
+	"github.com/bborbe/server/handler/auth_basic"
+	"github.com/bborbe/auth_http_proxy/auth_verifier"
 )
 
 var logger = log.DefaultLogger
 
 const (
-	DEFAULT_PORT                        int = 8080
-	PARAMETER_LOGLEVEL                      = "loglevel"
-	PARAMETER_PORT                          = "port"
-	PARAMETER_AUTH_ADDRESS                  = "auth-address"
-	PARAMETER_AUTH_APPLICATION_NAME         = "auth-application-name"
-	PARAMETER_AUTH_APPLICATION_PASSWORD     = "auth-application-password"
-	PARAMETER_TARGET_ADDRESS                = "target-address"
+	DEFAULT_PORT int = 8080
+	PARAMETER_LOGLEVEL = "loglevel"
+	PARAMETER_PORT = "port"
+	PARAMETER_AUTH_ADDRESS = "auth-address"
+	PARAMETER_AUTH_APPLICATION_NAME = "auth-application-name"
+	PARAMETER_AUTH_APPLICATION_PASSWORD = "auth-application-password"
+	PARAMETER_TARGET_ADDRESS = "target-address"
+	PARAMETER_AUTH_REALM = "auth-realm"
 )
 
 var (
-	logLevelPtr                = flag.String(PARAMETER_LOGLEVEL, log.INFO_STRING, "one of OFF,TRACE,DEBUG,INFO,WARN,ERROR")
-	portPtr                    = flag.Int(PARAMETER_PORT, DEFAULT_PORT, "port")
-	authAddressPtr             = flag.String(PARAMETER_AUTH_ADDRESS, "", "auth address")
-	authApplicationNamePtr     = flag.String(PARAMETER_AUTH_APPLICATION_NAME, "", "auth application name")
+	logLevelPtr = flag.String(PARAMETER_LOGLEVEL, log.INFO_STRING, "one of OFF,TRACE,DEBUG,INFO,WARN,ERROR")
+	portPtr = flag.Int(PARAMETER_PORT, DEFAULT_PORT, "port")
+	authAddressPtr = flag.String(PARAMETER_AUTH_ADDRESS, "", "auth address")
+	authApplicationNamePtr = flag.String(PARAMETER_AUTH_APPLICATION_NAME, "", "auth application name")
 	authApplicationPasswordPtr = flag.String(PARAMETER_AUTH_APPLICATION_PASSWORD, "", "auth application password")
-	targetAddressPtr           = flag.String(PARAMETER_TARGET_ADDRESS, "", "target address")
+	authRealmPtr = flag.String(PARAMETER_AUTH_REALM, "", "basic auth realm")
+	targetAddressPtr = flag.String(PARAMETER_TARGET_ADDRESS, "", "target address")
 )
 
 func main() {
@@ -47,7 +50,7 @@ func main() {
 	logger.SetLevelThreshold(log.LogStringToLevel(*logLevelPtr))
 	logger.Debugf("set log level to %s", *logLevelPtr)
 
-	server, err := createServer(*portPtr, *authAddressPtr, *authApplicationNamePtr, *authApplicationPasswordPtr, *targetAddressPtr)
+	server, err := createServer(*portPtr, *authAddressPtr, *authApplicationNamePtr, *authApplicationPasswordPtr, *authRealmPtr, *targetAddressPtr)
 	if err != nil {
 		logger.Fatal(err)
 		logger.Close()
@@ -57,7 +60,7 @@ func main() {
 	gracehttp.Serve(server)
 }
 
-func createServer(port int, authAddress string, authApplicationName string, authApplicationPassword string, targetAddress string) (*http.Server, error) {
+func createServer(port int, authAddress string, authApplicationName string, authApplicationPassword string, authRealm string, targetAddress string) (*http.Server, error) {
 	if port <= 0 {
 		return nil, fmt.Errorf("parameter %s missing", PARAMETER_PORT)
 	}
@@ -73,6 +76,9 @@ func createServer(port int, authAddress string, authApplicationName string, auth
 	if len(targetAddress) == 0 {
 		return nil, fmt.Errorf("parameter %s missing", PARAMETER_TARGET_ADDRESS)
 	}
+	if len(authRealm) == 0 {
+		return nil, fmt.Errorf("parameter %s missing", PARAMETER_AUTH_REALM)
+	}
 
 	logger.Debugf("create server on port: %d with target: %s", port, targetAddress)
 
@@ -82,13 +88,13 @@ func createServer(port int, authAddress string, authApplicationName string, auth
 	dialer := (&net.Dialer{
 		Timeout: http_client_builder.DEFAULT_TIMEOUT,
 	})
-
 	forwardHandler := forward.New(targetAddress, func(address string, req *http.Request) (resp *http.Response, err error) {
 		return http_client_builder.New().WithoutProxy().WithDialFunc(func(network, address string) (net.Conn, error) {
 			return dialer.Dial(network, targetAddress)
 		}).Build().Do(req)
 	})
-	authHandler := auth.New(forwardHandler, authClient.Auth)
+	authVerifier := auth_verifier.New(authClient.Auth)
+	authHandler := auth_basic.New(forwardHandler.ServeHTTP, authVerifier.Verify, authRealm)
 
 	return &http.Server{Addr: fmt.Sprintf(":%d", port), Handler: authHandler}, nil
 }
