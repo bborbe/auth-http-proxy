@@ -5,8 +5,9 @@ import (
 
 	"io"
 
-	"github.com/bborbe/log"
 	"fmt"
+
+	"github.com/bborbe/log"
 )
 
 var logger = log.DefaultLogger

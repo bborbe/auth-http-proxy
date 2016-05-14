@@ -14,33 +14,33 @@ import (
 
 	auth_api "github.com/bborbe/auth/api"
 	auth_client "github.com/bborbe/auth/client"
-	"github.com/bborbe/auth_http_proxy/forward"
-	"github.com/facebookgo/grace/gracehttp"
-	"github.com/bborbe/server/handler/auth_basic"
 	"github.com/bborbe/auth_http_proxy/auth_verifier"
+	"github.com/bborbe/auth_http_proxy/forward"
+	"github.com/bborbe/server/handler/auth_basic"
+	"github.com/facebookgo/grace/gracehttp"
 )
 
 var logger = log.DefaultLogger
 
 const (
-	DEFAULT_PORT int = 8080
-	PARAMETER_LOGLEVEL = "loglevel"
-	PARAMETER_PORT = "port"
-	PARAMETER_AUTH_ADDRESS = "auth-address"
-	PARAMETER_AUTH_APPLICATION_NAME = "auth-application-name"
-	PARAMETER_AUTH_APPLICATION_PASSWORD = "auth-application-password"
-	PARAMETER_TARGET_ADDRESS = "target-address"
-	PARAMETER_AUTH_REALM = "auth-realm"
+	DEFAULT_PORT                        int = 8080
+	PARAMETER_LOGLEVEL                      = "loglevel"
+	PARAMETER_PORT                          = "port"
+	PARAMETER_AUTH_ADDRESS                  = "auth-address"
+	PARAMETER_AUTH_APPLICATION_NAME         = "auth-application-name"
+	PARAMETER_AUTH_APPLICATION_PASSWORD     = "auth-application-password"
+	PARAMETER_TARGET_ADDRESS                = "target-address"
+	PARAMETER_AUTH_REALM                    = "auth-realm"
 )
 
 var (
-	logLevelPtr = flag.String(PARAMETER_LOGLEVEL, log.INFO_STRING, "one of OFF,TRACE,DEBUG,INFO,WARN,ERROR")
-	portPtr = flag.Int(PARAMETER_PORT, DEFAULT_PORT, "port")
-	authAddressPtr = flag.String(PARAMETER_AUTH_ADDRESS, "", "auth address")
-	authApplicationNamePtr = flag.String(PARAMETER_AUTH_APPLICATION_NAME, "", "auth application name")
+	logLevelPtr                = flag.String(PARAMETER_LOGLEVEL, log.INFO_STRING, "one of OFF,TRACE,DEBUG,INFO,WARN,ERROR")
+	portPtr                    = flag.Int(PARAMETER_PORT, DEFAULT_PORT, "port")
+	authAddressPtr             = flag.String(PARAMETER_AUTH_ADDRESS, "", "auth address")
+	authApplicationNamePtr     = flag.String(PARAMETER_AUTH_APPLICATION_NAME, "", "auth application name")
 	authApplicationPasswordPtr = flag.String(PARAMETER_AUTH_APPLICATION_PASSWORD, "", "auth application password")
-	authRealmPtr = flag.String(PARAMETER_AUTH_REALM, "", "basic auth realm")
-	targetAddressPtr = flag.String(PARAMETER_TARGET_ADDRESS, "", "target address")
+	authRealmPtr               = flag.String(PARAMETER_AUTH_REALM, "", "basic auth realm")
+	targetAddressPtr           = flag.String(PARAMETER_TARGET_ADDRESS, "", "target address")
 )
 
 func main() {
