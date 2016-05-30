@@ -54,7 +54,15 @@ func main() {
 	logger.SetLevelThreshold(log.LogStringToLevel(*logLevelPtr))
 	logger.Debugf("set log level to %s", *logLevelPtr)
 
-	server, err := createServer(*portPtr, *authAddressPtr, *authApplicationNamePtr, *authApplicationPasswordPtr, *authRealmPtr, *authGroupsPtr, *targetAddressPtr)
+	server, err := createServer(
+		*portPtr,
+		auth_api.Address(*authAddressPtr),
+		auth_api.ApplicationName(*authApplicationNamePtr),
+		auth_api.ApplicationPassword(*authApplicationPasswordPtr),
+		*authRealmPtr,
+		*authGroupsPtr,
+		*targetAddressPtr,
+	)
 	if err != nil {
 		logger.Fatal(err)
 		logger.Close()
@@ -64,7 +72,15 @@ func main() {
 	gracehttp.Serve(server)
 }
 
-func createServer(port int, authAddress string, authApplicationName string, authApplicationPassword string, authRealm string, authGroups string, targetAddress string) (*http.Server, error) {
+func createServer(
+	port int,
+	authAddress auth_api.Address,
+	authApplicationName auth_api.ApplicationName,
+	authApplicationPassword auth_api.ApplicationPassword,
+	authRealm string,
+	authGroups string,
+	targetAddress string,
+) (*http.Server, error) {
 	if port <= 0 {
 		return nil, fmt.Errorf("parameter %s missing", PARAMETER_PORT)
 	}
@@ -88,7 +104,7 @@ func createServer(port int, authAddress string, authApplicationName string, auth
 
 	httpRequestBuilderProvider := http_requestbuilder.NewHttpRequestBuilderProvider()
 	httpClient := http_client_builder.New().WithoutProxy().Build()
-	authClient := auth_client.New(httpClient.Do, httpRequestBuilderProvider, authAddress, auth_api.ApplicationName(authApplicationName), auth_api.ApplicationPassword(authApplicationPassword))
+	authClient := auth_client.New(httpClient.Do, httpRequestBuilderProvider, authAddress, authApplicationName, authApplicationPassword)
 	dialer := (&net.Dialer{
 		Timeout: http_client_builder.DEFAULT_TIMEOUT,
 	})
