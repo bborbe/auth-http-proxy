@@ -54,6 +54,8 @@ func main() {
 	logger.SetLevelThreshold(log.LogStringToLevel(*logLevelPtr))
 	logger.Debugf("set log level to %s", *logLevelPtr)
 
+	runtime.GOMAXPROCS(runtime.NumCPU())
+
 	server, err := createServer(
 		*portPtr,
 		auth_api.Address(*authAddressPtr),
