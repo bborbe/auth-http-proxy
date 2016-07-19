@@ -20,6 +20,7 @@ import (
 	"github.com/bborbe/auth_http_proxy/forward"
 	"github.com/bborbe/server/handler/auth_basic"
 	"github.com/facebookgo/grace/gracehttp"
+	"runtime"
 )
 
 var logger = log.DefaultLogger
