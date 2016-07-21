@@ -14,13 +14,14 @@ import (
 
 	"strings"
 
+	"runtime"
+
 	auth_api "github.com/bborbe/auth/api"
-	auth_client "github.com/bborbe/auth/client"
+	auth_client "github.com/bborbe/auth/client/verify_group_service"
 	"github.com/bborbe/auth_http_proxy/auth_verifier"
 	"github.com/bborbe/auth_http_proxy/forward"
 	"github.com/bborbe/server/handler/auth_basic"
 	"github.com/facebookgo/grace/gracehttp"
-	"runtime"
 )
 
 var logger = log.DefaultLogger
@@ -116,7 +117,7 @@ func createServer(
 			return dialer.Dial(network, targetAddress)
 		}).Build().Do(req)
 	})
-	authVerifier := auth_verifier.New(authClient.Auth, createGroups(authGroups))
+	authVerifier := auth_verifier.New(authClient.Auth, createGroups(authGroups)...)
 	authHandler := auth_basic.New(forwardHandler.ServeHTTP, authVerifier.Verify, authRealm)
 
 	return &http.Server{Addr: fmt.Sprintf(":%d", port), Handler: authHandler}, nil

@@ -15,7 +15,7 @@ type auth struct {
 	requiredGroups []api.GroupName
 }
 
-func New(check Check, requiredGroups []api.GroupName) *auth {
+func New(check Check, requiredGroups ...api.GroupName) *auth {
 	a := new(auth)
 	a.check = check
 	a.requiredGroups = requiredGroups
