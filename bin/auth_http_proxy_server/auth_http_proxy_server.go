@@ -20,7 +20,7 @@ import (
 	auth_client "github.com/bborbe/auth/client/verify_group_service"
 	"github.com/bborbe/auth_http_proxy/auth_verifier"
 	"github.com/bborbe/auth_http_proxy/forward"
-	"github.com/bborbe/server/handler/auth_basic"
+	"github.com/bborbe/http_handler/auth_basic"
 	"github.com/facebookgo/grace/gracehttp"
 )
 
