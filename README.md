@@ -46,7 +46,7 @@ auth_http_proxy_server \
 -loglevel=debug \
 -port=8888 \
 -target-address=localhost:7777 \
--auth-address=localhost:6666 \
+-auth-url=http://localhost:6666 \
 -auth-application-name=auth \
 -auth-application-password=test123 \
 -auth-realm=TestAuth

@@ -30,7 +30,7 @@ const (
 	DEFAULT_PORT                        int = 8080
 	PARAMETER_LOGLEVEL                      = "loglevel"
 	PARAMETER_PORT                          = "port"
-	PARAMETER_AUTH_ADDRESS                  = "auth-address"
+	PARAMETER_AUTH_URL                      = "auth-url"
 	PARAMETER_AUTH_APPLICATION_NAME         = "auth-application-name"
 	PARAMETER_AUTH_APPLICATION_PASSWORD     = "auth-application-password"
 	PARAMETER_TARGET_ADDRESS                = "target-address"
@@ -41,7 +41,7 @@ const (
 var (
 	logLevelPtr                = flag.String(PARAMETER_LOGLEVEL, log.INFO_STRING, "one of OFF,TRACE,DEBUG,INFO,WARN,ERROR")
 	portPtr                    = flag.Int(PARAMETER_PORT, DEFAULT_PORT, "port")
-	authAddressPtr             = flag.String(PARAMETER_AUTH_ADDRESS, "", "auth address")
+	authUrlPtr                 = flag.String(PARAMETER_AUTH_URL, "", "auth url")
 	authApplicationNamePtr     = flag.String(PARAMETER_AUTH_APPLICATION_NAME, "", "auth application name")
 	authApplicationPasswordPtr = flag.String(PARAMETER_AUTH_APPLICATION_PASSWORD, "", "auth application password")
 	authRealmPtr               = flag.String(PARAMETER_AUTH_REALM, "", "basic auth realm")
@@ -60,7 +60,7 @@ func main() {
 
 	server, err := createServer(
 		*portPtr,
-		auth_model.Address(*authAddressPtr),
+		auth_model.Url(*authUrlPtr),
 		auth_model.ApplicationName(*authApplicationNamePtr),
 		auth_model.ApplicationPassword(*authApplicationPasswordPtr),
 		*authRealmPtr,
@@ -78,7 +78,7 @@ func main() {
 
 func createServer(
 	port int,
-	authAddress auth_model.Address,
+	authUrl auth_model.Url,
 	authApplicationName auth_model.ApplicationName,
 	authApplicationPassword auth_model.ApplicationPassword,
 	authRealm string,
@@ -88,8 +88,8 @@ func createServer(
 	if port <= 0 {
 		return nil, fmt.Errorf("parameter %s missing", PARAMETER_PORT)
 	}
-	if len(authAddress) == 0 {
-		return nil, fmt.Errorf("parameter %s missing", PARAMETER_AUTH_ADDRESS)
+	if len(authUrl) == 0 {
+		return nil, fmt.Errorf("parameter %s missing", PARAMETER_AUTH_URL)
 	}
 	if len(authApplicationName) == 0 {
 		return nil, fmt.Errorf("parameter %s missing", PARAMETER_AUTH_APPLICATION_NAME)
@@ -108,7 +108,7 @@ func createServer(
 
 	httpRequestBuilderProvider := http_requestbuilder.NewHttpRequestBuilderProvider()
 	httpClient := http_client_builder.New().WithoutProxy().Build()
-	authClient := auth_client.New(httpClient.Do, httpRequestBuilderProvider, authAddress, authApplicationName, authApplicationPassword)
+	authClient := auth_client.New(httpClient.Do, httpRequestBuilderProvider, authUrl, authApplicationName, authApplicationPassword)
 	dialer := (&net.Dialer{
 		Timeout: http_client_builder.DEFAULT_TIMEOUT,
 	})
