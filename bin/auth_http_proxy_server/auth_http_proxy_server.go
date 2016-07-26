@@ -16,8 +16,8 @@ import (
 
 	"runtime"
 
-	auth_api "github.com/bborbe/auth/api"
 	auth_client "github.com/bborbe/auth/client/verify_group_service"
+	auth_model "github.com/bborbe/auth/model"
 	"github.com/bborbe/auth_http_proxy/auth_verifier"
 	"github.com/bborbe/auth_http_proxy/forward"
 	"github.com/bborbe/http_handler/auth_basic"
@@ -60,9 +60,9 @@ func main() {
 
 	server, err := createServer(
 		*portPtr,
-		auth_api.Address(*authAddressPtr),
-		auth_api.ApplicationName(*authApplicationNamePtr),
-		auth_api.ApplicationPassword(*authApplicationPasswordPtr),
+		auth_model.Address(*authAddressPtr),
+		auth_model.ApplicationName(*authApplicationNamePtr),
+		auth_model.ApplicationPassword(*authApplicationPasswordPtr),
 		*authRealmPtr,
 		*authGroupsPtr,
 		*targetAddressPtr,
@@ -78,9 +78,9 @@ func main() {
 
 func createServer(
 	port int,
-	authAddress auth_api.Address,
-	authApplicationName auth_api.ApplicationName,
-	authApplicationPassword auth_api.ApplicationPassword,
+	authAddress auth_model.Address,
+	authApplicationName auth_model.ApplicationName,
+	authApplicationPassword auth_model.ApplicationPassword,
 	authRealm string,
 	authGroups string,
 	targetAddress string,
@@ -123,12 +123,12 @@ func createServer(
 	return &http.Server{Addr: fmt.Sprintf(":%d", port), Handler: authHandler}, nil
 }
 
-func createGroups(groupNames string) []auth_api.GroupName {
+func createGroups(groupNames string) []auth_model.GroupName {
 	parts := strings.Split(groupNames, ",")
-	groups := make([]auth_api.GroupName, 0)
+	groups := make([]auth_model.GroupName, 0)
 	for _, groupName := range parts {
 		if len(groupName) > 0 {
-			groups = append(groups, auth_api.GroupName(groupName))
+			groups = append(groups, auth_model.GroupName(groupName))
 		}
 	}
 	logger.Debugf("required groups: %v", groups)
