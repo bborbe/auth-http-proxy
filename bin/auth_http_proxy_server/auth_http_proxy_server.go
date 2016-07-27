@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	debug_handler "github.com/bborbe/http_handler/debug"
 	"net/http"
 	"os"
 
@@ -36,6 +37,7 @@ const (
 	PARAMETER_TARGET_ADDRESS                = "target-address"
 	PARAMETER_AUTH_REALM                    = "auth-realm"
 	PARAMETER_AUTH_GROUPS                   = "auth-groups"
+	PARAMETER_DEBUG                         = "debug"
 )
 
 var (
@@ -47,6 +49,7 @@ var (
 	authRealmPtr               = flag.String(PARAMETER_AUTH_REALM, "", "basic auth realm")
 	authGroupsPtr              = flag.String(PARAMETER_AUTH_GROUPS, "", "required groups reperated by comma")
 	targetAddressPtr           = flag.String(PARAMETER_TARGET_ADDRESS, "", "target address")
+	debugPtr                   = flag.Bool(PARAMETER_DEBUG, false, "debug")
 )
 
 func main() {
@@ -60,6 +63,7 @@ func main() {
 
 	server, err := createServer(
 		*portPtr,
+		*debugPtr,
 		auth_model.Url(*authUrlPtr),
 		auth_model.ApplicationName(*authApplicationNamePtr),
 		auth_model.ApplicationPassword(*authApplicationPasswordPtr),
@@ -78,6 +82,7 @@ func main() {
 
 func createServer(
 	port int,
+	debug bool,
 	authUrl auth_model.Url,
 	authApplicationName auth_model.ApplicationName,
 	authApplicationPassword auth_model.ApplicationPassword,
@@ -118,9 +123,13 @@ func createServer(
 		}).Build().Do(req)
 	})
 	authVerifier := auth_verifier.New(authClient.Auth, createGroups(authGroups)...)
-	authHandler := auth_basic.New(forwardHandler.ServeHTTP, authVerifier.Verify, authRealm)
+	handler := auth_basic.New(forwardHandler.ServeHTTP, authVerifier.Verify, authRealm)
 
-	return &http.Server{Addr: fmt.Sprintf(":%d", port), Handler: authHandler}, nil
+	if debug {
+		handler = debug_handler.New(handler)
+	}
+
+	return &http.Server{Addr: fmt.Sprintf(":%d", port), Handler: handler}, nil
 }
 
 func createGroups(groupNames string) []auth_model.GroupName {
