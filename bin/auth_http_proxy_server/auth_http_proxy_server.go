@@ -123,7 +123,7 @@ func createServer(
 		}).Build().Do(req)
 	})
 	authVerifier := auth_verifier.New(authClient.Auth, createGroups(authGroups)...)
-	handler := auth_basic.New(forwardHandler.ServeHTTP, authVerifier.Verify, authRealm)
+	var handler http.Handler = auth_basic.New(forwardHandler.ServeHTTP, authVerifier.Verify, authRealm)
 
 	if debug {
 		handler = debug_handler.New(handler)
