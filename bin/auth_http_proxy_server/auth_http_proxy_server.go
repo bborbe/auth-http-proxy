@@ -2,9 +2,10 @@ package main
 
 import (
 	"fmt"
-	debug_handler "github.com/bborbe/http_handler/debug"
 	"net/http"
 	"os"
+
+	debug_handler "github.com/bborbe/http_handler/debug"
 
 	flag "github.com/bborbe/flagenv"
 	http_client_builder "github.com/bborbe/http/client_builder"
