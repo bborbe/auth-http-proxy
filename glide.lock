@@ -1,0 +1,42 @@
+hash: 5ad7e7ad7cdb379fc8fb07c2f5c3333831cd9bba0a6f42c90187e84fccad6148
+updated: 2016-08-24T21:28:26.707425997+02:00
+imports:
+- name: github.com/bborbe/auth
+  version: f0e5bf21c8194c6a354c052779d0184c9fd418c8
+  subpackages:
+  - client/verify_group_service
+  - model
+  - v1
+- name: github.com/bborbe/flagenv
+  version: a711a961081a928e1a3bfe2a047d59a69fa6b506
+- name: github.com/bborbe/http
+  version: ba3b05652664169dbef4c3c1c326db4929b0cec2
+  subpackages:
+  - client_builder
+  - header
+  - requestbuilder
+- name: github.com/bborbe/http_handler
+  version: 9157ff259dd5b969462691e14184e2fb71ba8512
+  subpackages:
+  - auth_basic
+  - debug
+- name: github.com/bborbe/io
+  version: 56d91e8345e4418981a56bc4b8466b4096138f08
+  subpackages:
+  - buffered_writer
+- name: github.com/bborbe/log
+  version: 0250bb5b2e2bd833cb9a47333c28aa46751cdbfe
+- name: github.com/facebookgo/clock
+  version: 600d898af40aa09a7a93ecb9265d87b0504b6f03
+- name: github.com/facebookgo/grace
+  version: 053ab5d25436faedf3fe76fbf3da797c8c27c659
+  subpackages:
+  - gracehttp
+  - gracenet
+- name: github.com/facebookgo/httpdown
+  version: a3b1354551a26449fbe05f5d855937f6e7acbd71
+- name: github.com/facebookgo/stats
+  version: 1b76add642e42c6ffba7211ad7b3939ce654526e
+testImports:
+- name: github.com/bborbe/assert
+  version: cd6d0ec67c40ced8ca6cf72773b9e4b44420fbd2

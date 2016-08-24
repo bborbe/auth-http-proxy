@@ -1,0 +1,50 @@
+install:
+	GOBIN=$(GOPATH)/bin GO15VENDOREXPERIMENT=1 go install bin/auth_http_proxy_server/auth_http_proxy_server.go
+test:
+	GO15VENDOREXPERIMENT=1 go test `glide novendor`
+check:
+	golint ./...
+	errcheck ./...
+runledis:
+	ledis-server \
+	-addr=localhost:5555 \
+	-databases=1
+runauth:
+	auth_server \
+	-loglevel=debug \
+	-port=6666 \
+	-prefix=/auth \
+	-ledisdb-address=localhost:5555 \
+	-auth-application-password=test123
+runfileserver:
+	file_server \
+	-loglevel=debug \
+	-port=7777 \
+	-root=/tmp
+run:
+	auth_http_proxy_server \
+	-loglevel=debug \
+	-port=8888 \
+	-target-address=localhost:7777 \
+	-auth-url=http://localhost:6666 \
+	-auth-application-name=auth \
+	-auth-application-password=test123 \
+	-auth-realm=TestAuth
+open:
+	open http://localhost:8888/
+format:
+	find . -name "*.go" -exec gofmt -w "{}" \;
+	goimports -w=true .
+prepare:
+	go get -u github.com/bborbe/server/bin/file_server
+	go get -u github.com/bborbe/auth/bin/auth_server
+	go get -u github.com/siddontang/ledisdb/cmd/ledis-server
+	go get -u golang.org/x/tools/cmd/goimports
+	go get -u github.com/Masterminds/glide
+	go get -u github.com/golang/lint/golint
+	go get -u github.com/kisielk/errcheck
+	glide install
+update:
+	glide up
+clean:
+	rm -rf var vendor target node_modules

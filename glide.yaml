@@ -1,0 +1,22 @@
+package: github.com/bborbe/auth_http_proxy
+import:
+- package: github.com/bborbe/auth
+  subpackages:
+  - client/verify_group_service
+  - model
+- package: github.com/bborbe/flagenv
+- package: github.com/bborbe/http
+  subpackages:
+  - client_builder
+  - header
+  - requestbuilder
+- package: github.com/bborbe/http_handler
+  subpackages:
+  - auth_basic
+  - debug
+- package: github.com/bborbe/log
+- package: github.com/facebookgo/grace
+  subpackages:
+  - gracehttp
+testImport:
+- package: github.com/bborbe/assert
