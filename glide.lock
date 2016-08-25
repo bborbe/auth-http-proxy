@@ -1,5 +1,5 @@
 hash: 5ad7e7ad7cdb379fc8fb07c2f5c3333831cd9bba0a6f42c90187e84fccad6148
-updated: 2016-08-24T21:28:26.707425997+02:00
+updated: 2016-08-25T20:04:54.821647781+02:00
 imports:
 - name: github.com/bborbe/auth
   version: f0e5bf21c8194c6a354c052779d0184c9fd418c8
@@ -8,20 +8,20 @@ imports:
   - model
   - v1
 - name: github.com/bborbe/flagenv
-  version: a711a961081a928e1a3bfe2a047d59a69fa6b506
+  version: 0977949b20c82a7cad254644637f29c72205d61d
 - name: github.com/bborbe/http
-  version: ba3b05652664169dbef4c3c1c326db4929b0cec2
+  version: 1a08a16fd2cc75228b32afadd7126f7372cb4780
   subpackages:
   - client_builder
   - header
   - requestbuilder
 - name: github.com/bborbe/http_handler
-  version: 9157ff259dd5b969462691e14184e2fb71ba8512
+  version: 88aeecad6b6b07bc2ec369c4e147b7081310c726
   subpackages:
   - auth_basic
   - debug
 - name: github.com/bborbe/io
-  version: 56d91e8345e4418981a56bc4b8466b4096138f08
+  version: a92503d8d6377ff0e8b24ad2007cc83546a50817
   subpackages:
   - buffered_writer
 - name: github.com/bborbe/log
@@ -39,4 +39,4 @@ imports:
   version: 1b76add642e42c6ffba7211ad7b3939ce654526e
 testImports:
 - name: github.com/bborbe/assert
-  version: cd6d0ec67c40ced8ca6cf72773b9e4b44420fbd2
+  version: f767bd2fffab5a86d5a887e2415d399e8aade8bf
