@@ -2,9 +2,14 @@ install:
 	GOBIN=$(GOPATH)/bin GO15VENDOREXPERIMENT=1 go install bin/auth_http_proxy_server/auth_http_proxy_server.go
 test:
 	GO15VENDOREXPERIMENT=1 go test `glide novendor`
-check:
-	golint ./...
+vet:
+	go tool vet .
+	go tool vet .-shadow .
+lint:
+	golint -min_confidence 1 ./...
+errcheck:
 	errcheck -ignore '(Close|Write)' ./...
+check: lint vet errcheck
 runledis:
 	ledis-server \
 	-addr=localhost:5555 \
