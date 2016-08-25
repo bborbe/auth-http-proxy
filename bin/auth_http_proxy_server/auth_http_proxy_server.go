@@ -62,7 +62,7 @@ func main() {
 
 	runtime.GOMAXPROCS(runtime.NumCPU())
 
-	server, err := createServer(
+	err := do(
 		*portPtr,
 		*debugPtr,
 		auth_model.Url(*authUrlPtr),
@@ -77,8 +77,33 @@ func main() {
 		logger.Close()
 		os.Exit(1)
 	}
+}
+
+func do(
+	port int,
+	debug bool,
+	authUrl auth_model.Url,
+	authApplicationName auth_model.ApplicationName,
+	authApplicationPassword auth_model.ApplicationPassword,
+	authRealm string,
+	authGroups string,
+	targetAddress string,
+) error {
+	server, err := createServer(
+		port,
+		debug,
+		authUrl,
+		authApplicationName,
+		authApplicationPassword,
+		authRealm,
+		authGroups,
+		targetAddress,
+	)
+	if err != nil {
+		return err
+	}
 	logger.Debugf("start server")
-	gracehttp.Serve(server)
+	return gracehttp.Serve(server)
 }
 
 func createServer(
@@ -112,7 +137,7 @@ func createServer(
 
 	logger.Debugf("create server on port: %d with target: %s", port, targetAddress)
 
-	httpRequestBuilderProvider := http_requestbuilder.NewHttpRequestBuilderProvider()
+	httpRequestBuilderProvider := http_requestbuilder.NewHTTPRequestBuilderProvider()
 	httpClient := http_client_builder.New().WithoutProxy().Build()
 	authClient := auth_client.New(httpClient.Do, httpRequestBuilderProvider, authUrl, authApplicationName, authApplicationPassword)
 	dialer := (&net.Dialer{

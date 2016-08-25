@@ -52,7 +52,9 @@ func (h *handler) serveHTTP(resp http.ResponseWriter, req *http.Request) error {
 	logger.Debugf("write response")
 	copyHeader(resp, &subresp.Header)
 	resp.WriteHeader(subresp.StatusCode)
-	io.Copy(resp, subresp.Body)
+	if _, err := io.Copy(resp, subresp.Body); err != nil {
+		return err
+	}
 	logger.Debugf("forward request done")
 	return nil
 }
