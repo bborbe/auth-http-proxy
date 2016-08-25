@@ -1,31 +1,31 @@
 hash: 5ad7e7ad7cdb379fc8fb07c2f5c3333831cd9bba0a6f42c90187e84fccad6148
-updated: 2016-08-25T20:04:54.821647781+02:00
+updated: 2016-08-25T21:17:25.52419143+02:00
 imports:
 - name: github.com/bborbe/auth
-  version: f0e5bf21c8194c6a354c052779d0184c9fd418c8
+  version: aba8049ba991f6c2eb1ac4b1cb3563edbede8554
   subpackages:
   - client/verify_group_service
   - model
   - v1
 - name: github.com/bborbe/flagenv
-  version: 0977949b20c82a7cad254644637f29c72205d61d
+  version: 9c2510a4cb99b118da34234aaf15e36db8adfea6
 - name: github.com/bborbe/http
-  version: 1a08a16fd2cc75228b32afadd7126f7372cb4780
+  version: e3129e4b040e04260ae15011e1600a0de7d150e5
   subpackages:
   - client_builder
   - header
   - requestbuilder
 - name: github.com/bborbe/http_handler
-  version: 88aeecad6b6b07bc2ec369c4e147b7081310c726
+  version: ff995bdd1103edc024d5998694874b99ebe1c28f
   subpackages:
   - auth_basic
   - debug
 - name: github.com/bborbe/io
-  version: a92503d8d6377ff0e8b24ad2007cc83546a50817
+  version: b820f8cb162c3389b0d47c5435cf395c8b9fb3ee
   subpackages:
   - buffered_writer
 - name: github.com/bborbe/log
-  version: 0250bb5b2e2bd833cb9a47333c28aa46751cdbfe
+  version: 9ae9cab3e22cfa1ced54e9d8699c7abd294c9533
 - name: github.com/facebookgo/clock
   version: 600d898af40aa09a7a93ecb9265d87b0504b6f03
 - name: github.com/facebookgo/grace
