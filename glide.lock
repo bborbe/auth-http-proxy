@@ -1,5 +1,5 @@
 hash: 5ad7e7ad7cdb379fc8fb07c2f5c3333831cd9bba0a6f42c90187e84fccad6148
-updated: 2016-08-26T11:27:40.995480347+02:00
+updated: 2016-08-26T11:33:33.249866987+02:00
 imports:
 - name: github.com/bborbe/auth
   version: c91b188aa97ba9b918fd8e4478d3caa8aaed4c92
@@ -16,7 +16,7 @@ imports:
   - header
   - requestbuilder
 - name: github.com/bborbe/http_handler
-  version: ff995bdd1103edc024d5998694874b99ebe1c28f
+  version: ab55278d59bc71960461045464a26847a74d1f27
   subpackages:
   - auth_basic
   - debug
