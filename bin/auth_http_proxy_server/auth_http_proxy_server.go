@@ -2,15 +2,13 @@ package main
 
 import (
 	"fmt"
-	"net/http"
-	"os"
-
 	debug_handler "github.com/bborbe/http_handler/debug"
+	"net/http"
 
 	flag "github.com/bborbe/flagenv"
 	http_client_builder "github.com/bborbe/http/client_builder"
 	http_requestbuilder "github.com/bborbe/http/requestbuilder"
-	"github.com/bborbe/log"
+	"github.com/golang/glog"
 
 	"net"
 
@@ -26,11 +24,8 @@ import (
 	"github.com/facebookgo/grace/gracehttp"
 )
 
-var logger = log.DefaultLogger
-
 const (
 	defaultPort                      int = 8080
-	parameterLoglevel                    = "loglevel"
 	parameterPort                        = "port"
 	parameterAuthUrl                     = "auth-url"
 	parameterAuthApplicationName         = "auth-application-name"
@@ -42,7 +37,6 @@ const (
 )
 
 var (
-	logLevelPtr                = flag.String(parameterLoglevel, log.INFO_STRING, "one of OFF,TRACE,DEBUG,INFO,WARN,ERROR")
 	portPtr                    = flag.Int(parameterPort, defaultPort, "port")
 	authUrlPtr                 = flag.String(parameterAuthUrl, "", "auth url")
 	authApplicationNamePtr     = flag.String(parameterAuthApplicationName, "", "auth application name")
@@ -54,11 +48,9 @@ var (
 )
 
 func main() {
-	defer logger.Close()
+	defer glog.Flush()
+	glog.CopyStandardLogTo("info")
 	flag.Parse()
-
-	logger.SetLevelThreshold(log.LogStringToLevel(*logLevelPtr))
-	logger.Debugf("set log level to %s", *logLevelPtr)
 
 	runtime.GOMAXPROCS(runtime.NumCPU())
 
@@ -73,9 +65,7 @@ func main() {
 		*targetAddressPtr,
 	)
 	if err != nil {
-		logger.Fatal(err)
-		logger.Close()
-		os.Exit(1)
+		glog.Exit(err)
 	}
 }
 
@@ -102,7 +92,7 @@ func do(
 	if err != nil {
 		return err
 	}
-	logger.Debugf("start server")
+	glog.V(2).Infof("start server")
 	return gracehttp.Serve(server)
 }
 
@@ -116,7 +106,7 @@ func createServer(
 	authGroups string,
 	targetAddress string,
 ) (*http.Server, error) {
-	logger.Debugf("port %d debug %v	authUrl %v authApplicationName %v authApplicationPassword-length %d authRealm %v authGroups %v	targetAddress %v", port, debug, authUrl, authApplicationName, len(authApplicationPassword), authRealm, authGroups, targetAddress)
+	glog.V(2).Infof("port %d debug %v	authUrl %v authApplicationName %v authApplicationPassword-length %d authRealm %v authGroups %v	targetAddress %v", port, debug, authUrl, authApplicationName, len(authApplicationPassword), authRealm, authGroups, targetAddress)
 	if port <= 0 {
 		return nil, fmt.Errorf("parameter %s missing", parameterPort)
 	}
@@ -136,7 +126,7 @@ func createServer(
 		return nil, fmt.Errorf("parameter %s missing", parameterAuthRealm)
 	}
 
-	logger.Debugf("create server on port: %d with target: %s", port, targetAddress)
+	glog.V(2).Infof("create server on port: %d with target: %s", port, targetAddress)
 
 	httpRequestBuilderProvider := http_requestbuilder.NewHTTPRequestBuilderProvider()
 	httpClient := http_client_builder.New().WithoutProxy().Build()
@@ -167,6 +157,6 @@ func createGroups(groupNames string) []auth_model.GroupName {
 			groups = append(groups, auth_model.GroupName(groupName))
 		}
 	}
-	logger.Debugf("required groups: %v", groups)
+	glog.V(2).Infof("required groups: %v", groups)
 	return groups
 }

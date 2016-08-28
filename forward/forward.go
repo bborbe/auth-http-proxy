@@ -7,10 +7,8 @@ import (
 
 	"fmt"
 
-	"github.com/bborbe/log"
+	"github.com/golang/glog"
 )
-
-var logger = log.DefaultLogger
 
 type executeRequest func(address string, req *http.Request) (resp *http.Response, err error)
 
@@ -27,19 +25,19 @@ func New(target string, executeRequest executeRequest) *handler {
 }
 
 func (h *handler) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
-	logger.Debugf("forward request")
+	glog.V(2).Infof("forward request")
 	err := h.serveHTTP(resp, req)
 	if err != nil {
-		logger.Debugf("forward request failed: %v", err)
+		glog.V(2).Infof("forward request failed: %v", err)
 		resp.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 }
 
 func (h *handler) serveHTTP(resp http.ResponseWriter, req *http.Request) error {
-	logger.Debugf("%v", req)
+	glog.V(2).Infof("%v", req)
 	urlStr := fmt.Sprintf("http://%s%s", req.Host, req.RequestURI)
-	logger.Debugf("forward request %s %s", req.Method, urlStr)
+	glog.V(2).Infof("forward request %s %s", req.Method, urlStr)
 	subreq, err := http.NewRequest(req.Method, urlStr, req.Body)
 	if err != nil {
 		return err
@@ -49,13 +47,13 @@ func (h *handler) serveHTTP(resp http.ResponseWriter, req *http.Request) error {
 	if err != nil {
 		return err
 	}
-	logger.Debugf("write response")
+	glog.V(2).Infof("write response")
 	copyHeader(resp, &subresp.Header)
 	resp.WriteHeader(subresp.StatusCode)
 	if _, err := io.Copy(resp, subresp.Body); err != nil {
 		return err
 	}
-	logger.Debugf("forward request done")
+	glog.V(2).Infof("forward request done")
 	return nil
 }
 

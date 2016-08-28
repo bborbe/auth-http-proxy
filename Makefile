@@ -28,7 +28,8 @@ runfileserver:
 	-root=/tmp
 run:
 	auth_http_proxy_server \
-	-loglevel=debug \
+	-logtostderr \
+	-v=2 \
 	-port=8888 \
 	-target-address=localhost:7777 \
 	-auth-url=http://localhost:6666 \

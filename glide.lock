@@ -1,5 +1,5 @@
-hash: 5ad7e7ad7cdb379fc8fb07c2f5c3333831cd9bba0a6f42c90187e84fccad6148
-updated: 2016-08-26T11:33:33.249866987+02:00
+hash: 1e60f485cec5e3f830b21f3774e8c4d375331ed2187e1cf2f1509a4b599839bb
+updated: 2016-08-28T18:12:00.798705201+02:00
 imports:
 - name: github.com/bborbe/auth
   version: c91b188aa97ba9b918fd8e4478d3caa8aaed4c92
@@ -37,6 +37,8 @@ imports:
   version: a3b1354551a26449fbe05f5d855937f6e7acbd71
 - name: github.com/facebookgo/stats
   version: 1b76add642e42c6ffba7211ad7b3939ce654526e
+- name: github.com/golang/glog
+  version: 23def4e6c14b4da8ac2ed8007337bc5eb5007998
 testImports:
 - name: github.com/bborbe/assert
   version: 639eac9a24e3c01472758f3c79452b8517bc29f6

@@ -14,9 +14,9 @@ import:
   subpackages:
   - auth_basic
   - debug
-- package: github.com/bborbe/log
 - package: github.com/facebookgo/grace
   subpackages:
   - gracehttp
+- package: github.com/golang/glog
 testImport:
 - package: github.com/bborbe/assert
