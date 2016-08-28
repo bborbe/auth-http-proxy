@@ -8,14 +8,14 @@ import (
 
 var logger = log.DefaultLogger
 
-type Check func(authToken model.AuthToken, requiredGroups []model.GroupName) (*model.UserName, error)
+type check func(authToken model.AuthToken, requiredGroups []model.GroupName) (*model.UserName, error)
 
 type auth struct {
-	check          Check
+	check          check
 	requiredGroups []model.GroupName
 }
 
-func New(check Check, requiredGroups ...model.GroupName) *auth {
+func New(check check, requiredGroups ...model.GroupName) *auth {
 	a := new(auth)
 	a.check = check
 	a.requiredGroups = requiredGroups

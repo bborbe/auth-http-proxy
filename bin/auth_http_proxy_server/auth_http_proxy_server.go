@@ -29,28 +29,28 @@ import (
 var logger = log.DefaultLogger
 
 const (
-	DEFAULT_PORT                        int = 8080
-	PARAMETER_LOGLEVEL                      = "loglevel"
-	PARAMETER_PORT                          = "port"
-	PARAMETER_AUTH_URL                      = "auth-url"
-	PARAMETER_AUTH_APPLICATION_NAME         = "auth-application-name"
-	PARAMETER_AUTH_APPLICATION_PASSWORD     = "auth-application-password"
-	PARAMETER_TARGET_ADDRESS                = "target-address"
-	PARAMETER_AUTH_REALM                    = "auth-realm"
-	PARAMETER_AUTH_GROUPS                   = "auth-groups"
-	PARAMETER_DEBUG                         = "debug"
+	defaultPort                      int = 8080
+	parameterLoglevel                    = "loglevel"
+	parameterPort                        = "port"
+	parameterAuthUrl                     = "auth-url"
+	parameterAuthApplicationName         = "auth-application-name"
+	parameterAuthApplicationPassword     = "auth-application-password"
+	parameterTargetAddress               = "target-address"
+	parameterAuthRealm                   = "auth-realm"
+	parameterAuthGroups                  = "auth-groups"
+	parameterDebug                       = "debug"
 )
 
 var (
-	logLevelPtr                = flag.String(PARAMETER_LOGLEVEL, log.INFO_STRING, "one of OFF,TRACE,DEBUG,INFO,WARN,ERROR")
-	portPtr                    = flag.Int(PARAMETER_PORT, DEFAULT_PORT, "port")
-	authUrlPtr                 = flag.String(PARAMETER_AUTH_URL, "", "auth url")
-	authApplicationNamePtr     = flag.String(PARAMETER_AUTH_APPLICATION_NAME, "", "auth application name")
-	authApplicationPasswordPtr = flag.String(PARAMETER_AUTH_APPLICATION_PASSWORD, "", "auth application password")
-	authRealmPtr               = flag.String(PARAMETER_AUTH_REALM, "", "basic auth realm")
-	authGroupsPtr              = flag.String(PARAMETER_AUTH_GROUPS, "", "required groups reperated by comma")
-	targetAddressPtr           = flag.String(PARAMETER_TARGET_ADDRESS, "", "target address")
-	debugPtr                   = flag.Bool(PARAMETER_DEBUG, false, "debug")
+	logLevelPtr                = flag.String(parameterLoglevel, log.INFO_STRING, "one of OFF,TRACE,DEBUG,INFO,WARN,ERROR")
+	portPtr                    = flag.Int(parameterPort, defaultPort, "port")
+	authUrlPtr                 = flag.String(parameterAuthUrl, "", "auth url")
+	authApplicationNamePtr     = flag.String(parameterAuthApplicationName, "", "auth application name")
+	authApplicationPasswordPtr = flag.String(parameterAuthApplicationPassword, "", "auth application password")
+	authRealmPtr               = flag.String(parameterAuthRealm, "", "basic auth realm")
+	authGroupsPtr              = flag.String(parameterAuthGroups, "", "required groups reperated by comma")
+	targetAddressPtr           = flag.String(parameterTargetAddress, "", "target address")
+	debugPtr                   = flag.Bool(parameterDebug, false, "debug")
 )
 
 func main() {
@@ -118,22 +118,22 @@ func createServer(
 ) (*http.Server, error) {
 	logger.Debugf("port %d debug %v	authUrl %v authApplicationName %v authApplicationPassword-length %d authRealm %v authGroups %v	targetAddress %v", port, debug, authUrl, authApplicationName, len(authApplicationPassword), authRealm, authGroups, targetAddress)
 	if port <= 0 {
-		return nil, fmt.Errorf("parameter %s missing", PARAMETER_PORT)
+		return nil, fmt.Errorf("parameter %s missing", parameterPort)
 	}
 	if len(authUrl) == 0 {
-		return nil, fmt.Errorf("parameter %s missing", PARAMETER_AUTH_URL)
+		return nil, fmt.Errorf("parameter %s missing", parameterAuthUrl)
 	}
 	if len(authApplicationName) == 0 {
-		return nil, fmt.Errorf("parameter %s missing", PARAMETER_AUTH_APPLICATION_NAME)
+		return nil, fmt.Errorf("parameter %s missing", parameterAuthApplicationName)
 	}
 	if len(authApplicationPassword) == 0 {
-		return nil, fmt.Errorf("parameter %s missing", PARAMETER_AUTH_APPLICATION_PASSWORD)
+		return nil, fmt.Errorf("parameter %s missing", parameterAuthApplicationPassword)
 	}
 	if len(targetAddress) == 0 {
-		return nil, fmt.Errorf("parameter %s missing", PARAMETER_TARGET_ADDRESS)
+		return nil, fmt.Errorf("parameter %s missing", parameterTargetAddress)
 	}
 	if len(authRealm) == 0 {
-		return nil, fmt.Errorf("parameter %s missing", PARAMETER_AUTH_REALM)
+		return nil, fmt.Errorf("parameter %s missing", parameterAuthRealm)
 	}
 
 	logger.Debugf("create server on port: %d with target: %s", port, targetAddress)

@@ -12,14 +12,14 @@ import (
 
 var logger = log.DefaultLogger
 
-type ExecuteRequest func(address string, req *http.Request) (resp *http.Response, err error)
+type executeRequest func(address string, req *http.Request) (resp *http.Response, err error)
 
 type handler struct {
 	target         string
-	executeRequest ExecuteRequest
+	executeRequest executeRequest
 }
 
-func New(target string, executeRequest ExecuteRequest) *handler {
+func New(target string, executeRequest executeRequest) *handler {
 	h := new(handler)
 	h.target = target
 	h.executeRequest = executeRequest
