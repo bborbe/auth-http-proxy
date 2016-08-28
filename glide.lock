@@ -1,5 +1,5 @@
 hash: 1e60f485cec5e3f830b21f3774e8c4d375331ed2187e1cf2f1509a4b599839bb
-updated: 2016-08-28T18:12:00.798705201+02:00
+updated: 2016-08-28T19:53:18.883526411+02:00
 imports:
 - name: github.com/bborbe/auth
   version: c91b188aa97ba9b918fd8e4478d3caa8aaed4c92

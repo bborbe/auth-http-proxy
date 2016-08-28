@@ -92,7 +92,7 @@ func do(
 	if err != nil {
 		return err
 	}
-	glog.V(2).Infof("start server")
+	glog.Infof("start server")
 	return gracehttp.Serve(server)
 }
 
@@ -106,7 +106,7 @@ func createServer(
 	authGroups string,
 	targetAddress string,
 ) (*http.Server, error) {
-	glog.V(2).Infof("port %d debug %v	authUrl %v authApplicationName %v authApplicationPassword-length %d authRealm %v authGroups %v	targetAddress %v", port, debug, authUrl, authApplicationName, len(authApplicationPassword), authRealm, authGroups, targetAddress)
+	glog.Infof("port %d debug %v	authUrl %v authApplicationName %v authApplicationPassword-length %d authRealm %v authGroups %v	targetAddress %v", port, debug, authUrl, authApplicationName, len(authApplicationPassword), authRealm, authGroups, targetAddress)
 	if port <= 0 {
 		return nil, fmt.Errorf("parameter %s missing", parameterPort)
 	}
@@ -126,8 +126,6 @@ func createServer(
 		return nil, fmt.Errorf("parameter %s missing", parameterAuthRealm)
 	}
 
-	glog.V(2).Infof("create server on port: %d with target: %s", port, targetAddress)
-
 	httpRequestBuilderProvider := http_requestbuilder.NewHTTPRequestBuilderProvider()
 	httpClient := http_client_builder.New().WithoutProxy().Build()
 	authClient := auth_client.New(httpClient.Do, httpRequestBuilderProvider, authUrl, authApplicationName, authApplicationPassword)
@@ -143,6 +141,7 @@ func createServer(
 	var handler http.Handler = auth_basic.New(forwardHandler.ServeHTTP, authVerifier.Verify, authRealm)
 
 	if debug {
+		glog.V(2).Infof("add debug handler")
 		handler = debug_handler.New(handler)
 	}
 
@@ -157,6 +156,6 @@ func createGroups(groupNames string) []auth_model.GroupName {
 			groups = append(groups, auth_model.GroupName(groupName))
 		}
 	}
-	glog.V(2).Infof("required groups: %v", groups)
+	glog.V(1).Infof("required groups: %v", groups)
 	return groups
 }
