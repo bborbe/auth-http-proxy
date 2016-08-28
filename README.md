@@ -24,7 +24,8 @@ Start auth-server
 
 ```
 auth_server \
--loglevel=debug \
+-logtostderr \
+-v=2 \
 -port=6666 \
 -ledisdb-address=localhost:5555 \
 -auth-application-password=test123
@@ -34,7 +35,8 @@ Start sample you want protect
 
 ```
 file_server \
--loglevel=debug \
+-logtostderr \
+-v=2 \
 -port=7777 \
 -root=/tmp
 ```

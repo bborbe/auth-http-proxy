@@ -16,14 +16,16 @@ runledis:
 	-databases=1
 runauth:
 	auth_server \
-	-loglevel=debug \
+	-logtostderr \
+	-v=2 \
 	-port=6666 \
 	-prefix=/auth \
 	-ledisdb-address=localhost:5555 \
 	-auth-application-password=test123
 runfileserver:
 	file_server \
-	-loglevel=debug \
+	-logtostderr \
+	-v=2 \
 	-port=7777 \
 	-root=/tmp
 run:
