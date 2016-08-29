@@ -4,6 +4,8 @@ SOURCEDIRECTORY="github.com/bborbe/auth_http_proxy"
 
 ################################################################################
 
+echo "use workspace ${WORKSPACE}"
+
 export GOROOT=/opt/go
 export PATH=/opt/go2xunit/bin/:/opt/utils/bin/:/opt/aptly_utils/bin/:/opt/aptly/bin/:/opt/debian_utils/bin/:/opt/debian/bin/:$GOROOT/bin:$PATH
 export GOPATH=${WORKSPACE}
