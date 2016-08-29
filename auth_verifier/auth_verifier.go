@@ -25,7 +25,7 @@ func (a *auth) Verify(username string, password string) (bool, error) {
 	token := header.CreateAuthorizationToken(username, password)
 	user, err := a.check(model.AuthToken(token), a.requiredGroups)
 	if err != nil {
-		glog.V(2).Infof("verify failed: %v", err)
+		glog.V(1).Infof("verify failed: %v", err)
 		return false, err
 	}
 	result := len(*user) > 0
