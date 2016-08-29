@@ -106,7 +106,7 @@ func createServer(
 	authGroups string,
 	targetAddress string,
 ) (*http.Server, error) {
-	glog.Infof("port %d debug %v	authUrl %v authApplicationName %v authApplicationPassword-length %d authRealm %v authGroups %v	targetAddress %v", port, debug, authUrl, authApplicationName, len(authApplicationPassword), authRealm, authGroups, targetAddress)
+	glog.Infof("port %d debug %v authUrl %v authApplicationName %v authApplicationPassword-length %d authRealm %v authGroups %v targetAddress %v", port, debug, authUrl, authApplicationName, len(authApplicationPassword), authRealm, authGroups, targetAddress)
 	if port <= 0 {
 		return nil, fmt.Errorf("parameter %s missing", parameterPort)
 	}
