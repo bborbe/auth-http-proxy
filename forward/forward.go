@@ -27,7 +27,7 @@ func New(target string, executeRequest executeRequest) *handler {
 func (h *handler) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 	glog.V(2).Infof("forward request")
 	if err := h.serveHTTP(resp, req); err != nil {
-		glog.Infof("forward request failed: %v", err)
+		glog.V(1).Infof("forward request failed: %v", err)
 		resp.WriteHeader(http.StatusInternalServerError)
 		return
 	}

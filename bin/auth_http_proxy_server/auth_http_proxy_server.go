@@ -92,7 +92,7 @@ func do(
 	if err != nil {
 		return err
 	}
-	glog.Infof("start server")
+	glog.V(2).Infof("start server")
 	return gracehttp.Serve(server)
 }
 
