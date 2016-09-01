@@ -28,16 +28,26 @@ runfileserver:
 	-v=2 \
 	-port=7777 \
 	-root=/tmp
-run:
+runwithauth:
 	auth_http_proxy_server \
 	-logtostderr \
 	-v=2 \
 	-port=8888 \
+	-basic-auth-realm=TestAuth \
 	-target-address=localhost:7777 \
+	-verifier=auth \
 	-auth-url=http://localhost:6666 \
 	-auth-application-name=auth \
-	-auth-application-password=test123 \
-	-auth-realm=TestAuth
+	-auth-application-password=test123
+runwithfile:
+	auth_http_proxy_server \
+	-logtostderr \
+	-v=2 \
+	-port=8888 \
+	-basic-auth-realm=TestAuth \
+	-target-address=localhost:7777 \
+	-verifier=file \
+	-file-users=sample_users
 open:
 	open http://localhost:8888/
 format:

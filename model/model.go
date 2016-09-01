@@ -18,8 +18,4 @@ func (p Password) String() string {
 	return string(p)
 }
 
-type GroupName string
-
-func (g GroupName) String() string {
-	return string(g)
-}
+type UserFile string

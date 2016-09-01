@@ -13,15 +13,16 @@ import (
 
 	"net"
 
-	"strings"
-
 	"runtime"
 
 	auth_client "github.com/bborbe/auth/client/verify_group_service"
 	auth_model "github.com/bborbe/auth/model"
 	"github.com/bborbe/auth_http_proxy/forward"
 	"github.com/bborbe/auth_http_proxy/model"
+	"github.com/bborbe/auth_http_proxy/verifier"
 	auth_verifier "github.com/bborbe/auth_http_proxy/verifier/auth"
+	"github.com/bborbe/auth_http_proxy/verifier/file"
+	"github.com/bborbe/auth_http_proxy/verifier/ldap"
 	"github.com/bborbe/http_handler/auth_basic"
 	"github.com/facebookgo/grace/gracehttp"
 )
@@ -33,20 +34,24 @@ const (
 	parameterAuthApplicationName         = "auth-application-name"
 	parameterAuthApplicationPassword     = "auth-application-password"
 	parameterTargetAddress               = "target-address"
-	parameterAuthRealm                   = "auth-realm"
+	parameterBasicAuthRealm              = "basic-auth-realm"
 	parameterAuthGroups                  = "auth-groups"
 	parameterDebug                       = "debug"
+	parameterVerifierType                = "verifier"
+	parameterFileUsers                   = "file-users"
 )
 
 var (
 	portPtr                    = flag.Int(parameterPort, defaultPort, "port")
 	authUrlPtr                 = flag.String(parameterAuthUrl, "", "auth url")
-	authApplicationNamePtr     = flag.String(parameterAuthApplicationName, "", "auth application name")
-	authApplicationPasswordPtr = flag.String(parameterAuthApplicationPassword, "", "auth application password")
-	authRealmPtr               = flag.String(parameterAuthRealm, "", "basic auth realm")
-	authGroupsPtr              = flag.String(parameterAuthGroups, "", "required groups reperated by comma")
+	basicAuthRealmPtr          = flag.String(parameterBasicAuthRealm, "", "basic auth realm")
 	targetAddressPtr           = flag.String(parameterTargetAddress, "", "target address")
 	debugPtr                   = flag.Bool(parameterDebug, false, "debug")
+	verifierPtr                = flag.String(parameterVerifierType, "", "verifier type")
+	authApplicationNamePtr     = flag.String(parameterAuthApplicationName, "", "auth application name")
+	authApplicationPasswordPtr = flag.String(parameterAuthApplicationPassword, "", "auth application password")
+	authGroupsPtr              = flag.String(parameterAuthGroups, "", "required groups reperated by comma")
+	fileUsersPtr               = flag.String(parameterFileUsers, "", "users")
 )
 
 func main() {
@@ -55,41 +60,13 @@ func main() {
 	flag.Parse()
 	runtime.GOMAXPROCS(runtime.NumCPU())
 
-	err := do(
-		*portPtr,
-		*debugPtr,
-		auth_model.Url(*authUrlPtr),
-		auth_model.ApplicationName(*authApplicationNamePtr),
-		auth_model.ApplicationPassword(*authApplicationPasswordPtr),
-		*authRealmPtr,
-		*authGroupsPtr,
-		*targetAddressPtr,
-	)
-	if err != nil {
+	if err := do(); err != nil {
 		glog.Exit(err)
 	}
 }
 
-func do(
-	port int,
-	debug bool,
-	authUrl auth_model.Url,
-	authApplicationName auth_model.ApplicationName,
-	authApplicationPassword auth_model.ApplicationPassword,
-	authRealm string,
-	authGroups string,
-	targetAddress string,
-) error {
-	server, err := createServer(
-		port,
-		debug,
-		authUrl,
-		authApplicationName,
-		authApplicationPassword,
-		authRealm,
-		authGroups,
-		targetAddress,
-	)
+func do() error {
+	server, err := createServer()
 	if err != nil {
 		return err
 	}
@@ -97,70 +74,94 @@ func do(
 	return gracehttp.Serve(server)
 }
 
-func createServer(
-	port int,
-	debug bool,
-	authUrl auth_model.Url,
-	authApplicationName auth_model.ApplicationName,
-	authApplicationPassword auth_model.ApplicationPassword,
-	authRealm string,
-	authGroups string,
-	targetAddress string,
-) (*http.Server, error) {
-	glog.Infof("port %d debug %v authUrl %v authApplicationName %v authApplicationPassword-length %d authRealm %v authGroups %v targetAddress %v", port, debug, authUrl, authApplicationName, len(authApplicationPassword), authRealm, authGroups, targetAddress)
+func createServer() (*http.Server, error) {
+	glog.V(2).Infof("create server")
 
-	if port <= 0 {
+	handler, err := createHandler()
+	if err != nil {
+		return nil, err
+	}
+
+	if *portPtr <= 0 {
 		return nil, fmt.Errorf("parameter %s missing", parameterPort)
 	}
-	if len(targetAddress) == 0 {
+	return &http.Server{Addr: fmt.Sprintf(":%d", *portPtr), Handler: handler}, nil
+}
+
+func createHandler() (http.Handler, error) {
+	glog.V(2).Infof("create handler")
+
+	if len(*targetAddressPtr) == 0 {
 		return nil, fmt.Errorf("parameter %s missing", parameterTargetAddress)
 	}
-	if len(authRealm) == 0 {
-		return nil, fmt.Errorf("parameter %s missing", parameterAuthRealm)
+	dialer := (&net.Dialer{
+		Timeout: http_client_builder.DEFAULT_TIMEOUT,
+	})
+	forwardHandler := forward.New(*targetAddressPtr, func(address string, req *http.Request) (resp *http.Response, err error) {
+		return http_client_builder.New().WithoutProxy().WithDialFunc(func(network, address string) (net.Conn, error) {
+			return dialer.Dial(network, *targetAddressPtr)
+		}).Build().Do(req)
+	})
+	if len(*basicAuthRealmPtr) == 0 {
+		return nil, fmt.Errorf("parameter %s missing", parameterBasicAuthRealm)
 	}
+	verifier, err := getVerifierByType()
+	if err != nil {
+		return nil, err
+	}
+	var handler http.Handler = auth_basic.New(forwardHandler.ServeHTTP, func(username string, password string) (bool, error) {
+		return verifier.Verify(model.UserName(username), model.Password(password))
+	}, *basicAuthRealmPtr)
 
-	if len(authUrl) == 0 {
+	if *debugPtr {
+		glog.V(2).Infof("add debug handler")
+		handler = debug_handler.New(handler)
+	}
+	return handler, nil
+}
+
+func getVerifierByType() (verifier.Verifier, error) {
+	if len(*verifierPtr) == 0 {
+		return nil, fmt.Errorf("parameter %s missing", parameterVerifierType)
+	}
+	glog.V(2).Infof("get verifier for type: %v", *verifierPtr)
+	switch *verifierPtr {
+	case "auth":
+		return createAuthVerifier()
+	case "ldap":
+		return createLdapVerifier()
+	case "file":
+		return createFileVerifier()
+	}
+	return nil, fmt.Errorf("parameter %s invalid", parameterVerifierType)
+}
+
+func createAuthVerifier() (verifier.Verifier, error) {
+
+	if len(*authUrlPtr) == 0 {
 		return nil, fmt.Errorf("parameter %s missing", parameterAuthUrl)
 	}
-	if len(authApplicationName) == 0 {
+	if len(*authApplicationNamePtr) == 0 {
 		return nil, fmt.Errorf("parameter %s missing", parameterAuthApplicationName)
 	}
-	if len(authApplicationPassword) == 0 {
+	if len(*authApplicationPasswordPtr) == 0 {
 		return nil, fmt.Errorf("parameter %s missing", parameterAuthApplicationPassword)
 	}
 
 	httpRequestBuilderProvider := http_requestbuilder.NewHTTPRequestBuilderProvider()
 	httpClient := http_client_builder.New().WithoutProxy().Build()
-	authClient := auth_client.New(httpClient.Do, httpRequestBuilderProvider, authUrl, authApplicationName, authApplicationPassword)
-	dialer := (&net.Dialer{
-		Timeout: http_client_builder.DEFAULT_TIMEOUT,
-	})
-	forwardHandler := forward.New(targetAddress, func(address string, req *http.Request) (resp *http.Response, err error) {
-		return http_client_builder.New().WithoutProxy().WithDialFunc(func(network, address string) (net.Conn, error) {
-			return dialer.Dial(network, targetAddress)
-		}).Build().Do(req)
-	})
-	authVerifier := auth_verifier.New(authClient.Auth, createGroups(authGroups)...)
-	var handler http.Handler = auth_basic.New(forwardHandler.ServeHTTP, func(username string, password string) (bool, error) {
-		return authVerifier.Verify(model.UserName(username), model.Password(password))
-	}, authRealm)
-
-	if debug {
-		glog.V(2).Infof("add debug handler")
-		handler = debug_handler.New(handler)
-	}
-
-	return &http.Server{Addr: fmt.Sprintf(":%d", port), Handler: handler}, nil
+	authClient := auth_client.New(httpClient.Do, httpRequestBuilderProvider, auth_model.Url(*authUrlPtr), auth_model.ApplicationName(*authApplicationNamePtr), auth_model.ApplicationPassword(*authApplicationPasswordPtr))
+	groups := auth_verifier.CreateGroupsFromString(*authGroupsPtr)
+	return auth_verifier.New(authClient.Auth, groups...), nil
 }
 
-func createGroups(groupNames string) []model.GroupName {
-	parts := strings.Split(groupNames, ",")
-	groups := make([]model.GroupName, 0)
-	for _, groupName := range parts {
-		if len(groupName) > 0 {
-			groups = append(groups, model.GroupName(groupName))
-		}
+func createLdapVerifier() (verifier.Verifier, error) {
+	return ldap.New(), nil
+}
+
+func createFileVerifier() (verifier.Verifier, error) {
+	if len(*fileUsersPtr) == 0 {
+		return nil, fmt.Errorf("parameter %s missing", parameterFileUsers)
 	}
-	glog.V(1).Infof("required groups: %v", groups)
-	return groups
+	return file.New(file.UserFile(*fileUsersPtr)), nil
 }

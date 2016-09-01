@@ -12,6 +12,18 @@
 
 ## Usage
 
+Start sample you want protect
+
+```
+file_server \
+-logtostderr \
+-v=2 \
+-port=7777 \
+-root=/tmp
+```
+
+### With Auth backend 
+
 Start ledis database
 
 ```
@@ -31,30 +43,6 @@ auth_server \
 -auth-application-password=test123
 ```
 
-Start sample you want protect
-
-```
-file_server \
--logtostderr \
--v=2 \
--port=7777 \
--root=/tmp
-```
-
-Start auth-http-proxy
-
-```
-auth_http_proxy_server \
--logtostderr \
--v=2 \
--port=8888 \
--target-address=localhost:7777 \
--auth-url=http://localhost:6666 \
--auth-application-name=auth \
--auth-application-password=test123 \
--auth-realm=TestAuth
-```
-
 Register user
 
 `echo -n 'tester:secret' | base64`
@@ -65,6 +53,53 @@ curl \
 -d '{ "authToken":"dGVzdGVyOnNlY3JldA==","user":"tester" }' \
 -H "Authorization: Bearer YXV0aDp0ZXN0MTIz" \
 http://localhost:6666/user
+```
+
+Start auth_http_proxy_server
+
+```
+auth_http_proxy_server \
+-logtostderr \
+-v=2 \
+-port=8888 \
+-basic-auth-realm=TestAuth \
+-target-address=localhost:7777 \
+-verifier=auth \
+-auth-url=http://localhost:6666 \
+-auth-application-name=auth \
+-auth-application-password=test123
+```
+
+### With file backend
+
+`echo 'admin:tester' > sample_users`
+
+Start auth_http_proxy_server
+
+```
+auth_http_proxy_server \
+-logtostderr \
+-v=2 \
+-port=8888 \
+-basic-auth-realm=TestAuth \
+-target-address=localhost:7777 \
+-verifier=file \
+-file-users=sample_users
+```
+
+### With ldap backend (TBD)
+
+Start auth_http_proxy_server
+
+```
+auth_http_proxy_server \
+-logtostderr \
+-v=2 \
+-port=8888 \
+-basic-auth-realm=TestAuth \
+-target-address=localhost:7777 \
+-verifier=ldap \
+-ldap-foo=bar
 ```
 
 ## Continuous integration
