@@ -9,5 +9,13 @@
 	"auth-url": "",
 	"auth-application-name": "",
 	"auth-application-password": "",
-	"auth-groups": []
+	"auth-groups": [],
+	"ldap-base": "",
+	"ldap-host": "",
+	"ldap-port": 0,
+	"ldap-use-ssl": false,
+	"ldap-bind-dn": "",
+	"ldap-bind-password": "",
+	"ldap-user-filter": "",
+	"ldap-group-filter": ""
 }

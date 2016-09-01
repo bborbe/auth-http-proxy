@@ -27,32 +27,51 @@ import (
 const (
 	defaultPort                      int = 8080
 	parameterPort                        = "port"
-	parameterAuthUrl                     = "auth-url"
-	parameterAuthApplicationName         = "auth-application-name"
-	parameterAuthApplicationPassword     = "auth-application-password"
 	parameterTargetAddress               = "target-address"
 	parameterBasicAuthRealm              = "basic-auth-realm"
 	parameterAuthGroups                  = "auth-groups"
 	parameterDebug                       = "debug"
 	parameterVerifierType                = "verifier"
-	parameterFileUsers                   = "file-users"
 	parameterKind                        = "kind"
 	parameterConfig                      = "config"
+	parameterFileUsers                   = "file-users"
+	parameterAuthUrl                     = "auth-url"
+	parameterAuthApplicationName         = "auth-application-name"
+	parameterAuthApplicationPassword     = "auth-application-password"
+	parameterLdapBase                    = "ldap-base"
+	parameterLdapHost                    = "ldap-host"
+	parameterLdapPort                    = "ldap-port"
+	parameterLdapUseSSL                  = "ldap-use-ssl"
+	parameterLdapBindDN                  = "ldap-bind-dn"
+	parameterLdapBindPassword            = "ldap-bind-password"
+	parameterLdapUserFilter              = "ldap-user-filter"
+	parameterLdapGroupFilter             = "ldap-group-filter"
 )
 
 var (
-	portPtr                    = flag.Int(parameterPort, defaultPort, "port")
-	authUrlPtr                 = flag.String(parameterAuthUrl, "", "auth url")
-	basicAuthRealmPtr          = flag.String(parameterBasicAuthRealm, "", "basic auth realm")
-	targetAddressPtr           = flag.String(parameterTargetAddress, "", "target address")
-	debugPtr                   = flag.Bool(parameterDebug, false, "debug")
-	verifierPtr                = flag.String(parameterVerifierType, "", "verifier (auth,file,ldap)")
+	portPtr           = flag.Int(parameterPort, defaultPort, "port")
+	authUrlPtr        = flag.String(parameterAuthUrl, "", "auth url")
+	basicAuthRealmPtr = flag.String(parameterBasicAuthRealm, "", "basic auth realm")
+	targetAddressPtr  = flag.String(parameterTargetAddress, "", "target address")
+	debugPtr          = flag.Bool(parameterDebug, false, "debug")
+	verifierPtr       = flag.String(parameterVerifierType, "", "verifier (auth,file,ldap)")
+	kindPtr           = flag.String(parameterKind, "", "(basic,html)")
+	configPtr         = flag.String(parameterConfig, "", "config")
+	// file params
+	fileUseresPtr = flag.String(parameterFileUsers, "", "users")
+	// auth params
 	authApplicationNamePtr     = flag.String(parameterAuthApplicationName, "", "auth application name")
 	authApplicationPasswordPtr = flag.String(parameterAuthApplicationPassword, "", "auth application password")
 	authGroupsPtr              = flag.String(parameterAuthGroups, "", "required groups reperated by comma")
-	userFilePtr                = flag.String(parameterFileUsers, "", "users")
-	kindPtr                    = flag.String(parameterKind, "", "(basic,html)")
-	configPtr                  = flag.String(parameterConfig, "", "config")
+	// ldap params
+	ldapBasePtr         = flag.String(parameterLdapBase, "", "ldap-base")
+	ldapHostPtr         = flag.String(parameterLdapHost, "", "ldap-host")
+	ldapPortPtr         = flag.Int(parameterLdapPort, 0, "ldap-port")
+	ldapUseSSLPtr       = flag.Bool(parameterLdapUseSSL, false, "ldap-use-ssl")
+	ldapBindDNPtr       = flag.String(parameterLdapBindDN, "", "ldap-bind-dn")
+	ldapBindPasswordPtr = flag.String(parameterLdapBindPassword, "", "ldap-bind-password")
+	ldapUserFilterPtr   = flag.String(parameterLdapUserFilter, "", "ldap-user-filter")
+	ldapGroupFilterPtr  = flag.String(parameterLdapGroupFilter, "", "ldap-group-filter")
 )
 
 func main() {
@@ -93,7 +112,7 @@ func createConfig() (*model.Config, error) {
 		glog.V(2).Infof("create empty config")
 		config = new(model.Config)
 	}
-	if config.Port == 0 {
+	if config.Port <= 0 {
 		config.Port = model.Port(*portPtr)
 	}
 	if !config.Debug {
@@ -103,7 +122,7 @@ func createConfig() (*model.Config, error) {
 		config.Kind = model.Kind(*kindPtr)
 	}
 	if len(config.UserFile) == 0 {
-		config.UserFile = model.UserFile(*userFilePtr)
+		config.UserFile = model.UserFile(*fileUseresPtr)
 	}
 	if len(config.VerifierType) == 0 {
 		config.VerifierType = model.VerifierType(*verifierPtr)
@@ -125,6 +144,30 @@ func createConfig() (*model.Config, error) {
 	}
 	if len(config.AuthGroups) == 0 {
 		config.AuthGroups = model.CreateGroupsFromString(*authGroupsPtr)
+	}
+	if len(config.LdapBase) == 0 {
+		config.LdapBase = model.LdapBase(*ldapBasePtr)
+	}
+	if len(config.LdapHost) == 0 {
+		config.LdapHost = model.LdapHost(*ldapHostPtr)
+	}
+	if config.LdapPort <= 0 {
+		config.LdapPort = model.LdapPort(*ldapPortPtr)
+	}
+	if !config.LdapUseSSL {
+		config.LdapUseSSL = model.LdapUseSSL(*ldapUseSSLPtr)
+	}
+	if len(config.LdapBindDN) == 0 {
+		config.LdapBindDN = model.LdapBindDN(*ldapBindDNPtr)
+	}
+	if len(config.LdapBindPassword) == 0 {
+		config.LdapBindPassword = model.LdapBindPassword(*ldapBindPasswordPtr)
+	}
+	if len(config.LdapUserFilter) == 0 {
+		config.LdapUserFilter = model.LdapUserFilter(*ldapUserFilterPtr)
+	}
+	if len(config.LdapGroupFilter) == 0 {
+		config.LdapGroupFilter = model.LdapGroupFilter(*ldapGroupFilterPtr)
 	}
 	return config, nil
 }
@@ -229,7 +272,7 @@ func getVerifierByType(config *model.Config) (verifier.Verifier, error) {
 	case "auth":
 		return createAuthVerifier(config)
 	case "ldap":
-		return createLdapVerifier()
+		return createLdapVerifier(config)
 	case "file":
 		return createFileVerifier(config)
 	}
@@ -252,8 +295,17 @@ func createAuthVerifier(config *model.Config) (verifier.Verifier, error) {
 	return auth_verifier.New(authClient.Auth, config.AuthGroups...), nil
 }
 
-func createLdapVerifier() (verifier.Verifier, error) {
-	return ldap.New(), nil
+func createLdapVerifier(config *model.Config) (verifier.Verifier, error) {
+	return ldap.New(
+		config.LdapBase,
+		config.LdapHost,
+		config.LdapPort,
+		config.LdapUseSSL,
+		config.LdapBindDN,
+		config.LdapBindPassword,
+		config.LdapUserFilter,
+		config.LdapGroupFilter,
+	), nil
 }
 
 func createFileVerifier(config *model.Config) (verifier.Verifier, error) {

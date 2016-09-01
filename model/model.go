@@ -20,6 +20,14 @@ type Config struct {
 	VerifierType            VerifierType            `json:"verifier"`
 	UserFile                UserFile                `json:"file-users"`
 	Kind                    Kind                    `json:"kind"`
+	LdapBase                LdapBase                `json:"ldap-base"`
+	LdapHost                LdapHost                `json:"ldap-host"`
+	LdapPort                LdapPort                `json:"ldap-port"`
+	LdapUseSSL              LdapUseSSL              `json:"ldap-use-ssl"`
+	LdapBindDN              LdapBindDN              `json:"ldap-bind-dn"`
+	LdapBindPassword        LdapBindPassword        `json:"ldap-bind-password"`
+	LdapUserFilter          LdapUserFilter          `json:"ldap-user-filter"`
+	LdapGroupFilter         LdapGroupFilter         `json:"ldap-group-filter"`
 }
 type ConfigPath string
 
@@ -123,4 +131,52 @@ func CreateGroupsFromString(groupNames string) []AuthGroup {
 	}
 	glog.V(1).Infof("required groups: %v", groups)
 	return groups
+}
+
+type LdapBase string
+
+func (l LdapBase) String() string {
+	return string(l)
+}
+
+type LdapHost string
+
+func (l LdapHost) String() string {
+	return string(l)
+}
+
+type LdapPort int
+
+func (l LdapPort) Int() int {
+	return int(l)
+}
+
+type LdapUseSSL bool
+
+func (l LdapUseSSL) Bool() bool {
+	return bool(l)
+}
+
+type LdapBindDN string
+
+func (l LdapBindDN) String() string {
+	return string(l)
+}
+
+type LdapBindPassword string
+
+func (l LdapBindPassword) String() string {
+	return string(l)
+}
+
+type LdapUserFilter string
+
+func (l LdapUserFilter) String() string {
+	return string(l)
+}
+
+type LdapGroupFilter string
+
+func (l LdapGroupFilter) String() string {
+	return string(l)
 }

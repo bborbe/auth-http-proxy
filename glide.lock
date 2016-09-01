@@ -1,5 +1,5 @@
-hash: 2792a94b41818de311672766fdb7634d0278dc3576fcb8fd9e55dd57289abe71
-updated: 2016-09-01T22:27:51.79479903+02:00
+hash: 1f730b1fbbd8a4a9ba8464f61b3f0cf39229af4e424568327a86a1e8878b2f0b
+updated: 2016-09-02T00:14:50.730166141+02:00
 imports:
 - name: github.com/bborbe/auth
   version: 9abb0bed31c3a8807cac37edbe9e6bf2bc893a8a
@@ -16,7 +16,7 @@ imports:
   - header
   - requestbuilder
 - name: github.com/bborbe/http_handler
-  version: b9d9118b3ec30badc77f391391d978d4345c236e
+  version: df5b212a57f6c46aeab49814023a5fcfe1ce806b
   subpackages:
   - auth_basic
   - auth_html
@@ -34,6 +34,12 @@ imports:
   version: 1b76add642e42c6ffba7211ad7b3939ce654526e
 - name: github.com/golang/glog
   version: 23def4e6c14b4da8ac2ed8007337bc5eb5007998
+- name: github.com/jtblin/go-ldap-client
+  version: 34a022a1bd911acbf4b00ad3a9d9a5fe01956086
+- name: gopkg.in/asn1-ber.v1
+  version: 4e86f4367175e39f69d9358a5f17b4dda270378d
+- name: gopkg.in/ldap.v2
+  version: d0a5ced67b4dc310b9158d63a2c6f9c5ec13f105
 testImports:
 - name: github.com/bborbe/assert
   version: 2db035a4c0870f6f48d1955f7b9542f9dbd4fb64

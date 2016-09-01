@@ -74,6 +74,7 @@ auth_http_proxy_server \
 -logtostderr \
 -v=2 \
 -port=8888 \
+-kind=basic \
 -basic-auth-realm=TestAuth \
 -target-address=localhost:7777 \
 -verifier=auth \
@@ -93,6 +94,7 @@ auth_http_proxy_server \
 -logtostderr \
 -v=2 \
 -port=8888 \
+-kind=basic \
 -basic-auth-realm=TestAuth \
 -target-address=localhost:7777 \
 -verifier=file \
@@ -108,10 +110,18 @@ auth_http_proxy_server \
 -logtostderr \
 -v=2 \
 -port=8888 \
+-kind=basic \
 -basic-auth-realm=TestAuth \
 -target-address=localhost:7777 \
 -verifier=ldap \
--ldap-foo=bar
+-ldap-base="dc=example,dc=com" \
+-ldap-host="ldap.example.com" \
+-ldap-port=389 \
+-ldap-use-ssl=false \
+-ldap-bind-dn="uid=readonlysuer,ou=People,dc=example,dc=com" \
+-ldap-bind-password="readonlypassword" \
+-ldap-user-filter="(uid=%s)" \
+-ldap-group-filter="(memberUid=%s)"
 ```
 
 ## Continuous integration
