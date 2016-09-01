@@ -101,7 +101,7 @@ auth_http_proxy_server \
 -file-users=sample_users
 ```
 
-### With ldap backend (TBD)
+### With ldap backend
 
 Start auth_http_proxy_server
 
