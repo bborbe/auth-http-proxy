@@ -1,5 +1,5 @@
-hash: 1e60f485cec5e3f830b21f3774e8c4d375331ed2187e1cf2f1509a4b599839bb
-updated: 2016-09-01T20:54:24.853709014+02:00
+hash: 2792a94b41818de311672766fdb7634d0278dc3576fcb8fd9e55dd57289abe71
+updated: 2016-09-01T22:27:51.79479903+02:00
 imports:
 - name: github.com/bborbe/auth
   version: 9abb0bed31c3a8807cac37edbe9e6bf2bc893a8a
@@ -16,9 +16,10 @@ imports:
   - header
   - requestbuilder
 - name: github.com/bborbe/http_handler
-  version: 4ed0e396148b53654c3f4343c64795ac8e27f474
+  version: b9d9118b3ec30badc77f391391d978d4345c236e
   subpackages:
   - auth_basic
+  - auth_html
   - debug
 - name: github.com/facebookgo/clock
   version: 600d898af40aa09a7a93ecb9265d87b0504b6f03

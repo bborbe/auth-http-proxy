@@ -13,6 +13,7 @@ import:
 - package: github.com/bborbe/http_handler
   subpackages:
   - auth_basic
+  - auth_html
   - debug
 - package: github.com/facebookgo/grace
   subpackages:

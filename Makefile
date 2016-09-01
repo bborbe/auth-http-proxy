@@ -35,6 +35,7 @@ runwithauth:
 	-port=8888 \
 	-basic-auth-realm=TestAuth \
 	-target-address=localhost:7777 \
+	-kind=basic \
 	-verifier=auth \
 	-auth-url=http://localhost:6666 \
 	-auth-application-name=auth \
@@ -46,6 +47,17 @@ runwithfile:
 	-port=8888 \
 	-basic-auth-realm=TestAuth \
 	-target-address=localhost:7777 \
+	-kind=basic \
+	-verifier=file \
+	-file-users=sample_users
+run:
+	auth_http_proxy_server \
+	-logtostderr \
+	-v=2 \
+	-debug \
+	-port=8888 \
+	-target-address=localhost:7777 \
+	-kind=html \
 	-verifier=file \
 	-file-users=sample_users
 open:
