@@ -108,9 +108,17 @@ func createServer(
 	targetAddress string,
 ) (*http.Server, error) {
 	glog.Infof("port %d debug %v authUrl %v authApplicationName %v authApplicationPassword-length %d authRealm %v authGroups %v targetAddress %v", port, debug, authUrl, authApplicationName, len(authApplicationPassword), authRealm, authGroups, targetAddress)
+
 	if port <= 0 {
 		return nil, fmt.Errorf("parameter %s missing", parameterPort)
 	}
+	if len(targetAddress) == 0 {
+		return nil, fmt.Errorf("parameter %s missing", parameterTargetAddress)
+	}
+	if len(authRealm) == 0 {
+		return nil, fmt.Errorf("parameter %s missing", parameterAuthRealm)
+	}
+
 	if len(authUrl) == 0 {
 		return nil, fmt.Errorf("parameter %s missing", parameterAuthUrl)
 	}
@@ -119,12 +127,6 @@ func createServer(
 	}
 	if len(authApplicationPassword) == 0 {
 		return nil, fmt.Errorf("parameter %s missing", parameterAuthApplicationPassword)
-	}
-	if len(targetAddress) == 0 {
-		return nil, fmt.Errorf("parameter %s missing", parameterTargetAddress)
-	}
-	if len(authRealm) == 0 {
-		return nil, fmt.Errorf("parameter %s missing", parameterAuthRealm)
 	}
 
 	httpRequestBuilderProvider := http_requestbuilder.NewHTTPRequestBuilderProvider()
