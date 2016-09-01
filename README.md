@@ -1,5 +1,17 @@
 # Auth-Http-Proxy
 
+## Install via Debian-Package
+
+```
+echo "deb [arch=amd64] http://aptly.tools.seibert-media.net/stable default main" \
+> /etc/apt/sources.list.d/amd64-stable-aptly.tools.seibert-media.net.list
+apt-get update
+apt-get install auth-http-proxy
+vi /etc/auth_http_proxy/config.json
+systemctl restart auth-http-proxy
+systemctl status auth-http-proxy
+```
+
 ## Install
 
 `go get github.com/bborbe/auth_http_proxy/bin/auth_http_proxy_server`
