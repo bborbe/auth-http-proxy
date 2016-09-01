@@ -1,22 +1,22 @@
 hash: 1e60f485cec5e3f830b21f3774e8c4d375331ed2187e1cf2f1509a4b599839bb
-updated: 2016-08-29T00:09:54.387872038+02:00
+updated: 2016-09-01T20:54:24.853709014+02:00
 imports:
 - name: github.com/bborbe/auth
-  version: eb7881e6eae03abd3f793f4ae61837abf501edd8
+  version: 9abb0bed31c3a8807cac37edbe9e6bf2bc893a8a
   subpackages:
   - client/verify_group_service
   - model
   - v1
 - name: github.com/bborbe/flagenv
-  version: ddf8de6851137e93b8384e2c3a30995ac830f56a
+  version: 96aab95bb1341e7a7ccf9160e49792e2ad3b0e08
 - name: github.com/bborbe/http
-  version: 610817d35e311dab1adfecb8b048aa019736a58e
+  version: addca5fc2e2de1bef39a64990873806e7fc9c0a9
   subpackages:
   - client_builder
   - header
   - requestbuilder
 - name: github.com/bborbe/http_handler
-  version: 15d45afac61e92038e5c8425d4d4586f34e3c445
+  version: 4ed0e396148b53654c3f4343c64795ac8e27f474
   subpackages:
   - auth_basic
   - debug
@@ -35,4 +35,4 @@ imports:
   version: 23def4e6c14b4da8ac2ed8007337bc5eb5007998
 testImports:
 - name: github.com/bborbe/assert
-  version: 639eac9a24e3c01472758f3c79452b8517bc29f6
+  version: 2db035a4c0870f6f48d1955f7b9542f9dbd4fb64
