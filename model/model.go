@@ -8,6 +8,43 @@ import (
 	"github.com/golang/glog"
 )
 
+type Config struct {
+	Port                    Port                    `json:"port"`
+	AuthUrl                 AuthUrl                 `json:"auth-url"`
+	AuthApplicationName     AuthApplicationName     `json:"auth-application-name"`
+	AuthApplicationPassword AuthApplicationPassword `json:"auth-application-password"`
+	TargetAddress           TargetAddress           `json:"target-address"`
+	BasicAuthRealm          BasicAuthRealm          `json:"basic-auth-realm"`
+	AuthGroups              []AuthGroup             `json:"auth-groups"`
+	Debug                   Debug                   `json:"debug"`
+	VerifierType            VerifierType            `json:"verifier"`
+	UserFile                UserFile                `json:"file-users"`
+	Kind                    Kind                    `json:"kind"`
+}
+type ConfigPath string
+
+func (c ConfigPath) IsValue() bool {
+	return len(c) > 0
+}
+
+func (c ConfigPath) Parse() (*Config, error) {
+	content, err := ioutil.ReadFile(string(c))
+	if err != nil {
+		glog.Warningf("read config from file %v failed: %v", c, err)
+		return nil, err
+	}
+	return ParseConfig(content)
+}
+
+func ParseConfig(content []byte) (*Config, error) {
+	config := &Config{}
+	if err := json.Unmarshal(content, config); err != nil {
+		glog.Warningf("parse config failed: %v", err)
+		return nil, err
+	}
+	return config, nil
+}
+
 type Port int
 type Debug bool
 type AuthUrl string
@@ -74,44 +111,6 @@ type UserFile string
 
 func (u UserFile) String() string {
 	return string(u)
-}
-
-type ConfigPath string
-
-func (c ConfigPath) IsValue() bool {
-	return len(c) > 0
-}
-
-func (c ConfigPath) Parse() (*Config, error) {
-	content, err := ioutil.ReadFile(string(c))
-	if err != nil {
-		glog.Warningf("read config from file %v failed: %v", c, err)
-		return nil, err
-	}
-	return ParseConfig(content)
-}
-
-func ParseConfig(content []byte) (*Config, error) {
-	config := &Config{}
-	if err := json.Unmarshal(content, config); err != nil {
-		glog.Warningf("parse config failed: %v", err)
-		return nil, err
-	}
-	return config, nil
-}
-
-type Config struct {
-	Port                    Port                    `json:"port"`
-	AuthUrl                 AuthUrl                 `json:"auth_url"`
-	AuthApplicationName     AuthApplicationName     `json:"auth_application_name"`
-	AuthApplicationPassword AuthApplicationPassword `json:"auth_application_password"`
-	TargetAddress           TargetAddress           `json:"target_address"`
-	BasicAuthRealm          BasicAuthRealm          `json:"basic_auth_realm"`
-	AuthGroups              []AuthGroup             `json:"auth_groups"`
-	Debug                   Debug                   `json:"debug"`
-	VerifierType            VerifierType            `json:"verifier"`
-	UserFile                UserFile                `json:"file_users"`
-	Kind                    Kind                    `json:"kind"`
 }
 
 func CreateGroupsFromString(groupNames string) []AuthGroup {

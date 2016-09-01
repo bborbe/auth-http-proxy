@@ -4,7 +4,7 @@
 	"target-address": "localhost:7777",
 	"kind": "basic",
 	"verifier": "file",
-	"file-users": "/etc/auth_http_proxy/users",
+	"file-users": "sample_users",
 	"basic-auth-realm": "Auth",
 	"auth-url": "",
 	"auth-application-name": "",
