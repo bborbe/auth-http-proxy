@@ -2,6 +2,10 @@ package main
 
 import (
 	"fmt"
+	"net"
+	"net/http"
+	"runtime"
+
 	auth_client "github.com/bborbe/auth/client/verify_group_service"
 	auth_model "github.com/bborbe/auth/model"
 	"github.com/bborbe/auth_http_proxy/forward"
@@ -18,9 +22,6 @@ import (
 	debug_handler "github.com/bborbe/http_handler/debug"
 	"github.com/facebookgo/grace/gracehttp"
 	"github.com/golang/glog"
-	"net"
-	"net/http"
-	"runtime"
 )
 
 const (

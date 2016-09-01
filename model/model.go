@@ -2,9 +2,10 @@ package model
 
 import (
 	"encoding/json"
-	"github.com/golang/glog"
 	"io/ioutil"
 	"strings"
+
+	"github.com/golang/glog"
 )
 
 type Port int

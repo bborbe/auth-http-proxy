@@ -1,8 +1,9 @@
 package main
 
 import (
-	"github.com/bborbe/auth_http_proxy/model"
 	"testing"
+
+	"github.com/bborbe/auth_http_proxy/model"
 
 	"os"
 

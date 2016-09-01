@@ -2,11 +2,12 @@ package file
 
 import (
 	"bufio"
-	"github.com/bborbe/auth_http_proxy/model"
-	"github.com/golang/glog"
 	"io"
 	"os"
 	"strings"
+
+	"github.com/bborbe/auth_http_proxy/model"
+	"github.com/golang/glog"
 )
 
 type auth struct {
