@@ -19,8 +19,9 @@ import (
 
 	auth_client "github.com/bborbe/auth/client/verify_group_service"
 	auth_model "github.com/bborbe/auth/model"
-	"github.com/bborbe/auth_http_proxy/auth_verifier"
 	"github.com/bborbe/auth_http_proxy/forward"
+	"github.com/bborbe/auth_http_proxy/model"
+	auth_verifier "github.com/bborbe/auth_http_proxy/verifier/auth"
 	"github.com/bborbe/http_handler/auth_basic"
 	"github.com/facebookgo/grace/gracehttp"
 )
@@ -138,7 +139,9 @@ func createServer(
 		}).Build().Do(req)
 	})
 	authVerifier := auth_verifier.New(authClient.Auth, createGroups(authGroups)...)
-	var handler http.Handler = auth_basic.New(forwardHandler.ServeHTTP, authVerifier.Verify, authRealm)
+	var handler http.Handler = auth_basic.New(forwardHandler.ServeHTTP, func(username string, password string) (bool, error) {
+		return authVerifier.Verify(model.UserName(username), model.Password(password))
+	}, authRealm)
 
 	if debug {
 		glog.V(2).Infof("add debug handler")
@@ -148,12 +151,12 @@ func createServer(
 	return &http.Server{Addr: fmt.Sprintf(":%d", port), Handler: handler}, nil
 }
 
-func createGroups(groupNames string) []auth_model.GroupName {
+func createGroups(groupNames string) []model.GroupName {
 	parts := strings.Split(groupNames, ",")
-	groups := make([]auth_model.GroupName, 0)
+	groups := make([]model.GroupName, 0)
 	for _, groupName := range parts {
 		if len(groupName) > 0 {
-			groups = append(groups, auth_model.GroupName(groupName))
+			groups = append(groups, model.GroupName(groupName))
 		}
 	}
 	glog.V(1).Infof("required groups: %v", groups)
