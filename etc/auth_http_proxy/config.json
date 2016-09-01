@@ -1,0 +1,10 @@
+{
+	"root": "/opt/aptly_dashboard/files",
+	"debug": false,
+	"port": 9180,
+	"prefix": "",
+	"repo-url": "",
+	"api-url": "",
+	"api-username": "",
+	"api-passwordfile": ""
+}

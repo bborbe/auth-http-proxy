@@ -7,17 +7,18 @@ import (
 
 	"fmt"
 
+	"github.com/bborbe/auth_http_proxy/model"
 	"github.com/golang/glog"
 )
 
 type executeRequest func(address string, req *http.Request) (resp *http.Response, err error)
 
 type handler struct {
-	target         string
+	target         model.TargetAddress
 	executeRequest executeRequest
 }
 
-func New(target string, executeRequest executeRequest) *handler {
+func New(target model.TargetAddress, executeRequest executeRequest) *handler {
 	h := new(handler)
 	h.target = target
 	h.executeRequest = executeRequest
@@ -44,7 +45,7 @@ func (h *handler) serveHTTP(resp http.ResponseWriter, req *http.Request) error {
 		return err
 	}
 	subreq.Header = req.Header
-	subresp, err := h.executeRequest(h.target, subreq)
+	subresp, err := h.executeRequest(h.target.String(), subreq)
 	if err != nil {
 		glog.V(2).Infof("execute request to %v failed: %v", h.target, err)
 		return err

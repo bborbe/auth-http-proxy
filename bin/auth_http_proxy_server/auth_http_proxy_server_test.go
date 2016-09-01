@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/bborbe/auth_http_proxy/model"
 	"testing"
 
 	"os"
@@ -16,7 +17,7 @@ func TestMain(m *testing.M) {
 }
 
 func TestGetVerifierByType(t *testing.T) {
-	_, err := getVerifierByType()
+	_, err := getVerifierByType(&model.Config{})
 	if err := AssertThat(err, NotNilValue()); err != nil {
 		t.Fatal(err)
 	}

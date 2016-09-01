@@ -1,0 +1,11 @@
+[Unit]
+Description=Aptly Dashboard
+
+[Service]
+LimitNOFILE=4096
+LimitNPROC=4096
+ExecStart=/opt/auth_http_proxy/bin/auth_http_proxy_server -config /etc/auth_http_proxy/config.json -logtostderr -v=1
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

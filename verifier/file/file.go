@@ -9,17 +9,11 @@ import (
 	"strings"
 )
 
-type UserFile string
-
-func (u UserFile) String() string {
-	return string(u)
-}
-
 type auth struct {
-	userFile UserFile
+	userFile model.UserFile
 }
 
-func New(userFile UserFile) *auth {
+func New(userFile model.UserFile) *auth {
 	a := new(auth)
 	a.userFile = userFile
 	return a

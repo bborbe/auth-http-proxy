@@ -1,6 +1,8 @@
 #!/bin/sh
 
 SOURCEDIRECTORY="github.com/bborbe/auth_http_proxy"
+VERSION="1.0.1-b${BUILD_NUMBER}"
+NAME="auth-http-proxy"
 
 ################################################################################
 
@@ -11,6 +13,7 @@ export PATH=/opt/go2xunit/bin/:/opt/utils/bin/:/opt/aptly_utils/bin/:/opt/aptly/
 export GOPATH=${WORKSPACE}
 export REPORT_DIR=${WORKSPACE}/test-reports
 INSTALLS=`cd src && find $SOURCEDIRECTORY/bin -name "*.go" | dirof | unique`
+DEB="${NAME}_${VERSION}.deb"
 rm -rf $REPORT_DIR ${WORKSPACE}/*.deb ${WORKSPACE}/pkg
 mkdir -p $REPORT_DIR
 PACKAGES=`cd src && find $SOURCEDIRECTORY -name "*_test.go" | dirof | unique`
@@ -38,3 +41,28 @@ then
 else
   echo "Tests success"
 fi
+
+################################################################################
+
+echo "Tests completed, install to ${GOPATH}"
+
+go install $INSTALLS
+
+echo "Install completed, create debian package"
+
+create_debian_package \
+-logtostderr \
+-v=2 \
+-version=$VERSION \
+-config=src/$SOURCEDIRECTORY/create_debian_package_config.json || exit 1
+
+echo "Create debian package completed, start upload to aptly"
+
+aptly_upload \
+-logtostderr \
+-v=2 \
+-url=http://aptly-api.aptly.svc.cluster.local:3845 \
+-file=$DEB \
+-repo=unstable || exit 1
+
+echo "Upload completed"
