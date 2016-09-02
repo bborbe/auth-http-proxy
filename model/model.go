@@ -15,7 +15,7 @@ type Config struct {
 	AuthApplicationPassword AuthApplicationPassword `json:"auth-application-password"`
 	TargetAddress           TargetAddress           `json:"target-address"`
 	BasicAuthRealm          BasicAuthRealm          `json:"basic-auth-realm"`
-	AuthGroups              []AuthGroup             `json:"auth-groups"`
+	RequiredGroups          []GroupName             `json:"required-groups"`
 	VerifierType            VerifierType            `json:"verifier"`
 	UserFile                UserFile                `json:"file-users"`
 	Kind                    Kind                    `json:"kind"`
@@ -84,10 +84,10 @@ func (b BasicAuthRealm) String() string {
 	return string(b)
 }
 
-type AuthGroup string
+type GroupName string
 
-func (a AuthGroup) String() string {
-	return string(a)
+func (g GroupName) String() string {
+	return string(g)
 }
 
 type Kind string
@@ -120,12 +120,12 @@ func (u UserFile) String() string {
 	return string(u)
 }
 
-func CreateGroupsFromString(groupNames string) []AuthGroup {
+func CreateGroupsFromString(groupNames string) []GroupName {
 	parts := strings.Split(groupNames, ",")
-	groups := make([]AuthGroup, 0)
+	groups := make([]GroupName, 0)
 	for _, groupName := range parts {
 		if len(groupName) > 0 {
-			groups = append(groups, AuthGroup(groupName))
+			groups = append(groups, GroupName(groupName))
 		}
 	}
 	glog.V(1).Infof("required groups: %v", groups)

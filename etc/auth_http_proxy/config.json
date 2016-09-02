@@ -8,7 +8,7 @@
 	"auth-url": "",
 	"auth-application-name": "",
 	"auth-application-password": "",
-	"auth-groups": [],
+	"required-groups": [],
 	"ldap-base": "",
 	"ldap-host": "",
 	"ldap-port": 0,

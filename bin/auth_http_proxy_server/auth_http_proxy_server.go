@@ -12,8 +12,8 @@ import (
 	"github.com/bborbe/auth_http_proxy/model"
 	"github.com/bborbe/auth_http_proxy/verifier"
 	auth_verifier "github.com/bborbe/auth_http_proxy/verifier/auth"
-	"github.com/bborbe/auth_http_proxy/verifier/file"
-	"github.com/bborbe/auth_http_proxy/verifier/ldap"
+	file_verifier "github.com/bborbe/auth_http_proxy/verifier/file"
+	ldap_verifier "github.com/bborbe/auth_http_proxy/verifier/ldap"
 	flag "github.com/bborbe/flagenv"
 	http_client_builder "github.com/bborbe/http/client_builder"
 	http_requestbuilder "github.com/bborbe/http/requestbuilder"
@@ -29,7 +29,7 @@ const (
 	parameterPort                        = "port"
 	parameterTargetAddress               = "target-address"
 	parameterBasicAuthRealm              = "basic-auth-realm"
-	parameterAuthGroups                  = "auth-groups"
+	parameterRequiredGroups              = "required-groups"
 	parameterVerifierType                = "verifier"
 	parameterKind                        = "kind"
 	parameterConfig                      = "config"
@@ -55,12 +55,12 @@ var (
 	verifierPtr       = flag.String(parameterVerifierType, "", "verifier (auth,file,ldap)")
 	kindPtr           = flag.String(parameterKind, "", "(basic,html)")
 	configPtr         = flag.String(parameterConfig, "", "config")
+	requiredGroupsPtr = flag.String(parameterRequiredGroups, "", "required groups reperated by comma")
 	// file params
 	fileUseresPtr = flag.String(parameterFileUsers, "", "users")
 	// auth params
 	authApplicationNamePtr     = flag.String(parameterAuthApplicationName, "", "auth application name")
 	authApplicationPasswordPtr = flag.String(parameterAuthApplicationPassword, "", "auth application password")
-	authGroupsPtr              = flag.String(parameterAuthGroups, "", "required groups reperated by comma")
 	// ldap params
 	ldapBasePtr         = flag.String(parameterLdapBase, "", "ldap-base")
 	ldapHostPtr         = flag.String(parameterLdapHost, "", "ldap-host")
@@ -137,8 +137,8 @@ func createConfig() (*model.Config, error) {
 	if len(config.AuthApplicationPassword) == 0 {
 		config.AuthApplicationPassword = model.AuthApplicationPassword(*authApplicationPasswordPtr)
 	}
-	if len(config.AuthGroups) == 0 {
-		config.AuthGroups = model.CreateGroupsFromString(*authGroupsPtr)
+	if len(config.RequiredGroups) == 0 {
+		config.RequiredGroups = model.CreateGroupsFromString(*requiredGroupsPtr)
 	}
 	if len(config.LdapBase) == 0 {
 		config.LdapBase = model.LdapBase(*ldapBasePtr)
@@ -287,11 +287,14 @@ func createAuthVerifier(config *model.Config) (verifier.Verifier, error) {
 	httpRequestBuilderProvider := http_requestbuilder.NewHTTPRequestBuilderProvider()
 	httpClient := http_client_builder.New().WithoutProxy().Build()
 	authClient := auth_client.New(httpClient.Do, httpRequestBuilderProvider, auth_model.Url(config.AuthUrl), auth_model.ApplicationName(config.AuthApplicationName), auth_model.ApplicationPassword(config.AuthApplicationPassword))
-	return auth_verifier.New(authClient.Auth, config.AuthGroups...), nil
+	return auth_verifier.New(
+		authClient.Auth,
+		config.RequiredGroups...,
+	), nil
 }
 
 func createLdapVerifier(config *model.Config) (verifier.Verifier, error) {
-	return ldap.New(
+	return ldap_verifier.New(
 		config.LdapBase,
 		config.LdapHost,
 		config.LdapPort,
@@ -300,6 +303,7 @@ func createLdapVerifier(config *model.Config) (verifier.Verifier, error) {
 		config.LdapBindPassword,
 		config.LdapUserFilter,
 		config.LdapGroupFilter,
+		config.RequiredGroups...,
 	), nil
 }
 
@@ -307,5 +311,5 @@ func createFileVerifier(config *model.Config) (verifier.Verifier, error) {
 	if len(config.UserFile) == 0 {
 		return nil, fmt.Errorf("parameter %s missing", parameterFileUsers)
 	}
-	return file.New(config.UserFile), nil
+	return file_verifier.New(config.UserFile), nil
 }
