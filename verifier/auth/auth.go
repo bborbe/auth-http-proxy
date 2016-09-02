@@ -41,6 +41,10 @@ func (a *auth) verify(token auth_model.AuthToken) (bool, error) {
 	if err != nil {
 		return false, err
 	}
-	result := len(*user) > 0
-	return result, nil
+	if user == nil || len(*user) == 0 {
+		glog.V(2).Infof("user empty => return false")
+		return false, err
+	}
+	glog.V(2).Infof("user valid => return true")
+	return true, nil
 }
