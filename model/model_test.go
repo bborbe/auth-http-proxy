@@ -34,3 +34,23 @@ func TestCreateGroupNone(t *testing.T) {
 		t.Fatal(err)
 	}
 }
+
+func TestParseConfigUserDn(t *testing.T) {
+	config, err := ParseConfig([]byte(`{"ldap-user-dn":"foo"}`))
+	if err := AssertThat(err, NilValue()); err != nil {
+		t.Fatal(err)
+	}
+	if err := AssertThat(config.LdapUserDn.String(), Is("foo")); err != nil {
+		t.Fatal(err)
+	}
+}
+
+func TestParseConfigGroupDn(t *testing.T) {
+	config, err := ParseConfig([]byte(`{"ldap-group-dn":"foo"}`))
+	if err := AssertThat(err, NilValue()); err != nil {
+		t.Fatal(err)
+	}
+	if err := AssertThat(config.LdapGroupDn.String(), Is("foo")); err != nil {
+		t.Fatal(err)
+	}
+}

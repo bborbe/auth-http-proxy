@@ -29,7 +29,10 @@ type Config struct {
 	LdapBindPassword        LdapBindPassword        `json:"ldap-bind-password"`
 	LdapUserFilter          LdapUserFilter          `json:"ldap-user-filter"`
 	LdapGroupFilter         LdapGroupFilter         `json:"ldap-group-filter"`
+	LdapUserDn              LdapUserDn              `json:"ldap-user-dn"`
+	LdapGroupDn             LdapGroupDn             `json:"ldap-group-dn"`
 }
+
 type CacheTTL time.Duration
 
 func (c CacheTTL) IsEmpty() bool {
@@ -189,5 +192,17 @@ func (l LdapUserFilter) String() string {
 type LdapGroupFilter string
 
 func (l LdapGroupFilter) String() string {
+	return string(l)
+}
+
+type LdapUserDn string
+
+func (l LdapUserDn) String() string {
+	return string(l)
+}
+
+type LdapGroupDn string
+
+func (l LdapGroupDn) String() string {
 	return string(l)
 }
