@@ -30,7 +30,6 @@ const (
 	parameterTargetAddress               = "target-address"
 	parameterBasicAuthRealm              = "basic-auth-realm"
 	parameterAuthGroups                  = "auth-groups"
-	parameterDebug                       = "debug"
 	parameterVerifierType                = "verifier"
 	parameterKind                        = "kind"
 	parameterConfig                      = "config"
@@ -53,7 +52,6 @@ var (
 	authUrlPtr        = flag.String(parameterAuthUrl, "", "auth url")
 	basicAuthRealmPtr = flag.String(parameterBasicAuthRealm, "", "basic auth realm")
 	targetAddressPtr  = flag.String(parameterTargetAddress, "", "target address")
-	debugPtr          = flag.Bool(parameterDebug, false, "debug")
 	verifierPtr       = flag.String(parameterVerifierType, "", "verifier (auth,file,ldap)")
 	kindPtr           = flag.String(parameterKind, "", "(basic,html)")
 	configPtr         = flag.String(parameterConfig, "", "config")
@@ -114,9 +112,6 @@ func createConfig() (*model.Config, error) {
 	}
 	if config.Port <= 0 {
 		config.Port = model.Port(*portPtr)
-	}
-	if !config.Debug {
-		config.Debug = model.Debug(*debugPtr)
 	}
 	if len(config.Kind) == 0 {
 		config.Kind = model.Kind(*kindPtr)
@@ -190,7 +185,7 @@ func createHandler(config *model.Config) (http.Handler, error) {
 	if err != nil {
 		return nil, err
 	}
-	if config.Debug {
+	if glog.V(4) {
 		glog.V(2).Infof("add debug handler")
 		handler = debug_handler.New(handler)
 	}

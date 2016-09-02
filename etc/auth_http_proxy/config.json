@@ -1,6 +1,5 @@
 {
 	"port": 8080,
-	"debug": false,
 	"target-address": "localhost:7777",
 	"kind": "basic",
 	"verifier": "file",

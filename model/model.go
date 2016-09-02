@@ -16,7 +16,6 @@ type Config struct {
 	TargetAddress           TargetAddress           `json:"target-address"`
 	BasicAuthRealm          BasicAuthRealm          `json:"basic-auth-realm"`
 	AuthGroups              []AuthGroup             `json:"auth-groups"`
-	Debug                   Debug                   `json:"debug"`
 	VerifierType            VerifierType            `json:"verifier"`
 	UserFile                UserFile                `json:"file-users"`
 	Kind                    Kind                    `json:"kind"`
@@ -54,7 +53,7 @@ func ParseConfig(content []byte) (*Config, error) {
 }
 
 type Port int
-type Debug bool
+
 type AuthUrl string
 
 func (a AuthUrl) String() string {
