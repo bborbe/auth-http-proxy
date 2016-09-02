@@ -14,6 +14,7 @@ type auth struct {
 func New(
 	ldapBase model.LdapBase,
 	ldapHost model.LdapHost,
+	ldapServerName model.LdapServerName,
 	ldapPort model.LdapPort,
 	ldapUseSSL model.LdapUseSSL,
 	ldapBindDN model.LdapBindDN,
@@ -28,6 +29,7 @@ func New(
 	a.client = &ldap.LDAPClient{
 		Base:         ldapBase.String(),
 		Host:         ldapHost.String(),
+		ServerName:   ldapServerName.String(),
 		Port:         ldapPort.Int(),
 		UseSSL:       ldapUseSSL.Bool(),
 		BindDN:       ldapBindDN.String(),

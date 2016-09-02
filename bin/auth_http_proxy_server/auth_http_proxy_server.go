@@ -52,6 +52,7 @@ const (
 	parameterLdapUserFilter              = "ldap-user-filter"
 	parameterLdapGroupFilter             = "ldap-group-filter"
 	parameterCacheTTL                    = "cache-ttl"
+	parameterLdapServerName              = "ldap-servername"
 )
 
 var (
@@ -72,6 +73,7 @@ var (
 	// ldap params
 	ldapBasePtr         = flag.String(parameterLdapBase, "", "ldap-base")
 	ldapHostPtr         = flag.String(parameterLdapHost, "", "ldap-host")
+	ldapServerNamePtr   = flag.String(parameterLdapServerName, "", "ldap-servername")
 	ldapPortPtr         = flag.Int(parameterLdapPort, 0, "ldap-port")
 	ldapUseSSLPtr       = flag.Bool(parameterLdapUseSSL, false, "ldap-use-ssl")
 	ldapBindDNPtr       = flag.String(parameterLdapBindDN, "", "ldap-bind-dn")
@@ -158,6 +160,9 @@ func createConfig() (*model.Config, error) {
 	}
 	if len(config.LdapHost) == 0 {
 		config.LdapHost = model.LdapHost(*ldapHostPtr)
+	}
+	if len(config.LdapServerName) == 0 {
+		config.LdapServerName = model.LdapServerName(*ldapServerNamePtr)
 	}
 	if config.LdapPort <= 0 {
 		config.LdapPort = model.LdapPort(*ldapPortPtr)
@@ -324,6 +329,7 @@ func createLdapVerifier(config *model.Config) (verifier.Verifier, error) {
 	return cache.New(ldap_verifier.New(
 		config.LdapBase,
 		config.LdapHost,
+		config.LdapServerName,
 		config.LdapPort,
 		config.LdapUseSSL,
 		config.LdapBindDN,

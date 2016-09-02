@@ -23,6 +23,7 @@ type Config struct {
 	Kind                    Kind                    `json:"kind"`
 	LdapBase                LdapBase                `json:"ldap-base"`
 	LdapHost                LdapHost                `json:"ldap-host"`
+	LdapServerName          LdapServerName          `json:"ldap-servername"`
 	LdapPort                LdapPort                `json:"ldap-port"`
 	LdapUseSSL              LdapUseSSL              `json:"ldap-use-ssl"`
 	LdapBindDN              LdapBindDN              `json:"ldap-bind-dn"`
@@ -156,6 +157,12 @@ func (l LdapBase) String() string {
 type LdapHost string
 
 func (l LdapHost) String() string {
+	return string(l)
+}
+
+type LdapServerName string
+
+func (l LdapServerName) String() string {
 	return string(l)
 }
 
