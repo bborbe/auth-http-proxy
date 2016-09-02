@@ -20,6 +20,8 @@ func New(
 	ldapBindPassword model.LdapBindPassword,
 	ldapUserFilter model.LdapUserFilter,
 	ldapGroupFilter model.LdapGroupFilter,
+	ldapUserDn model.LdapUserDn,
+	ldapGroupDn model.LdapGroupDn,
 	requiredGroups ...model.GroupName,
 ) *auth {
 	a := new(auth)
@@ -32,6 +34,8 @@ func New(
 		BindPassword: ldapBindPassword.String(),
 		UserFilter:   ldapUserFilter.String(),
 		GroupFilter:  ldapGroupFilter.String(),
+		UserDN:       ldapUserDn.String(),
+		GroupDN:      ldapGroupDn.String(),
 	}
 	a.requiredGroups = requiredGroups
 	return a
@@ -49,6 +53,7 @@ func (a *auth) Verify(username model.UserName, password model.Password) (bool, e
 		glog.V(1).Infof("authenticate user %v invalid", username)
 		return false, nil
 	}
+	glog.V(2).Infof("username and password of user %v is valid", username)
 	glog.V(2).Infof("get groups of user %v", username)
 	groupNames, err := a.client.GetGroupsOfUser(username.String())
 	if err != nil {
