@@ -1,8 +1,8 @@
-hash: 1f730b1fbbd8a4a9ba8464f61b3f0cf39229af4e424568327a86a1e8878b2f0b
-updated: 2016-09-02T00:14:50.730166141+02:00
+hash: 27d3a3a1a0adc57c6e4593ffaacf735264c0802f86c25fc80f35b6aa54e5de59
+updated: 2016-09-02T16:14:38.054313446+02:00
 imports:
 - name: github.com/bborbe/auth
-  version: 9abb0bed31c3a8807cac37edbe9e6bf2bc893a8a
+  version: d143f6bbd0c73c39d4e6426dc7d8ce415f433caa
   subpackages:
   - client/verify_group_service
   - model
@@ -16,7 +16,7 @@ imports:
   - header
   - requestbuilder
 - name: github.com/bborbe/http_handler
-  version: df5b212a57f6c46aeab49814023a5fcfe1ce806b
+  version: 6042e6fe4bda26d2325ba439d54b310d88c1a8a1
   subpackages:
   - auth_basic
   - auth_html
@@ -36,6 +36,8 @@ imports:
   version: 23def4e6c14b4da8ac2ed8007337bc5eb5007998
 - name: github.com/jtblin/go-ldap-client
   version: 34a022a1bd911acbf4b00ad3a9d9a5fe01956086
+- name: github.com/wunderlist/ttlcache
+  version: fa8f18d5e019f6bdf076153e60dccf2c6fc7ccf5
 - name: gopkg.in/asn1-ber.v1
   version: 4e86f4367175e39f69d9358a5f17b4dda270378d
 - name: gopkg.in/ldap.v2

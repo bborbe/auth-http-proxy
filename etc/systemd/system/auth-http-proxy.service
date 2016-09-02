@@ -1,5 +1,5 @@
 [Unit]
-Description=Aptly Dashboard
+Description=Auth Http Proxy
 
 [Service]
 LimitNOFILE=4096

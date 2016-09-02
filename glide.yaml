@@ -20,5 +20,6 @@ import:
   - gracehttp
 - package: github.com/golang/glog
 - package: github.com/jtblin/go-ldap-client
+- package: github.com/wunderlist/ttlcache
 testImport:
 - package: github.com/bborbe/assert

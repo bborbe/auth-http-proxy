@@ -18,7 +18,7 @@ func TestMain(m *testing.M) {
 }
 
 func TestGetVerifierByType(t *testing.T) {
-	_, err := getVerifierByType(&model.Config{})
+	_, err := createVerifier(&model.Config{})
 	if err := AssertThat(err, NotNilValue()); err != nil {
 		t.Fatal(err)
 	}

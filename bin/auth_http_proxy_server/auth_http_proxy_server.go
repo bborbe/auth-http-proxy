@@ -12,6 +12,7 @@ import (
 	"github.com/bborbe/auth_http_proxy/model"
 	"github.com/bborbe/auth_http_proxy/verifier"
 	auth_verifier "github.com/bborbe/auth_http_proxy/verifier/auth"
+	"github.com/bborbe/auth_http_proxy/verifier/cache"
 	file_verifier "github.com/bborbe/auth_http_proxy/verifier/file"
 	ldap_verifier "github.com/bborbe/auth_http_proxy/verifier/ldap"
 	flag "github.com/bborbe/flagenv"
@@ -207,7 +208,7 @@ func createHttpFilter(config *model.Config) (http.Handler, error) {
 }
 
 func createHtmlAuthHttpFilter(config *model.Config) (http.Handler, error) {
-	verifier, err := getVerifierByType(config)
+	verifier, err := addCache(createVerifier(config))
 	if err != nil {
 		return nil, err
 	}
@@ -223,7 +224,7 @@ func createHtmlAuthHttpFilter(config *model.Config) (http.Handler, error) {
 }
 
 func createBasicAuthHttpFilter(config *model.Config) (http.Handler, error) {
-	verifier, err := getVerifierByType(config)
+	verifier, err := addCache(createVerifier(config))
 	if err != nil {
 		return nil, err
 	}
@@ -258,7 +259,7 @@ func createForwardHandler(config *model.Config) (http.Handler, error) {
 	return forwardHandler, nil
 }
 
-func getVerifierByType(config *model.Config) (verifier.Verifier, error) {
+func createVerifier(config *model.Config) (verifier.Verifier, error) {
 	if len(config.VerifierType) == 0 {
 		return nil, fmt.Errorf("parameter %s missing", parameterVerifierType)
 	}
@@ -272,6 +273,13 @@ func getVerifierByType(config *model.Config) (verifier.Verifier, error) {
 		return createFileVerifier(config)
 	}
 	return nil, fmt.Errorf("parameter %s invalid", parameterVerifierType)
+}
+
+func addCache(v verifier.Verifier, err error) (verifier.Verifier, error) {
+	if err != nil {
+		return nil, err
+	}
+	return cache.New(v), nil
 }
 
 func createAuthVerifier(config *model.Config) (verifier.Verifier, error) {
