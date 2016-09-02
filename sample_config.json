@@ -1,14 +1,17 @@
 {
 	"port": 8080,
 	"target-address": "localhost:7777",
+	"required-groups": [],
 	"kind": "basic",
-	"verifier": "file",
-	"file-users": "sample_users",
 	"basic-auth-realm": "Auth",
+	"verifier": "file",
+	// file params
+	"file-users": "sample_users",
+	// auth params
 	"auth-url": "",
 	"auth-application-name": "",
 	"auth-application-password": "",
-	"required-groups": [],
+	// ldap params
 	"ldap-base": "",
 	"ldap-host": "",
 	"ldap-port": 0,
