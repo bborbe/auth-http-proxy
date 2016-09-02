@@ -22,6 +22,9 @@ import:
 - package: github.com/golang/glog
 - package: github.com/gorilla/mux
 - package: github.com/jtblin/go-ldap-client
+  repo: https://github.com/bborbe/go-ldap-client.git
+  version: master
+  vcs:     git
 - package: github.com/wunderlist/ttlcache
 testImport:
 - package: github.com/bborbe/assert

@@ -1,5 +1,5 @@
-hash: 88d1ab9043a073a28709a2406ee33487e8a26605c3851d9b5c7b9be437fc2f0e
-updated: 2016-09-02T17:45:30.637031436+02:00
+hash: 2c7a8703d30859aa4c2e186d608f8b3941c9d35bcfbf7b8ab9818af03a7cabd9
+updated: 2016-09-02T20:48:05.425502658+02:00
 imports:
 - name: github.com/bborbe/auth
   version: d143f6bbd0c73c39d4e6426dc7d8ce415f433caa
@@ -41,6 +41,8 @@ imports:
   version: 0a192a193177452756c362c20087ddafcf6829c4
 - name: github.com/jtblin/go-ldap-client
   version: 34a022a1bd911acbf4b00ad3a9d9a5fe01956086
+  repo: https://github.com/bborbe/go-ldap-client.git
+  vcs: git
 - name: github.com/wunderlist/ttlcache
   version: fa8f18d5e019f6bdf076153e60dccf2c6fc7ccf5
 - name: gopkg.in/asn1-ber.v1
