@@ -253,7 +253,7 @@ func createForwardHandler(config *model.Config) (http.Handler, error) {
 			return http_client_builder.New().WithoutProxy().WithoutRedirects().WithDialFunc(
 				func(network, address string) (net.Conn, error) {
 					return dialer.Dial(network, config.TargetAddress.String())
-				}).Build().Do(req)
+				}).BuildRoundTripper().RoundTrip(req)
 		})
 	return forwardHandler, nil
 }
