@@ -35,7 +35,7 @@ func (a *auth) Verify(username model.UserName, password model.Password) (bool, e
 		return false, err
 	}
 	if result {
-		glog.Infof("add user %v to cache", username)
+		glog.V(2).Infof("add user %v to cache", username)
 		a.cache.Set(username.String(), password.String())
 	}
 	return result, nil
