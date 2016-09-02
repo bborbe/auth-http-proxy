@@ -35,7 +35,7 @@ func TestVerifyFailed(t *testing.T) {
 
 	authVerifier := New(func(authToken auth_model.AuthToken, requiredGroups []auth_model.GroupName) (*auth_model.UserName, error) {
 		return nil, fmt.Errorf("not found")
-	}, model.AuthGroup("test"))
+	}, model.GroupName("test"))
 
 	result, err := authVerifier.Verify(username, password)
 	if err := AssertThat(err, NotNilValue()); err != nil {
@@ -53,7 +53,7 @@ func TestVerifyNotFound(t *testing.T) {
 	authVerifier := New(func(authToken auth_model.AuthToken, requiredGroups []auth_model.GroupName) (*auth_model.UserName, error) {
 		u := auth_model.UserName("")
 		return &u, nil
-	}, model.AuthGroup("test"))
+	}, model.GroupName("test"))
 
 	result, err := authVerifier.Verify(username, password)
 	if err := AssertThat(err, NilValue()); err != nil {
@@ -71,7 +71,7 @@ func TestVerifyFound(t *testing.T) {
 	authVerifier := New(func(authToken auth_model.AuthToken, requiredGroups []auth_model.GroupName) (*auth_model.UserName, error) {
 		u := auth_model.UserName(username)
 		return &u, nil
-	}, model.AuthGroup("test"))
+	}, model.GroupName("test"))
 
 	result, err := authVerifier.Verify(username, password)
 	if err := AssertThat(err, NilValue()); err != nil {

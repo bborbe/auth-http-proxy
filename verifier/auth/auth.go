@@ -14,7 +14,10 @@ type auth struct {
 	requiredGroups []auth_model.GroupName
 }
 
-func New(check check, requiredGroups ...model.AuthGroup) *auth {
+func New(
+	check check,
+	requiredGroups ...model.GroupName,
+) *auth {
 	a := new(auth)
 	a.check = check
 	a.requiredGroups = []auth_model.GroupName{}
@@ -25,7 +28,7 @@ func New(check check, requiredGroups ...model.AuthGroup) *auth {
 }
 
 func (a *auth) Verify(username model.UserName, password model.Password) (bool, error) {
-	glog.V(2).Infof("verify user %s has groups %v", username, a.requiredGroups)
+	glog.V(2).Infof("verify user %v is valid and has groups %v", username, a.requiredGroups)
 	token := header.CreateAuthorizationToken(username.String(), password.String())
 	result, err := a.verify(auth_model.AuthToken(token))
 	if err != nil {
