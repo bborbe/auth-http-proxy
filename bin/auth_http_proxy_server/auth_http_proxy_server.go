@@ -42,6 +42,8 @@ const (
 	parameterAuthApplicationName         = "auth-application-name"
 	parameterAuthApplicationPassword     = "auth-application-password"
 	parameterLdapBase                    = "ldap-base"
+	parameterLdapUserDn                  = "ldap-user-dn"
+	parameterLdapGroupDn                 = "ldap-group-dn"
 	parameterLdapHost                    = "ldap-host"
 	parameterLdapPort                    = "ldap-port"
 	parameterLdapUseSSL                  = "ldap-use-ssl"
@@ -76,6 +78,8 @@ var (
 	ldapBindPasswordPtr = flag.String(parameterLdapBindPassword, "", "ldap-bind-password")
 	ldapUserFilterPtr   = flag.String(parameterLdapUserFilter, "", "ldap-user-filter")
 	ldapGroupFilterPtr  = flag.String(parameterLdapGroupFilter, "", "ldap-group-filter")
+	ldapUserDnPtr       = flag.String(parameterLdapUserDn, "", "ldap-user-dn")
+	ldapGroupDnPtr      = flag.String(parameterLdapGroupDn, "", "ldap-group-dn")
 )
 
 func main() {
@@ -172,6 +176,12 @@ func createConfig() (*model.Config, error) {
 	}
 	if len(config.LdapGroupFilter) == 0 {
 		config.LdapGroupFilter = model.LdapGroupFilter(*ldapGroupFilterPtr)
+	}
+	if len(config.LdapUserDn) == 0 {
+		config.LdapUserDn = model.LdapUserDn(*ldapUserDnPtr)
+	}
+	if len(config.LdapGroupDn) == 0 {
+		config.LdapGroupDn = model.LdapGroupDn(*ldapGroupDnPtr)
 	}
 	return config, nil
 }
@@ -320,6 +330,8 @@ func createLdapVerifier(config *model.Config) (verifier.Verifier, error) {
 		config.LdapBindPassword,
 		config.LdapUserFilter,
 		config.LdapGroupFilter,
+		config.LdapUserDn,
+		config.LdapGroupDn,
 		config.RequiredGroups...,
 	), config.CacheTTL), nil
 }
