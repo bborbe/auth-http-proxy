@@ -124,6 +124,38 @@ auth_http_proxy_server \
 -ldap-group-filter="(memberUid=%s)"
 ```
 
+Start auth_http_proxy_server with config
+
+
+`vi config.json`
+
+```
+{
+  "port": 8888,
+  "target-address": "localhost:7777",
+  "kind": "html",
+  "verifier": "ldap",
+  "required-groups": ["Admins"],
+  "ldap-host": "ldap.example.com",
+  "ldap-port": 389,
+  "ldap-use-ssl": false,
+  "ldap-base": "dc=example,dc=com",
+  "ldap-user-dn": "ou=People",
+  "ldap-group-dn": "ou=Groups",
+  "ldap-bind-dn": "uid=readonlysuer,ou=People,dc=example,dc=com",
+  "ldap-bind-password": "S3CR3T",
+  "ldap-user-filter": "(uid=%s)",
+  "ldap-group-filter": "(member=uid=%s,ou=People,dc=example,dc=com)"
+}
+```
+
+```
+auth_http_proxy_server \
+-logtostderr \
+-v=2 \
+-config=config.json
+```
+
 ## Continuous integration
 
 [Jenkins](https://www.benjamin-borbe.de/jenkins/job/Go-Auth-Http-Proxy/)
