@@ -7,7 +7,8 @@ import (
 )
 
 type auth struct {
-	client *ldap.LDAPClient
+	client         *ldap.LDAPClient
+	requiredGroups []model.GroupName
 }
 
 func New(
@@ -19,6 +20,7 @@ func New(
 	ldapBindPassword model.LdapBindPassword,
 	ldapUserFilter model.LdapUserFilter,
 	ldapGroupFilter model.LdapGroupFilter,
+	requiredGroups ...model.GroupName,
 ) *auth {
 	a := new(auth)
 	a.client = &ldap.LDAPClient{
@@ -31,16 +33,41 @@ func New(
 		UserFilter:   ldapUserFilter.String(),
 		GroupFilter:  ldapGroupFilter.String(),
 	}
+	a.requiredGroups = requiredGroups
 	return a
 }
 
 func (a *auth) Verify(username model.UserName, password model.Password) (bool, error) {
-	glog.V(2).Infof("verify user %s")
+	glog.V(2).Infof("verify user %v is valid and has groups %v", username, a.requiredGroups)
+	glog.V(2).Infof("verify username and password of user %v", username)
 	ok, _, err := a.client.Authenticate(username.String(), password.String())
 	if err != nil {
-		glog.Warningf("authenticate user %v on ldap failed: %v", username, err)
+		glog.Warningf("verify username and password of user %v on ldap failed: %v", username, err)
 		return false, err
 	}
-	glog.V(2).Infof("authenticate user %v completed. result: %v", username, ok)
-	return ok, nil
+	if !ok {
+		glog.V(1).Infof("authenticate user %v invalid", username)
+		return false, nil
+	}
+	glog.V(2).Infof("get groups of user %v", username)
+	groupNames, err := a.client.GetGroupsOfUser(username.String())
+	if err != nil {
+		glog.Warningf("get groups for user %v failed: %v", username, err)
+		return false, err
+	}
+	glog.V(2).Infof("user %v has groups: %v", username, groupNames)
+	for _, requiredGroup := range a.requiredGroups {
+		found := false
+		for _, groupName := range groupNames {
+			if groupName == requiredGroup.String() {
+				found = true
+			}
+		}
+		if !found {
+			glog.V(1).Infof("user %v has not required group %v", username, requiredGroup)
+			return false, nil
+		}
+	}
+	glog.V(2).Infof("user %v is valid and has all required groups", username)
+	return true, nil
 }
