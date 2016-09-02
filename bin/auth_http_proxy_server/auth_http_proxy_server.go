@@ -250,7 +250,7 @@ func createForwardHandler(config *model.Config) (http.Handler, error) {
 	}
 	forwardHandler := forward.New(config.TargetAddress,
 		func(address string, req *http.Request) (resp *http.Response, err error) {
-			return http_client_builder.New().WithoutProxy().WithDialFunc(
+			return http_client_builder.New().WithoutProxy().WithoutRedirects().WithDialFunc(
 				func(network, address string) (net.Conn, error) {
 					return dialer.Dial(network, config.TargetAddress.String())
 				}).Build().Do(req)
