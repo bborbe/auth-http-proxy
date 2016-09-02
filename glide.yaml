@@ -15,10 +15,12 @@ import:
   - auth_basic
   - auth_html
   - debug
+  - static
 - package: github.com/facebookgo/grace
   subpackages:
   - gracehttp
 - package: github.com/golang/glog
+- package: github.com/gorilla/mux
 - package: github.com/jtblin/go-ldap-client
 - package: github.com/wunderlist/ttlcache
 testImport:

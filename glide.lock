@@ -1,5 +1,5 @@
-hash: 27d3a3a1a0adc57c6e4593ffaacf735264c0802f86c25fc80f35b6aa54e5de59
-updated: 2016-09-02T16:14:38.054313446+02:00
+hash: 88d1ab9043a073a28709a2406ee33487e8a26605c3851d9b5c7b9be437fc2f0e
+updated: 2016-09-02T17:45:30.637031436+02:00
 imports:
 - name: github.com/bborbe/auth
   version: d143f6bbd0c73c39d4e6426dc7d8ce415f433caa
@@ -21,6 +21,7 @@ imports:
   - auth_basic
   - auth_html
   - debug
+  - static
 - name: github.com/facebookgo/clock
   version: 600d898af40aa09a7a93ecb9265d87b0504b6f03
 - name: github.com/facebookgo/grace
@@ -34,6 +35,10 @@ imports:
   version: 1b76add642e42c6ffba7211ad7b3939ce654526e
 - name: github.com/golang/glog
   version: 23def4e6c14b4da8ac2ed8007337bc5eb5007998
+- name: github.com/gorilla/context
+  version: 08b5f424b9271eedf6f9f0ce86cb9396ed337a42
+- name: github.com/gorilla/mux
+  version: 0a192a193177452756c362c20087ddafcf6829c4
 - name: github.com/jtblin/go-ldap-client
   version: 34a022a1bd911acbf4b00ad3a9d9a5fe01956086
 - name: github.com/wunderlist/ttlcache
