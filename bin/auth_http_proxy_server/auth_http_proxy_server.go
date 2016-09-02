@@ -21,8 +21,10 @@ import (
 	"github.com/bborbe/http_handler/auth_basic"
 	"github.com/bborbe/http_handler/auth_html"
 	debug_handler "github.com/bborbe/http_handler/debug"
+	"github.com/bborbe/http_handler/static"
 	"github.com/facebookgo/grace/gracehttp"
 	"github.com/golang/glog"
+	"github.com/gorilla/mux"
 	"time"
 )
 
@@ -188,10 +190,18 @@ func createServer(config *model.Config) (*http.Server, error) {
 
 func createHandler(config *model.Config) (http.Handler, error) {
 	glog.V(2).Infof("create handler")
-	handler, err := createHttpFilter(config)
+
+	filter, err := createHttpFilter(config)
 	if err != nil {
 		return nil, err
 	}
+
+	router := mux.NewRouter()
+	router.NotFoundHandler = filter
+	router.Path("/healthz").Handler(static.New("ok"))
+
+	var handler http.Handler = router
+
 	if glog.V(4) {
 		glog.V(2).Infof("add debug handler")
 		handler = debug_handler.New(handler)
