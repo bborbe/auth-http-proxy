@@ -6,10 +6,12 @@ import (
 	"strings"
 
 	"github.com/golang/glog"
+	"time"
 )
 
 type Config struct {
 	Port                    Port                    `json:"port"`
+	CacheTTL                CacheTTL                `json:"cache-ttl"`
 	AuthUrl                 AuthUrl                 `json:"auth-url"`
 	AuthApplicationName     AuthApplicationName     `json:"auth-application-name"`
 	AuthApplicationPassword AuthApplicationPassword `json:"auth-application-password"`
@@ -28,6 +30,16 @@ type Config struct {
 	LdapUserFilter          LdapUserFilter          `json:"ldap-user-filter"`
 	LdapGroupFilter         LdapGroupFilter         `json:"ldap-group-filter"`
 }
+type CacheTTL time.Duration
+
+func (c CacheTTL) IsEmpty() bool {
+	return int64(c) == 0
+}
+
+func (c CacheTTL) Duration() time.Duration {
+	return time.Duration(c)
+}
+
 type ConfigPath string
 
 func (c ConfigPath) IsValue() bool {

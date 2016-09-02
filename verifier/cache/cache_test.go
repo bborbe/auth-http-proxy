@@ -17,7 +17,7 @@ func TestMain(m *testing.M) {
 }
 
 func TestImplementsVerifier(t *testing.T) {
-	object := New(nil)
+	object := New(nil, 5)
 	var expected *verifier.Verifier
 	err := AssertThat(object, Implements(expected))
 	if err != nil {

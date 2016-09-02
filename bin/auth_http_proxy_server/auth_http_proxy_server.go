@@ -23,6 +23,7 @@ import (
 	debug_handler "github.com/bborbe/http_handler/debug"
 	"github.com/facebookgo/grace/gracehttp"
 	"github.com/golang/glog"
+	"time"
 )
 
 const (
@@ -46,6 +47,7 @@ const (
 	parameterLdapBindPassword            = "ldap-bind-password"
 	parameterLdapUserFilter              = "ldap-user-filter"
 	parameterLdapGroupFilter             = "ldap-group-filter"
+	parameterCacheTTL                    = "cache-ttl"
 )
 
 var (
@@ -57,6 +59,7 @@ var (
 	kindPtr           = flag.String(parameterKind, "", "(basic,html)")
 	configPtr         = flag.String(parameterConfig, "", "config")
 	requiredGroupsPtr = flag.String(parameterRequiredGroups, "", "required groups reperated by comma")
+	cacheTTLPtr       = flag.Duration(parameterCacheTTL, 5*time.Minute, "cache ttl")
 	// file params
 	fileUseresPtr = flag.String(parameterFileUsers, "", "users")
 	// auth params
@@ -128,6 +131,9 @@ func createConfig() (*model.Config, error) {
 	}
 	if len(config.TargetAddress) == 0 {
 		config.TargetAddress = model.TargetAddress(*targetAddressPtr)
+	}
+	if config.CacheTTL.IsEmpty() {
+		config.CacheTTL = model.CacheTTL(*cacheTTLPtr)
 	}
 	if len(config.AuthUrl) == 0 {
 		config.AuthUrl = model.AuthUrl(*authUrlPtr)
@@ -208,7 +214,7 @@ func createHttpFilter(config *model.Config) (http.Handler, error) {
 }
 
 func createHtmlAuthHttpFilter(config *model.Config) (http.Handler, error) {
-	verifier, err := addCache(createVerifier(config))
+	verifier, err := createVerifier(config)
 	if err != nil {
 		return nil, err
 	}
@@ -224,7 +230,7 @@ func createHtmlAuthHttpFilter(config *model.Config) (http.Handler, error) {
 }
 
 func createBasicAuthHttpFilter(config *model.Config) (http.Handler, error) {
-	verifier, err := addCache(createVerifier(config))
+	verifier, err := createVerifier(config)
 	if err != nil {
 		return nil, err
 	}
@@ -275,13 +281,6 @@ func createVerifier(config *model.Config) (verifier.Verifier, error) {
 	return nil, fmt.Errorf("parameter %s invalid", parameterVerifierType)
 }
 
-func addCache(v verifier.Verifier, err error) (verifier.Verifier, error) {
-	if err != nil {
-		return nil, err
-	}
-	return cache.New(v), nil
-}
-
 func createAuthVerifier(config *model.Config) (verifier.Verifier, error) {
 	if len(config.AuthUrl) == 0 {
 		return nil, fmt.Errorf("parameter %s missing", parameterAuthUrl)
@@ -295,14 +294,14 @@ func createAuthVerifier(config *model.Config) (verifier.Verifier, error) {
 	httpRequestBuilderProvider := http_requestbuilder.NewHTTPRequestBuilderProvider()
 	httpClient := http_client_builder.New().WithoutProxy().Build()
 	authClient := auth_client.New(httpClient.Do, httpRequestBuilderProvider, auth_model.Url(config.AuthUrl), auth_model.ApplicationName(config.AuthApplicationName), auth_model.ApplicationPassword(config.AuthApplicationPassword))
-	return auth_verifier.New(
+	return cache.New(auth_verifier.New(
 		authClient.Auth,
 		config.RequiredGroups...,
-	), nil
+	), config.CacheTTL), nil
 }
 
 func createLdapVerifier(config *model.Config) (verifier.Verifier, error) {
-	return ldap_verifier.New(
+	return cache.New(ldap_verifier.New(
 		config.LdapBase,
 		config.LdapHost,
 		config.LdapPort,
@@ -312,12 +311,12 @@ func createLdapVerifier(config *model.Config) (verifier.Verifier, error) {
 		config.LdapUserFilter,
 		config.LdapGroupFilter,
 		config.RequiredGroups...,
-	), nil
+	), config.CacheTTL), nil
 }
 
 func createFileVerifier(config *model.Config) (verifier.Verifier, error) {
 	if len(config.UserFile) == 0 {
 		return nil, fmt.Errorf("parameter %s missing", parameterFileUsers)
 	}
-	return file_verifier.New(config.UserFile), nil
+	return cache.New(file_verifier.New(config.UserFile), config.CacheTTL), nil
 }

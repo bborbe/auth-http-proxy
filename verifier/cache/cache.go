@@ -5,7 +5,6 @@ import (
 	"github.com/bborbe/auth_http_proxy/verifier"
 	"github.com/golang/glog"
 	"github.com/wunderlist/ttlcache"
-	"time"
 )
 
 type auth struct {
@@ -13,10 +12,13 @@ type auth struct {
 	cache    *ttlcache.Cache
 }
 
-func New(verifier verifier.Verifier) *auth {
+func New(
+	verifier verifier.Verifier,
+	ttl model.CacheTTL,
+) *auth {
 	a := new(auth)
 	a.verifier = verifier
-	a.cache = ttlcache.NewCache(5 * time.Minute)
+	a.cache = ttlcache.NewCache(ttl.Duration())
 	return a
 }
 
