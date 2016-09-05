@@ -278,10 +278,10 @@ func createBasicAuthHttpFilter(config *model.Config) (http.Handler, error) {
 	if len(config.BasicAuthRealm) == 0 {
 		return nil, fmt.Errorf("parameter %s missing", parameterBasicAuthRealm)
 	}
-	handler := auth_basic.New(forwardHandler.ServeHTTP,
-		func(username string, password string) (bool, error) {
-			return verifier.Verify(model.UserName(username), model.Password(password))
-		}, config.BasicAuthRealm.String())
+	check := func(username string, password string) (bool, error) {
+		return verifier.Verify(model.UserName(username), model.Password(password))
+	}
+	handler := auth_basic.New(forwardHandler.ServeHTTP, check, config.BasicAuthRealm.String())
 	return handler, nil
 }
 
