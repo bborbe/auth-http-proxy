@@ -16,7 +16,7 @@ imports:
   - header
   - requestbuilder
 - name: github.com/bborbe/http_handler
-  version: 6042e6fe4bda26d2325ba439d54b310d88c1a8a1
+  version: 6142c130322347c49620f1ebdb5f001ce4fac20b
   subpackages:
   - auth_basic
   - auth_html
