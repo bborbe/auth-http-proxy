@@ -62,6 +62,7 @@ run:
 	-port=8888 \
 	-target-address=localhost:7777 \
 	-kind=html \
+	-secret=AES256Key-32Characters1234567890 \
 	-verifier=file \
 	-file-users=sample_users
 open:

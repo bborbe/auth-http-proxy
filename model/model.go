@@ -17,6 +17,7 @@ type Config struct {
 	AuthApplicationPassword AuthApplicationPassword `json:"auth-application-password"`
 	TargetAddress           TargetAddress           `json:"target-address"`
 	BasicAuthRealm          BasicAuthRealm          `json:"basic-auth-realm"`
+	Secret                  Secret                  `json:"secret"`
 	RequiredGroups          []GroupName             `json:"required-groups"`
 	VerifierType            VerifierType            `json:"verifier"`
 	UserFile                UserFile                `json:"file-users"`
@@ -98,6 +99,16 @@ type BasicAuthRealm string
 
 func (b BasicAuthRealm) String() string {
 	return string(b)
+}
+
+type Secret string
+
+func (s Secret) String() string {
+	return string(s)
+}
+
+func (s Secret) Bytes() []byte {
+	return []byte(s)
 }
 
 type GroupName string

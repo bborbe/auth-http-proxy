@@ -8,6 +8,7 @@ import (
 
 	auth_client "github.com/bborbe/auth/client/verify_group_service"
 	auth_model "github.com/bborbe/auth/model"
+	"github.com/bborbe/auth_http_proxy/crypter"
 	"github.com/bborbe/auth_http_proxy/forward"
 	"github.com/bborbe/auth_http_proxy/model"
 	"github.com/bborbe/auth_http_proxy/verifier"
@@ -53,6 +54,7 @@ const (
 	parameterLdapGroupFilter             = "ldap-group-filter"
 	parameterCacheTTL                    = "cache-ttl"
 	parameterLdapServerName              = "ldap-servername"
+	parameterSecret                      = "secret"
 )
 
 var (
@@ -61,6 +63,7 @@ var (
 	basicAuthRealmPtr = flag.String(parameterBasicAuthRealm, "", "basic auth realm")
 	targetAddressPtr  = flag.String(parameterTargetAddress, "", "target address")
 	verifierPtr       = flag.String(parameterVerifierType, "", "verifier (auth,file,ldap)")
+	secretPtr         = flag.String(parameterSecret, "", "aes secret key (length: 32")
 	kindPtr           = flag.String(parameterKind, "", "(basic,html)")
 	configPtr         = flag.String(parameterConfig, "", "config")
 	requiredGroupsPtr = flag.String(parameterRequiredGroups, "", "required groups reperated by comma")
@@ -133,6 +136,9 @@ func createConfig() (*model.Config, error) {
 	}
 	if len(config.VerifierType) == 0 {
 		config.VerifierType = model.VerifierType(*verifierPtr)
+	}
+	if len(config.Secret) == 0 {
+		config.Secret = model.Secret(*secretPtr)
 	}
 	if len(config.BasicAuthRealm) == 0 {
 		config.BasicAuthRealm = model.BasicAuthRealm(*basicAuthRealmPtr)
@@ -247,10 +253,16 @@ func createHtmlAuthHttpFilter(config *model.Config) (http.Handler, error) {
 	if err != nil {
 		return nil, err
 	}
-	handler := auth_html.New(forwardHandler.ServeHTTP,
-		func(username string, password string) (bool, error) {
-			return verifier.Verify(model.UserName(username), model.Password(password))
-		})
+	check := func(username string, password string) (bool, error) {
+		return verifier.Verify(model.UserName(username), model.Password(password))
+	}
+	if len(config.Secret) == 0 {
+		return nil, fmt.Errorf("parameter %s missing", parameterSecret)
+	}
+	if len(config.Secret)%16 != 0 {
+		return nil, fmt.Errorf("parameter %s invalid length", parameterSecret)
+	}
+	handler := auth_html.New(forwardHandler.ServeHTTP, check, crypter.New(config.Secret.Bytes()))
 	return handler, nil
 }
 
