@@ -61,6 +61,7 @@ run:
 	-v=2 \
 	-port=8888 \
 	-target-address=localhost:7777 \
+	-target-healthz-url=http://localhost:7777 \
 	-kind=html \
 	-secret=AES256Key-32Characters1234567890 \
 	-verifier=file \

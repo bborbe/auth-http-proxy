@@ -21,8 +21,8 @@ import (
 	http_requestbuilder "github.com/bborbe/http/requestbuilder"
 	"github.com/bborbe/http_handler/auth_basic"
 	"github.com/bborbe/http_handler/auth_html"
+	"github.com/bborbe/http_handler/check"
 	debug_handler "github.com/bborbe/http_handler/debug"
-	"github.com/bborbe/http_handler/static"
 	"github.com/facebookgo/grace/gracehttp"
 	"github.com/golang/glog"
 	"github.com/gorilla/mux"
@@ -33,6 +33,7 @@ const (
 	defaultPort                      int = 8080
 	parameterPort                        = "port"
 	parameterTargetAddress               = "target-address"
+	parameterTargetHealthzUrl            = "target-healthz-url"
 	parameterBasicAuthRealm              = "basic-auth-realm"
 	parameterRequiredGroups              = "required-groups"
 	parameterVerifierType                = "verifier"
@@ -58,16 +59,17 @@ const (
 )
 
 var (
-	portPtr           = flag.Int(parameterPort, defaultPort, "port")
-	authUrlPtr        = flag.String(parameterAuthUrl, "", "auth url")
-	basicAuthRealmPtr = flag.String(parameterBasicAuthRealm, "", "basic auth realm")
-	targetAddressPtr  = flag.String(parameterTargetAddress, "", "target address")
-	verifierPtr       = flag.String(parameterVerifierType, "", "verifier (auth,file,ldap)")
-	secretPtr         = flag.String(parameterSecret, "", "aes secret key (length: 32")
-	kindPtr           = flag.String(parameterKind, "", "(basic,html)")
-	configPtr         = flag.String(parameterConfig, "", "config")
-	requiredGroupsPtr = flag.String(parameterRequiredGroups, "", "required groups reperated by comma")
-	cacheTTLPtr       = flag.Duration(parameterCacheTTL, 5*time.Minute, "cache ttl")
+	portPtr             = flag.Int(parameterPort, defaultPort, "port")
+	authUrlPtr          = flag.String(parameterAuthUrl, "", "auth url")
+	basicAuthRealmPtr   = flag.String(parameterBasicAuthRealm, "", "basic auth realm")
+	targetAddressPtr    = flag.String(parameterTargetAddress, "", "target address")
+	targetHealthzUrlPtr = flag.String(parameterTargetHealthzUrl, "", "target healthz address")
+	verifierPtr         = flag.String(parameterVerifierType, "", "verifier (auth,file,ldap)")
+	secretPtr           = flag.String(parameterSecret, "", "aes secret key (length: 32")
+	kindPtr             = flag.String(parameterKind, "", "(basic,html)")
+	configPtr           = flag.String(parameterConfig, "", "config")
+	requiredGroupsPtr   = flag.String(parameterRequiredGroups, "", "required groups reperated by comma")
+	cacheTTLPtr         = flag.Duration(parameterCacheTTL, 5*time.Minute, "cache ttl")
 	// file params
 	fileUseresPtr = flag.String(parameterFileUsers, "", "users")
 	// auth params
@@ -143,6 +145,9 @@ func createConfig() (*model.Config, error) {
 	if len(config.BasicAuthRealm) == 0 {
 		config.BasicAuthRealm = model.BasicAuthRealm(*basicAuthRealmPtr)
 	}
+	if len(config.TargetHealthzUrl) == 0 {
+		config.TargetHealthzUrl = model.TargetHealthzUrl(*targetHealthzUrlPtr)
+	}
 	if len(config.TargetAddress) == 0 {
 		config.TargetAddress = model.TargetAddress(*targetAddressPtr)
 	}
@@ -209,6 +214,32 @@ func createServer(config *model.Config) (*http.Server, error) {
 	return &http.Server{Addr: fmt.Sprintf(":%d", config.Port), Handler: handler}, nil
 }
 
+func createHealthzCheck(config *model.Config) func() error {
+	if len(config.TargetHealthzUrl) > 0 {
+		return func() error {
+			resp, err := http.Get(config.TargetHealthzUrl.String())
+			if err != nil {
+				glog.V(2).Infof("check url %v failed: %v", config.TargetHealthzUrl, err)
+				return err
+			}
+			if resp.StatusCode/100 != 2 {
+				glog.V(2).Infof("check url %v has wrong status: %v", config.TargetHealthzUrl, resp.Status)
+				return fmt.Errorf("check url %v has wrong status: %v", config.TargetHealthzUrl, resp.Status)
+			}
+			return nil
+		}
+	}
+	return func() error {
+		conn, err := net.Dial("tcp", config.TargetAddress.String())
+		if err != nil {
+			glog.V(2).Infof("tcp connection to %v failed: %v", config.TargetAddress, err)
+			return err
+		}
+		glog.V(2).Infof("tcp connection to %v success", config.TargetAddress)
+		return conn.Close()
+	}
+}
+
 func createHandler(config *model.Config) (http.Handler, error) {
 	glog.V(2).Infof("create handler")
 
@@ -219,7 +250,7 @@ func createHandler(config *model.Config) (http.Handler, error) {
 
 	router := mux.NewRouter()
 	router.NotFoundHandler = filter
-	router.Path("/healthz").Handler(static.New("ok"))
+	router.Path("/healthz").Handler(check.New(createHealthzCheck(config)))
 
 	var handler http.Handler = router
 

@@ -16,6 +16,7 @@ type Config struct {
 	AuthApplicationName     AuthApplicationName     `json:"auth-application-name"`
 	AuthApplicationPassword AuthApplicationPassword `json:"auth-application-password"`
 	TargetAddress           TargetAddress           `json:"target-address"`
+	TargetHealthzUrl        TargetHealthzUrl        `json:"target-healthz-url"`
 	BasicAuthRealm          BasicAuthRealm          `json:"basic-auth-realm"`
 	Secret                  Secret                  `json:"secret"`
 	RequiredGroups          []GroupName             `json:"required-groups"`
@@ -92,6 +93,12 @@ func (a AuthApplicationPassword) String() string {
 type TargetAddress string
 
 func (t TargetAddress) String() string {
+	return string(t)
+}
+
+type TargetHealthzUrl string
+
+func (t TargetHealthzUrl) String() string {
 	return string(t)
 }
 
