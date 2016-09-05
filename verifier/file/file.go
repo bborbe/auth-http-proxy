@@ -46,7 +46,7 @@ func (a *auth) Verify(username model.UserName, password model.Password) (bool, e
 			}
 		}
 		if err == io.EOF {
-			glog.V(1).Infof("reach eof, user not found")
+			glog.V(1).Infof("reach eof, user %v not found", username)
 			return false, nil
 		}
 	}
