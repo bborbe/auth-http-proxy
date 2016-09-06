@@ -5,6 +5,9 @@
 	"architecture": "amd64",
 	"maintainer": "Benjamin Borbe <bborbe@rocketnews.de>",
 	"description": "Auth http proxy",
+	"postinst": "src/github.com/bborbe/auth_http_proxy/postinst",
+	"postrm": "src/github.com/bborbe/auth_http_proxy/postrm",
+	"prerm": "src/github.com/bborbe/auth_http_proxy/prerm",
 	"files": [
 		{
 			"source": "bin/auth_http_proxy_server",

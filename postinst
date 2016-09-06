@@ -1,0 +1,60 @@
+#!/bin/sh
+
+set -e
+
+USER="auth-http-proxy"
+GROUP="auth-http-proxy"
+SERVICE="auth-http-proxy.service"
+
+case "$1" in
+	configure)
+
+		if ! getent group "$GROUP" > /dev/null 2>&1 ; then
+			addgroup \
+			--system \
+			--quiet \
+			"$GROUP"
+		fi
+
+		if ! id $USER > /dev/null 2>&1 ; then
+			adduser \
+			--system \
+			--group "$GROUP" \
+			--home /nonexistent \
+			--no-create-home \
+			--disabled-password \
+			--shell /bin/false \
+			--quiet \
+			"$USER"
+		fi
+
+		chown -R ${USER}:${GROUP} /etc/auth_http_proxy
+		chmod 750 /etc/auth_http_proxy
+
+		chown -R ${USER}:${GROUP} /opt/auth_http_proxy
+		chmod 750 /opt/auth_http_proxy
+
+	;;
+
+  abort-upgrade)
+  ;;
+
+  abort-remove)
+  ;;
+
+  abort-deconfigure)
+  ;;
+
+  *)
+    echo "postinst called with unknown argument \`$1'" >&2
+    exit 1
+  ;;
+
+esac
+
+if [ -d /run/systemd/system ]; then
+	systemctl --system daemon-reload >/dev/null || true
+	deb-systemd-invoke start $SERVICE >/dev/null || true
+fi
+
+exit 0
