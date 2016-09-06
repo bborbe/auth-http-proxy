@@ -19,7 +19,7 @@ case "$1" in
 		if ! id $USER > /dev/null 2>&1 ; then
 			adduser \
 			--system \
-			--group "$GROUP" \
+			--ingroup "$GROUP" \
 			--home /nonexistent \
 			--no-create-home \
 			--disabled-password \
