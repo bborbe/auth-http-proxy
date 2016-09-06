@@ -34,6 +34,9 @@ type Config struct {
 	LdapGroupFilter         LdapGroupFilter         `json:"ldap-group-filter"`
 	LdapUserDn              LdapUserDn              `json:"ldap-user-dn"`
 	LdapGroupDn             LdapGroupDn             `json:"ldap-group-dn"`
+	CrowdURL                CrowdURL                `json:"crowd-url"`
+	CrowdAppName            CrowdAppName            `json:"crowd-app-name"`
+	CrowdAppPassword        CrowdAppPassword        `json:"crowd-app-password"`
 }
 
 type CacheTTL time.Duration
@@ -230,4 +233,22 @@ type LdapGroupDn string
 
 func (l LdapGroupDn) String() string {
 	return string(l)
+}
+
+type CrowdURL string
+
+func (c CrowdURL) String() string {
+	return string(c)
+}
+
+type CrowdAppName string
+
+func (c CrowdAppName) String() string {
+	return string(c)
+}
+
+type CrowdAppPassword string
+
+func (c CrowdAppPassword) String() string {
+	return string(c)
 }

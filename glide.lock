@@ -1,5 +1,5 @@
-hash: 2c7a8703d30859aa4c2e186d608f8b3941c9d35bcfbf7b8ab9818af03a7cabd9
-updated: 2016-09-05T23:48:45.195355441+02:00
+hash: c3889e5408be233cbe1712778fd9635ab842299f1fca06cf0581a9ddc5f402ac
+updated: 2016-09-06T15:21:11.661124185+02:00
 imports:
 - name: github.com/bborbe/auth
   version: d143f6bbd0c73c39d4e6426dc7d8ce415f433caa
@@ -20,6 +20,7 @@ imports:
   subpackages:
   - auth_basic
   - auth_html
+  - check
   - debug
   - static
 - name: github.com/facebookgo/clock
@@ -45,6 +46,8 @@ imports:
   vcs: git
 - name: github.com/wunderlist/ttlcache
   version: fa8f18d5e019f6bdf076153e60dccf2c6fc7ccf5
+- name: go.jona.me/crowd
+  version: ce747c719e95002846f6977ab5d555fb6befd7bf
 - name: gopkg.in/asn1-ber.v1
   version: 4e86f4367175e39f69d9358a5f17b4dda270378d
 - name: gopkg.in/ldap.v2

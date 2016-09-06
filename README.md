@@ -101,6 +101,22 @@ auth_http_proxy_server \
 -file-users=sample_users
 ```
 
+### With crowd backend
+
+```
+auth_http_proxy_server \
+-logtostderr \
+-v=2 \
+-port=8888 \
+-kind=basic \
+-basic-auth-realm=TestAuth \
+-target-address=localhost:7777 \
+-verifier=crowd \
+-crowd-url="https://crowd.example.com/" \
+-crowd-app-name="user" \
+-crowd-app-password="pass" 
+```
+
 ### With ldap backend
 
 Start auth_http_proxy_server

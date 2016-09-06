@@ -14,6 +14,7 @@ import (
 	"github.com/bborbe/auth_http_proxy/verifier"
 	auth_verifier "github.com/bborbe/auth_http_proxy/verifier/auth"
 	"github.com/bborbe/auth_http_proxy/verifier/cache"
+	crowd_verifier "github.com/bborbe/auth_http_proxy/verifier/crowd"
 	file_verifier "github.com/bborbe/auth_http_proxy/verifier/file"
 	ldap_verifier "github.com/bborbe/auth_http_proxy/verifier/ldap"
 	flag "github.com/bborbe/flagenv"
@@ -26,6 +27,7 @@ import (
 	"github.com/facebookgo/grace/gracehttp"
 	"github.com/golang/glog"
 	"github.com/gorilla/mux"
+	"go.jona.me/crowd"
 	"time"
 )
 
@@ -56,6 +58,9 @@ const (
 	parameterCacheTTL                    = "cache-ttl"
 	parameterLdapServerName              = "ldap-servername"
 	parameterSecret                      = "secret"
+	parameterCrowdURL                    = "crowd-url"
+	parameterCrowdAppName                = "crowd-app-name"
+	parameterCrowdAppPassword            = "crowd-app-password"
 )
 
 var (
@@ -64,7 +69,7 @@ var (
 	basicAuthRealmPtr   = flag.String(parameterBasicAuthRealm, "", "basic auth realm")
 	targetAddressPtr    = flag.String(parameterTargetAddress, "", "target address")
 	targetHealthzUrlPtr = flag.String(parameterTargetHealthzUrl, "", "target healthz address")
-	verifierPtr         = flag.String(parameterVerifierType, "", "verifier (auth,file,ldap)")
+	verifierPtr         = flag.String(parameterVerifierType, "", "verifier (file,ldap,crowd,auth)")
 	secretPtr           = flag.String(parameterSecret, "", "aes secret key (length: 32")
 	kindPtr             = flag.String(parameterKind, "", "(basic,html)")
 	configPtr           = flag.String(parameterConfig, "", "config")
@@ -87,6 +92,10 @@ var (
 	ldapGroupFilterPtr  = flag.String(parameterLdapGroupFilter, "", "ldap-group-filter")
 	ldapUserDnPtr       = flag.String(parameterLdapUserDn, "", "ldap-user-dn")
 	ldapGroupDnPtr      = flag.String(parameterLdapGroupDn, "", "ldap-group-dn")
+	// crowd
+	crowdURLPtr     = flag.String(parameterCrowdURL, "", "crowd url")
+	crowdAppNamePtr = flag.String(parameterCrowdAppName, "", "crowd app name")
+	crowdAppPassPtr = flag.String(parameterCrowdAppPassword, "", "crowd app password")
 )
 
 func main() {
@@ -198,6 +207,15 @@ func createConfig() (*model.Config, error) {
 	}
 	if len(config.LdapGroupDn) == 0 {
 		config.LdapGroupDn = model.LdapGroupDn(*ldapGroupDnPtr)
+	}
+	if len(config.CrowdURL) == 0 {
+		config.CrowdURL = model.CrowdURL(*crowdURLPtr)
+	}
+	if len(config.CrowdAppName) == 0 {
+		config.CrowdAppName = model.CrowdAppName(*crowdAppNamePtr)
+	}
+	if len(config.CrowdAppPassword) == 0 {
+		config.CrowdAppPassword = model.CrowdAppPassword(*crowdAppPassPtr)
 	}
 	return config, nil
 }
@@ -345,6 +363,8 @@ func createVerifier(config *model.Config) (verifier.Verifier, error) {
 		return createLdapVerifier(config)
 	case "file":
 		return createFileVerifier(config)
+	case "crowd":
+		return createCrowdVerifier(config)
 	}
 	return nil, fmt.Errorf("parameter %s invalid", parameterVerifierType)
 }
@@ -390,4 +410,24 @@ func createFileVerifier(config *model.Config) (verifier.Verifier, error) {
 		return nil, fmt.Errorf("parameter %s missing", parameterFileUsers)
 	}
 	return cache.New(file_verifier.New(config.UserFile), config.CacheTTL), nil
+}
+
+func createCrowdVerifier(config *model.Config) (verifier.Verifier, error) {
+	if len(config.CrowdAppName) == 0 {
+		return nil, fmt.Errorf("parameter %s missing", parameterCrowdAppName)
+	}
+	if len(config.CrowdAppPassword) == 0 {
+		return nil, fmt.Errorf("parameter %s missing", parameterCrowdAppPassword)
+	}
+	if len(config.CrowdURL) == 0 {
+		return nil, fmt.Errorf("parameter %s missing", parameterCrowdURL)
+	}
+
+	crowdClient, err := crowd.New(config.CrowdAppName.String(), config.CrowdAppPassword.String(), config.CrowdURL.String())
+	if err != nil {
+		glog.V(2).Infof("create crowd client failed: %v", err)
+		return nil, err
+	}
+
+	return cache.New(crowd_verifier.New(crowdClient.Authenticate), config.CacheTTL), nil
 }
