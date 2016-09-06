@@ -5,13 +5,10 @@
 	"kind": "basic",
 	"basic-auth-realm": "Auth",
 	"verifier": "file",
-	// file params
 	"file-users": "/etc/auth_http_proxy/users",
-	// auth params
 	"auth-url": "",
 	"auth-application-name": "",
 	"auth-application-password": "",
-	// ldap params
 	"ldap-base": "",
 	"ldap-host": "",
 	"ldap-port": 0,
