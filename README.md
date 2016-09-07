@@ -1,5 +1,7 @@
 # Auth-Http-Proxy
 
+Is a http-proxy to add authenication to applications without own. You can choose between basic-auth and html-form based. Posible user storages are ldap, file, crowd or [auth](https://github.com/bborbe/auth).  
+
 ## Install via Debian-Package
 
 ```
@@ -12,19 +14,15 @@ systemctl restart auth-http-proxy
 systemctl status auth-http-proxy
 ```
 
-## Install
+## Install va sources 
 
 `go get github.com/bborbe/auth_http_proxy/bin/auth_http_proxy_server`
-
-`go get github.com/bborbe/auth/bin/auth_server`
-
-`go get go get github.com/siddontang/ledisdb/cmd/ledis-server`
-
-`go get github.com/bborbe/server/bin/file_server`
 
 ## Usage
 
 Start sample you want protect
+
+`go get github.com/bborbe/server/bin/file_server`
 
 ```
 file_server \
@@ -34,56 +32,9 @@ file_server \
 -root=/tmp
 ```
 
-### With Auth backend 
-
-Start ledis database
-
-```
-ledis-server \
--databases=1 \
--addr=localhost:5555
-```
-
-Start auth-server
-
-```
-auth_server \
--logtostderr \
--v=2 \
--port=6666 \
--ledisdb-address=localhost:5555 \
--auth-application-password=test123
-```
-
-Register user
-
-`echo -n 'tester:secret' | base64`
-
-```
-curl \
--X POST \
--d '{ "authToken":"dGVzdGVyOnNlY3JldA==","user":"tester" }' \
--H "Authorization: Bearer YXV0aDp0ZXN0MTIz" \
-http://localhost:6666/user
-```
-
-Start auth_http_proxy_server
-
-```
-auth_http_proxy_server \
--logtostderr \
--v=2 \
--port=8888 \
--kind=basic \
--basic-auth-realm=TestAuth \
--target-address=localhost:7777 \
--verifier=auth \
--auth-url=http://localhost:6666 \
--auth-application-name=auth \
--auth-application-password=test123
-```
-
 ### With file backend
+
+_only for testing_
 
 `echo 'admin:tester' > sample_users`
 
@@ -102,6 +53,8 @@ auth_http_proxy_server \
 ```
 
 ### With crowd backend
+
+Start auth_http_proxy_server
 
 ```
 auth_http_proxy_server \
@@ -150,7 +103,7 @@ Start auth_http_proxy_server with config
   "port": 8888,
   "target-address": "localhost:7777",
   "kind": "html",
-	"secret": "AES256Key-32Characters1234567890",
+  "secret": "AES256Key-32Characters1234567890",
   "verifier": "ldap",
   "required-groups": ["Admins"],
   "ldap-host": "ldap.example.com",
@@ -171,6 +124,59 @@ auth_http_proxy_server \
 -logtostderr \
 -v=2 \
 -config=config.json
+```
+
+### With Auth backend 
+
+Start ledis database
+
+`go get github.com/siddontang/ledisdb/cmd/ledis-server`
+
+```
+ledis-server \
+-databases=1 \
+-addr=localhost:5555
+```
+
+Start auth-server
+
+`go get github.com/bborbe/auth/bin/auth_server`
+
+```
+auth_server \
+-logtostderr \
+-v=2 \
+-port=6666 \
+-ledisdb-address=localhost:5555 \
+-auth-application-password=test123
+```
+
+Register user
+
+`echo -n 'tester:secret' | base64`
+
+```
+curl \
+-X POST \
+-d '{ "authToken":"dGVzdGVyOnNlY3JldA==","user":"tester" }' \
+-H "Authorization: Bearer YXV0aDp0ZXN0MTIz" \
+http://localhost:6666/user
+```
+
+Start auth_http_proxy_server
+
+```
+auth_http_proxy_server \
+-logtostderr \
+-v=2 \
+-port=8888 \
+-kind=basic \
+-basic-auth-realm=TestAuth \
+-target-address=localhost:7777 \
+-verifier=auth \
+-auth-url=http://localhost:6666 \
+-auth-application-name=auth \
+-auth-application-password=test123
 ```
 
 ## Continuous integration
