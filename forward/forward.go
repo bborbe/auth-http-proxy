@@ -61,8 +61,8 @@ func (h *handler) serveHTTP(resp http.ResponseWriter, req *http.Request) error {
 	return nil
 }
 
-func copyHeader(resp http.ResponseWriter, source *http.Header) {
-	for key, values := range *source {
+func copyHeader(resp http.ResponseWriter, req *http.Header) {
+	for key, values := range *req {
 		for _, value := range values {
 			resp.Header().Add(key, value)
 		}
