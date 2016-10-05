@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"runtime"
 
+	"time"
+
 	auth_client "github.com/bborbe/auth/client/verify_group_service"
 	auth_model "github.com/bborbe/auth/model"
 	"github.com/bborbe/auth_http_proxy/crypter"
@@ -28,7 +30,6 @@ import (
 	"github.com/golang/glog"
 	"github.com/gorilla/mux"
 	"go.jona.me/crowd"
-	"time"
 )
 
 const (

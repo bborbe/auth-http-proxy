@@ -6,10 +6,11 @@ import (
 
 	"os"
 
+	"fmt"
+
 	. "github.com/bborbe/assert"
 	"github.com/bborbe/http/mock"
 	"github.com/golang/glog"
-	"fmt"
 )
 
 func TestMain(m *testing.M) {

@@ -5,8 +5,9 @@ import (
 	"io/ioutil"
 	"strings"
 
-	"github.com/golang/glog"
 	"time"
+
+	"github.com/golang/glog"
 )
 
 type Config struct {
