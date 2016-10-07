@@ -342,7 +342,7 @@ func createForwardHandler(config *model.Config) (http.Handler, error) {
 	if len(config.TargetAddress) == 0 {
 		return nil, fmt.Errorf("parameter %s missing", parameterTargetAddress)
 	}
-	forwardHandler := forward.New(config.TargetAddress,
+	forwardHandler := forward.New(config.TargetAddress.String(),
 		func(address string, req *http.Request) (resp *http.Response, err error) {
 			return http_client_builder.New().WithoutProxy().WithoutRedirects().WithDialFunc(
 				func(network, address string) (net.Conn, error) {
