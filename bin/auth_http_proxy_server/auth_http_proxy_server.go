@@ -11,7 +11,7 @@ import (
 	auth_client "github.com/bborbe/auth/client/verify_group_service"
 	auth_model "github.com/bborbe/auth/model"
 	"github.com/bborbe/auth_http_proxy/crypter"
-	"github.com/bborbe/auth_http_proxy/forward"
+	"github.com/bborbe/http_handler/forward"
 	"github.com/bborbe/auth_http_proxy/model"
 	"github.com/bborbe/auth_http_proxy/verifier"
 	auth_verifier "github.com/bborbe/auth_http_proxy/verifier/auth"

@@ -1,8 +1,8 @@
 hash: c3889e5408be233cbe1712778fd9635ab842299f1fca06cf0581a9ddc5f402ac
-updated: 2016-09-06T15:21:11.661124185+02:00
+updated: 2016-10-07T15:55:01.840088631+02:00
 imports:
 - name: github.com/bborbe/auth
-  version: d143f6bbd0c73c39d4e6426dc7d8ce415f433caa
+  version: 4b66f8d40501820acfe4e3e56aee820f837c0964
   subpackages:
   - client/verify_group_service
   - model
@@ -10,23 +10,24 @@ imports:
 - name: github.com/bborbe/flagenv
   version: 96aab95bb1341e7a7ccf9160e49792e2ad3b0e08
 - name: github.com/bborbe/http
-  version: addca5fc2e2de1bef39a64990873806e7fc9c0a9
+  version: 356ba8175de4264aedb8337322827961b7c3e927
   subpackages:
   - client_builder
   - header
   - requestbuilder
 - name: github.com/bborbe/http_handler
-  version: b54565d901cc8355aed83a623a4a4413913e6240
+  version: 68234d52806f1c128694be8b421c6bdab2dfb093
   subpackages:
   - auth_basic
   - auth_html
   - check
   - debug
+  - forward
   - static
 - name: github.com/facebookgo/clock
   version: 600d898af40aa09a7a93ecb9265d87b0504b6f03
 - name: github.com/facebookgo/grace
-  version: 053ab5d25436faedf3fe76fbf3da797c8c27c659
+  version: 5729e484473f52048578af1b80d0008c7024089b
   subpackages:
   - gracehttp
   - gracenet
@@ -39,7 +40,7 @@ imports:
 - name: github.com/gorilla/context
   version: 08b5f424b9271eedf6f9f0ce86cb9396ed337a42
 - name: github.com/gorilla/mux
-  version: 0a192a193177452756c362c20087ddafcf6829c4
+  version: 757bef944d0f21880861c2dd9c871ca543023cba
 - name: github.com/jtblin/go-ldap-client
   version: cdfec42bc92d4b53c07737bdee28d5568e40169b
   repo: https://github.com/bborbe/go-ldap-client.git
@@ -54,4 +55,4 @@ imports:
   version: d0a5ced67b4dc310b9158d63a2c6f9c5ec13f105
 testImports:
 - name: github.com/bborbe/assert
-  version: 2db035a4c0870f6f48d1955f7b9542f9dbd4fb64
+  version: d2b3a7c4c731ac8cc63c6f5a1ea7d401e7547d42
