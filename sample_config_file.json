@@ -1,0 +1,10 @@
+{
+	"port": 8888,
+	"target-address": "localhost:7777",
+	"required-groups": [],
+	"kind": "html",
+	"secret": "AES256Key-32Characters1234567890",
+	"basic-auth-realm": "Auth",
+	"verifier": "file",
+	"file-users": "sample_users"
+}

@@ -160,7 +160,7 @@ curl \
 -X POST \
 -d '{ "authToken":"dGVzdGVyOnNlY3JldA==","user":"tester" }' \
 -H "Authorization: Bearer YXV0aDp0ZXN0MTIz" \
-http://localhost:6666/user
+http://localhost:6666/api/1.0/user
 ```
 
 Start auth_http_proxy_server

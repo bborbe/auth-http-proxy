@@ -50,11 +50,16 @@ runwithfile:
 	-kind=basic \
 	-verifier=file \
 	-file-users=sample_users
-runconfig:
+runconfigauth:
 	auth_http_proxy_server \
 	-logtostderr \
 	-v=2 \
-	-config=sample_config.json
+	-config=sample_config_auth.json
+runconfigfile:
+	auth_http_proxy_server \
+	-logtostderr \
+	-v=2 \
+	-config=sample_config_file.json
 run:
 	auth_http_proxy_server \
 	-logtostderr \

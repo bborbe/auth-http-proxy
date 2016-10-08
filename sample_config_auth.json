@@ -1,0 +1,12 @@
+{
+	"port": 8888,
+	"target-address": "localhost:7777",
+	"required-groups": [],
+	"kind": "html",
+	"secret": "AES256Key-32Characters1234567890",
+	"basic-auth-realm": "Auth",
+	"verifier": "auth",
+	"auth-url": "http://localhost:6666/auth",
+	"auth-application-name": "auth",
+	"auth-application-password": "test123"
+}
