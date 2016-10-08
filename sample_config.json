@@ -6,13 +6,10 @@
 	"secret": "AES256Key-32Characters1234567890",
 	"basic-auth-realm": "Auth",
 	"verifier": "file",
-	// file params
 	"file-users": "sample_users",
-	// auth params
 	"auth-url": "",
 	"auth-application-name": "",
 	"auth-application-password": "",
-	// ldap params
 	"ldap-base": "",
 	"ldap-host": "",
 	"ldap-port": 0,
