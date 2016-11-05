@@ -266,10 +266,11 @@ func createHandler(config *model.Config) (http.Handler, error) {
 	if err != nil {
 		return nil, err
 	}
-
+	checkHandler := check.New(createHealthzCheck(config))
 	router := mux.NewRouter()
 	router.NotFoundHandler = filter
-	router.Path("/healthz").Handler(check.New(createHealthzCheck(config)))
+	router.Path("/healthz").Handler(checkHandler)
+	router.Path("/readiness").Handler(checkHandler)
 
 	var handler http.Handler = router
 
