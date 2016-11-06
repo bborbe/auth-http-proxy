@@ -7,8 +7,9 @@ import (
 
 	"time"
 
-	"github.com/golang/glog"
 	"fmt"
+
+	"github.com/golang/glog"
 )
 
 type Config struct {
