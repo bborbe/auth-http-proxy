@@ -230,7 +230,8 @@ func createServer(config *model.Config) (*http.Server, error) {
 	if config.Port <= 0 {
 		return nil, fmt.Errorf("parameter %s missing", parameterPort)
 	}
-	return &http.Server{Addr: fmt.Sprintf(":%d", config.Port), Handler: handler}, nil
+	glog.V(2).Infof("create http server on %s", config.Port.Address())
+	return &http.Server{Addr: config.Port.Address(), Handler: handler}, nil
 }
 
 func createHealthzCheck(config *model.Config) func() error {

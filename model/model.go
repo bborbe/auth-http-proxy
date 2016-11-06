@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/golang/glog"
+	"fmt"
 )
 
 type Config struct {
@@ -75,6 +76,10 @@ func ParseConfig(content []byte) (*Config, error) {
 }
 
 type Port int
+
+func (p Port) Address() string {
+	return fmt.Sprintf(":%d", p)
+}
 
 type AuthUrl string
 
