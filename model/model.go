@@ -42,6 +42,69 @@ type Config struct {
 	CrowdAppPassword        CrowdAppPassword        `json:"crowd-app-password"`
 }
 
+func (c *Config) Validate() error {
+	if c.Port <= 0 {
+		return fmt.Errorf("parameter Port missing")
+	}
+	if len(c.TargetAddress) == 0 {
+		return fmt.Errorf("parameter TargetAddress missing")
+	}
+	if len(c.Kind) == 0 {
+		return fmt.Errorf("parameter Kind missing")
+	}
+	if c.Kind != "basic" && c.Kind != "html" {
+		return fmt.Errorf("parameter Kind invalid")
+	}
+	if len(c.VerifierType) == 0 {
+		return fmt.Errorf("parameter VerifierType missing")
+	}
+	if c.VerifierType != "auth" && c.VerifierType != "ldap" && c.VerifierType != "file" && c.VerifierType != "crowd" {
+		return fmt.Errorf("parameter VerifierType invalid")
+	}
+
+	if c.VerifierType == "crowd" {
+		if len(c.CrowdAppName) == 0 {
+			return fmt.Errorf("parameter CrowdAppName missing")
+		}
+		if len(c.CrowdAppPassword) == 0 {
+			return fmt.Errorf("parameter CrowdAppPassword missing")
+		}
+		if len(c.CrowdURL) == 0 {
+			return fmt.Errorf("parameter CrowdURL missing")
+		}
+	}
+	if c.VerifierType == "file" {
+		if len(c.UserFile) == 0 {
+			return fmt.Errorf("parameter UserFile missing")
+		}
+	}
+	if c.VerifierType == "auth" {
+		if len(c.AuthUrl) == 0 {
+			return fmt.Errorf("parameter AuthUrl missing")
+		}
+		if len(c.AuthApplicationName) == 0 {
+			return fmt.Errorf("parameter AuthApplicationName missing")
+		}
+		if len(c.AuthApplicationPassword) == 0 {
+			return fmt.Errorf("parameter AuthApplicationPassword missing")
+		}
+	}
+	if c.Kind == "html" {
+		if len(c.Secret) == 0 {
+			return fmt.Errorf("parameter Secret missing")
+		}
+		if len(c.Secret)%16 != 0 {
+			return fmt.Errorf("parameter Secret invalid length")
+		}
+	}
+	if c.Kind == "basic" {
+		if len(c.BasicAuthRealm) == 0 {
+			return fmt.Errorf("parameter BasicAuthRealm missing")
+		}
+	}
+	return nil
+}
+
 type CacheTTL time.Duration
 
 func (c CacheTTL) IsEmpty() bool {

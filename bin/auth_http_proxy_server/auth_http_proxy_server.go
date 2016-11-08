@@ -1,34 +1,14 @@
 package main
 
 import (
-	"fmt"
-	"net"
-	"net/http"
 	"runtime"
-
 	"time"
 
-	auth_client "github.com/bborbe/auth/client/verify_group_service"
-	auth_model "github.com/bborbe/auth/model"
-	"github.com/bborbe/auth_http_proxy/crypter"
+	"github.com/bborbe/auth_http_proxy/factory"
 	"github.com/bborbe/auth_http_proxy/model"
-	"github.com/bborbe/auth_http_proxy/verifier"
-	auth_verifier "github.com/bborbe/auth_http_proxy/verifier/auth"
-	"github.com/bborbe/auth_http_proxy/verifier/cache"
-	crowd_verifier "github.com/bborbe/auth_http_proxy/verifier/crowd"
-	file_verifier "github.com/bborbe/auth_http_proxy/verifier/file"
-	ldap_verifier "github.com/bborbe/auth_http_proxy/verifier/ldap"
 	flag "github.com/bborbe/flagenv"
-	http_client_builder "github.com/bborbe/http/client_builder"
-	http_requestbuilder "github.com/bborbe/http/requestbuilder"
-	"github.com/bborbe/http_handler/auth_basic"
-	"github.com/bborbe/http_handler/auth_html"
-	"github.com/bborbe/http_handler/check"
-	debug_handler "github.com/bborbe/http_handler/debug"
-	"github.com/bborbe/http_handler/forward"
 	"github.com/facebookgo/grace/gracehttp"
 	"github.com/golang/glog"
-	"github.com/gorilla/mux"
 	"go.jona.me/crowd"
 )
 
@@ -114,12 +94,17 @@ func do() error {
 	if err != nil {
 		return err
 	}
-	server, err := createServer(config)
-	if err != nil {
+	if err := config.Validate(); err != nil {
 		return err
 	}
+	crowdClient, err := crowd.New(config.CrowdAppName.String(), config.CrowdAppPassword.String(), config.CrowdURL.String())
+	if err != nil {
+		glog.V(2).Infof("create crowd client failed: %v", err)
+		return err
+	}
+	factory := factory.New(*config, crowdClient)
 	glog.V(2).Infof("start server")
-	return gracehttp.Serve(server)
+	return gracehttp.Serve(factory.HttpServer())
 }
 
 func createConfig() (*model.Config, error) {
@@ -219,218 +204,4 @@ func createConfig() (*model.Config, error) {
 		config.CrowdAppPassword = model.CrowdAppPassword(*crowdAppPassPtr)
 	}
 	return config, nil
-}
-
-func createServer(config *model.Config) (*http.Server, error) {
-	glog.V(2).Infof("create server")
-	handler, err := createHandler(config)
-	if err != nil {
-		return nil, err
-	}
-	if config.Port <= 0 {
-		return nil, fmt.Errorf("parameter %s missing", parameterPort)
-	}
-	glog.V(2).Infof("create http server on %s", config.Port.Address())
-	return &http.Server{Addr: config.Port.Address(), Handler: handler}, nil
-}
-
-func createHealthzCheck(config *model.Config) func() error {
-	if len(config.TargetHealthzUrl) > 0 {
-		return func() error {
-			resp, err := http.Get(config.TargetHealthzUrl.String())
-			if err != nil {
-				glog.V(2).Infof("check url %v failed: %v", config.TargetHealthzUrl, err)
-				return err
-			}
-			if resp.StatusCode/100 != 2 {
-				glog.V(2).Infof("check url %v has wrong status: %v", config.TargetHealthzUrl, resp.Status)
-				return fmt.Errorf("check url %v has wrong status: %v", config.TargetHealthzUrl, resp.Status)
-			}
-			return nil
-		}
-	}
-	return func() error {
-		conn, err := net.Dial("tcp", config.TargetAddress.String())
-		if err != nil {
-			glog.V(2).Infof("tcp connection to %v failed: %v", config.TargetAddress, err)
-			return err
-		}
-		glog.V(2).Infof("tcp connection to %v success", config.TargetAddress)
-		return conn.Close()
-	}
-}
-
-func createHandler(config *model.Config) (http.Handler, error) {
-	glog.V(2).Infof("create handler")
-
-	filter, err := createHttpFilter(config)
-	if err != nil {
-		return nil, err
-	}
-	checkHandler := check.New(createHealthzCheck(config))
-	router := mux.NewRouter()
-	router.NotFoundHandler = filter
-	router.Path("/healthz").Handler(checkHandler)
-	router.Path("/readiness").Handler(checkHandler)
-
-	var handler http.Handler = router
-
-	if glog.V(4) {
-		glog.V(2).Infof("add debug handler")
-		handler = debug_handler.New(handler)
-	}
-	return handler, nil
-}
-
-func createHttpFilter(config *model.Config) (http.Handler, error) {
-	if len(config.Kind) == 0 {
-		return nil, fmt.Errorf("parameter %s missing", parameterKind)
-	}
-	glog.V(2).Infof("get auth filter for: %v", config.Kind)
-	switch config.Kind {
-	case "html":
-		return createHtmlAuthHttpFilter(config)
-	case "basic":
-		return createBasicAuthHttpFilter(config)
-	}
-	return nil, fmt.Errorf("parameter %s invalid", parameterKind)
-}
-
-func createHtmlAuthHttpFilter(config *model.Config) (http.Handler, error) {
-	verifier, err := createVerifier(config)
-	if err != nil {
-		return nil, err
-	}
-	forwardHandler, err := createForwardHandler(config)
-	if err != nil {
-		return nil, err
-	}
-	check := func(username string, password string) (bool, error) {
-		return verifier.Verify(model.UserName(username), model.Password(password))
-	}
-	if len(config.Secret) == 0 {
-		return nil, fmt.Errorf("parameter %s missing", parameterSecret)
-	}
-	if len(config.Secret)%16 != 0 {
-		return nil, fmt.Errorf("parameter %s invalid length", parameterSecret)
-	}
-	handler := auth_html.New(forwardHandler.ServeHTTP, check, crypter.New(config.Secret.Bytes()))
-	return handler, nil
-}
-
-func createBasicAuthHttpFilter(config *model.Config) (http.Handler, error) {
-	verifier, err := createVerifier(config)
-	if err != nil {
-		return nil, err
-	}
-	forwardHandler, err := createForwardHandler(config)
-	if err != nil {
-		return nil, err
-	}
-	if len(config.BasicAuthRealm) == 0 {
-		return nil, fmt.Errorf("parameter %s missing", parameterBasicAuthRealm)
-	}
-	check := func(username string, password string) (bool, error) {
-		return verifier.Verify(model.UserName(username), model.Password(password))
-	}
-	handler := auth_basic.New(forwardHandler.ServeHTTP, check, config.BasicAuthRealm.String())
-	return handler, nil
-}
-
-func createForwardHandler(config *model.Config) (http.Handler, error) {
-	dialer := (&net.Dialer{
-		Timeout: http_client_builder.DEFAULT_TIMEOUT,
-	})
-	if len(config.TargetAddress) == 0 {
-		return nil, fmt.Errorf("parameter %s missing", parameterTargetAddress)
-	}
-	forwardHandler := forward.New(config.TargetAddress.String(),
-		func(address string, req *http.Request) (resp *http.Response, err error) {
-			return http_client_builder.New().WithoutProxy().WithoutRedirects().WithDialFunc(
-				func(network, address string) (net.Conn, error) {
-					return dialer.Dial(network, config.TargetAddress.String())
-				}).BuildRoundTripper().RoundTrip(req)
-		})
-	return forwardHandler, nil
-}
-
-func createVerifier(config *model.Config) (verifier.Verifier, error) {
-	if len(config.VerifierType) == 0 {
-		return nil, fmt.Errorf("parameter %s missing", parameterVerifierType)
-	}
-	glog.V(2).Infof("get verifier for: %v", config.VerifierType)
-	switch config.VerifierType {
-	case "auth":
-		return createAuthVerifier(config)
-	case "ldap":
-		return createLdapVerifier(config)
-	case "file":
-		return createFileVerifier(config)
-	case "crowd":
-		return createCrowdVerifier(config)
-	}
-	return nil, fmt.Errorf("parameter %s invalid", parameterVerifierType)
-}
-
-func createAuthVerifier(config *model.Config) (verifier.Verifier, error) {
-	if len(config.AuthUrl) == 0 {
-		return nil, fmt.Errorf("parameter %s missing", parameterAuthUrl)
-	}
-	if len(config.AuthApplicationName) == 0 {
-		return nil, fmt.Errorf("parameter %s missing", parameterAuthApplicationName)
-	}
-	if len(config.AuthApplicationPassword) == 0 {
-		return nil, fmt.Errorf("parameter %s missing", parameterAuthApplicationPassword)
-	}
-	httpRequestBuilderProvider := http_requestbuilder.NewHTTPRequestBuilderProvider()
-	httpClient := http_client_builder.New().WithoutProxy().Build()
-	authClient := auth_client.New(httpClient.Do, httpRequestBuilderProvider, auth_model.Url(config.AuthUrl), auth_model.ApplicationName(config.AuthApplicationName), auth_model.ApplicationPassword(config.AuthApplicationPassword))
-	return cache.New(auth_verifier.New(
-		authClient.Auth,
-		config.RequiredGroups...,
-	), config.CacheTTL), nil
-}
-
-func createLdapVerifier(config *model.Config) (verifier.Verifier, error) {
-	return cache.New(ldap_verifier.New(
-		config.LdapBase,
-		config.LdapHost,
-		config.LdapServerName,
-		config.LdapPort,
-		config.LdapUseSSL,
-		config.LdapBindDN,
-		config.LdapBindPassword,
-		config.LdapUserFilter,
-		config.LdapGroupFilter,
-		config.LdapUserDn,
-		config.LdapGroupDn,
-		config.RequiredGroups...,
-	), config.CacheTTL), nil
-}
-
-func createFileVerifier(config *model.Config) (verifier.Verifier, error) {
-	if len(config.UserFile) == 0 {
-		return nil, fmt.Errorf("parameter %s missing", parameterFileUsers)
-	}
-	return cache.New(file_verifier.New(config.UserFile), config.CacheTTL), nil
-}
-
-func createCrowdVerifier(config *model.Config) (verifier.Verifier, error) {
-	if len(config.CrowdAppName) == 0 {
-		return nil, fmt.Errorf("parameter %s missing", parameterCrowdAppName)
-	}
-	if len(config.CrowdAppPassword) == 0 {
-		return nil, fmt.Errorf("parameter %s missing", parameterCrowdAppPassword)
-	}
-	if len(config.CrowdURL) == 0 {
-		return nil, fmt.Errorf("parameter %s missing", parameterCrowdURL)
-	}
-
-	crowdClient, err := crowd.New(config.CrowdAppName.String(), config.CrowdAppPassword.String(), config.CrowdURL.String())
-	if err != nil {
-		glog.V(2).Infof("create crowd client failed: %v", err)
-		return nil, err
-	}
-
-	return cache.New(crowd_verifier.New(crowdClient.Authenticate), config.CacheTTL), nil
 }

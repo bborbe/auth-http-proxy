@@ -1,22 +1,25 @@
 hash: c3889e5408be233cbe1712778fd9635ab842299f1fca06cf0581a9ddc5f402ac
-updated: 2016-11-02T13:28:28.903271717+01:00
+updated: 2016-11-08T20:58:20.932849234+01:00
 imports:
 - name: github.com/bborbe/auth
-  version: c3700eb90791ec5e3d43121437c997e70b699816
+  version: 6aea7262b247ab78e99c1b4bb98035d35ffa09cc
   subpackages:
+  - client/rest
+  - client/user
   - client/verify_group_service
   - model
   - v1
 - name: github.com/bborbe/flagenv
   version: 96aab95bb1341e7a7ccf9160e49792e2ad3b0e08
 - name: github.com/bborbe/http
-  version: 67f99d0ea700c6cc4baf9eb1a51b3b3d871d5b69
+  version: 5e3917d07a18bd0ac6f78df4669aa25c4a419ad9
   subpackages:
   - client_builder
   - header
   - requestbuilder
+  - rest
 - name: github.com/bborbe/http_handler
-  version: 1bc0235ec1a00c92ff01e80d2cfeef8268be8701
+  version: d48c6c731920f723686b2c87f013f9e0ec30a50b
   subpackages:
   - auth_basic
   - auth_html
