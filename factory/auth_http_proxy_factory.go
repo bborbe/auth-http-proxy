@@ -5,9 +5,9 @@ import (
 	"net"
 	"net/http"
 
-	"github.com/bborbe/auth/client/rest"
-	"github.com/bborbe/auth/client/user"
+	"github.com/bborbe/auth/client"
 	auth_model "github.com/bborbe/auth/model"
+	"github.com/bborbe/auth/service"
 	"github.com/bborbe/auth_http_proxy/crypter"
 	"github.com/bborbe/auth_http_proxy/model"
 	"github.com/bborbe/auth_http_proxy/verifier"
@@ -17,7 +17,6 @@ import (
 	file_verifier "github.com/bborbe/auth_http_proxy/verifier/file"
 	ldap_verifier "github.com/bborbe/auth_http_proxy/verifier/ldap"
 	http_client_builder "github.com/bborbe/http/client_builder"
-	http_rest "github.com/bborbe/http/rest"
 	"github.com/bborbe/http_handler/auth_basic"
 	"github.com/bborbe/http_handler/auth_html"
 	"github.com/bborbe/http_handler/check"
@@ -148,12 +147,8 @@ func (a *authHttpProxyFactory) createVerifier() verifier.Verifier {
 }
 
 func (a *authHttpProxyFactory) createAuthVerifier() verifier.Verifier {
-	httpClient := http_client_builder.New().WithoutProxy().Build()
-	httpRest := http_rest.New(httpClient.Do)
-	rest := rest.New(httpRest.Call, auth_model.Url(a.config.AuthUrl), auth_model.ApplicationName(a.config.AuthApplicationName), auth_model.ApplicationPassword(a.config.AuthApplicationPassword))
-	userService := user.New(rest.Call)
 	return cache.New(auth_verifier.New(
-		userService.VerifyTokenHasGroups,
+		a.userService().VerifyTokenHasGroups,
 		a.config.RequiredGroups...,
 	), a.config.CacheTTL)
 }
@@ -181,4 +176,16 @@ func (a *authHttpProxyFactory) createFileVerifier() verifier.Verifier {
 
 func (a *authHttpProxyFactory) createCrowdVerifier() verifier.Verifier {
 	return cache.New(crowd_verifier.New(a.crowdClient.Authenticate), a.config.CacheTTL)
+}
+
+func (a *authHttpProxyFactory) httpClient() *http.Client {
+	return http_client_builder.New().WithoutProxy().Build()
+}
+
+func (a *authHttpProxyFactory) authClient() client.Client {
+	return client.New(a.httpClient().Do, auth_model.Url(a.config.AuthUrl), auth_model.ApplicationName(a.config.AuthApplicationName), auth_model.ApplicationPassword(a.config.AuthApplicationPassword))
+}
+
+func (a *authHttpProxyFactory) userService() service.UserService {
+	return a.authClient().UserService()
 }
