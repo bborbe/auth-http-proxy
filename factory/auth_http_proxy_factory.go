@@ -148,7 +148,7 @@ func (a *authHttpProxyFactory) createVerifier() verifier.Verifier {
 
 func (a *authHttpProxyFactory) createAuthVerifier() verifier.Verifier {
 	return cache.New(auth_verifier.New(
-		a.userService().VerifyTokenHasGroups,
+		a.authService().VerifyTokenHasGroups,
 		a.config.RequiredGroups...,
 	), a.config.CacheTTL)
 }
@@ -186,6 +186,6 @@ func (a *authHttpProxyFactory) authClient() client.Client {
 	return client.New(a.httpClient().Do, auth_model.Url(a.config.AuthUrl), auth_model.ApplicationName(a.config.AuthApplicationName), auth_model.ApplicationPassword(a.config.AuthApplicationPassword))
 }
 
-func (a *authHttpProxyFactory) userService() service.UserService {
-	return a.authClient().UserService()
+func (a *authHttpProxyFactory) authService() service.AuthService {
+	return a.authClient().AuthService()
 }
