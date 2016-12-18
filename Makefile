@@ -11,18 +11,18 @@ lint:
 errcheck:
 	errcheck -ignore '(Close|Write)' ./...
 check: lint vet errcheck
-runledis:
+runledisserver:
 	ledis-server \
 	-addr=localhost:5555 \
 	-databases=1
-runldap:
+runldapserver:
 	docker run \
 	-p 389:389 -p 636:636 \
 	-e LDAP_SECRET='S3CR3T' \
 	-e LDAP_SUFFIX='dc=example,dc=com' \
 	-e LDAP_ROOTDN='cn=root,dc=example,dc=com' \
 	bborbe/openldap:latest
-runauth:
+runauthserver:
 	auth_server \
 	-logtostderr \
 	-v=2 \
@@ -36,7 +36,7 @@ runfileserver:
 	-v=2 \
 	-port=7777 \
 	-root=/tmp
-runwithauth:
+runauth:
 	auth_http_proxy_server \
 	-logtostderr \
 	-v=2 \
@@ -48,7 +48,7 @@ runwithauth:
 	-auth-url=http://localhost:6666 \
 	-auth-application-name=auth \
 	-auth-application-password=test123
-runwithfile:
+runfile:
 	auth_http_proxy_server \
 	-logtostderr \
 	-v=2 \
@@ -58,7 +58,7 @@ runwithfile:
 	-kind=basic \
 	-verifier=file \
 	-file-users=sample_users
-runwithldap:
+runldap:
 	auth_http_proxy_server \
 	-logtostderr \
 	-v=2 \
@@ -81,27 +81,39 @@ runwithldap:
 	-ldap-user-field="uid" \
 	-ldap-group-field="ou" \
 	-required-groups="admins"
-runconfigauth:
+runauthconfig:
 	auth_http_proxy_server \
 	-logtostderr \
 	-v=2 \
 	-config=sample_config_auth.json
-runconfigfile:
+runfileconfig:
 	auth_http_proxy_server \
 	-logtostderr \
 	-v=2 \
 	-config=sample_config_file.json
-run:
+runhtml:
 	auth_http_proxy_server \
 	-logtostderr \
 	-v=2 \
 	-port=8888 \
 	-target-address=localhost:7777 \
 	-target-healthz-url=http://localhost:7777 \
-	-kind=html \
-	-secret=AES256Key-32Characters1234567890 \
 	-verifier=file \
-	-file-users=sample_users
+	-file-users=sample_users \
+	-kind=html \
+	-secret=AES256Key-32Characters1234567890
+runbasic:
+	auth_http_proxy_server \
+	-logtostderr \
+	-v=2 \
+	-port=8888 \
+	-target-address=localhost:7777 \
+	-target-healthz-url=http://localhost:7777 \
+	-verifier=file \
+	-file-users=sample_users \
+	-kind=basic \
+	-basic-auth-realm="Test Auth"
+run: runhtml
 open:
 	open http://localhost:8888/
 format:

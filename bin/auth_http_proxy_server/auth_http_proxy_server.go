@@ -16,14 +16,16 @@ const (
 	defaultPort               int = 8080
 	parameterPort                 = "port"
 	parameterCacheTTL             = "cache-ttl"
-	parameterSecret               = "secret"
 	parameterTargetAddress        = "target-address"
 	parameterTargetHealthzUrl     = "target-healthz-url"
-	parameterBasicAuthRealm       = "basic-auth-realm"
 	parameterRequiredGroups       = "required-groups"
-	parameterVerifierType         = "verifier"
-	parameterKind                 = "kind"
 	parameterConfig               = "config"
+	// kind (html,basic)
+	parameterKind           = "kind"
+	parameterSecret         = "secret"
+	parameterBasicAuthRealm = "basic-auth-realm"
+	// verifiertype (file,auth,ldap,crowd)
+	parameterVerifierType = "verifier"
 	// file
 	parameterFileUsers = "file-users"
 	// auth

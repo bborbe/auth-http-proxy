@@ -1,8 +1,8 @@
 hash: 0496ecca050a05308b990007053795ecbc6cb9269ebacd3ff7db8626cf7e506a
-updated: 2016-12-18T16:36:10.314990361+01:00
+updated: 2016-12-18T22:45:33.801411946+01:00
 imports:
 - name: github.com/bborbe/auth
-  version: 1874d2ecf723d814e768fccd90ebd18055525283
+  version: 522ef3737b7b62587a4b3748881fbff9fbd1aed6
   subpackages:
   - client
   - client/application
@@ -22,7 +22,7 @@ imports:
   - header
   - rest
 - name: github.com/bborbe/http_handler
-  version: eaabd539fb300f804fb36a2b920e125e3851baa1
+  version: c5509dcb481e29ee03b51e5927c1a74e4ca17dae
   subpackages:
   - auth_basic
   - auth_html
@@ -47,7 +47,7 @@ imports:
 - name: github.com/gorilla/mux
   version: 757bef944d0f21880861c2dd9c871ca543023cba
 - name: github.com/jtblin/go-ldap-client
-  version: 136eb628f3761ca73e85be5523d407c36ac64b8c
+  version: 1d1b0117de0507d82f70ebf37d439647549588f2
   repo: https://github.com/bborbe/go-ldap-client.git
   vcs: git
 - name: github.com/wunderlist/ttlcache
