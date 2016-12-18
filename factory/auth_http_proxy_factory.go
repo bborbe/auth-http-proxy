@@ -155,7 +155,7 @@ func (a *authHttpProxyFactory) createAuthVerifier() verifier.Verifier {
 
 func (a *authHttpProxyFactory) createLdapVerifier() verifier.Verifier {
 	return cache.New(ldap_verifier.New(
-		a.config.LdapBase,
+		a.config.LdapBaseDn,
 		a.config.LdapHost,
 		a.config.LdapServerName,
 		a.config.LdapPort,

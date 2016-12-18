@@ -26,7 +26,7 @@ type Config struct {
 	VerifierType            VerifierType            `json:"verifier"`
 	UserFile                UserFile                `json:"file-users"`
 	Kind                    Kind                    `json:"kind"`
-	LdapBase                LdapBase                `json:"ldap-base"`
+	LdapBaseDn              LdapBaseDn              `json:"ldap-base"`
 	LdapHost                LdapHost                `json:"ldap-host"`
 	LdapServerName          LdapServerName          `json:"ldap-servername"`
 	LdapPort                LdapPort                `json:"ldap-port"`
@@ -239,9 +239,9 @@ func CreateGroupsFromString(groupNames string) []GroupName {
 	return groups
 }
 
-type LdapBase string
+type LdapBaseDn string
 
-func (l LdapBase) String() string {
+func (l LdapBaseDn) String() string {
 	return string(l)
 }
 

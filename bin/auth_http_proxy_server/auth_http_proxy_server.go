@@ -13,40 +13,43 @@ import (
 )
 
 const (
-	defaultPort                      int = 8080
-	parameterPort                        = "port"
-	parameterTargetAddress               = "target-address"
-	parameterTargetHealthzUrl            = "target-healthz-url"
-	parameterBasicAuthRealm              = "basic-auth-realm"
-	parameterRequiredGroups              = "required-groups"
-	parameterVerifierType                = "verifier"
-	parameterKind                        = "kind"
-	parameterConfig                      = "config"
-	parameterFileUsers                   = "file-users"
-	parameterAuthUrl                     = "auth-url"
-	parameterAuthApplicationName         = "auth-application-name"
-	parameterAuthApplicationPassword     = "auth-application-password"
-	parameterLdapBase                    = "ldap-base"
-	parameterLdapUserDn                  = "ldap-user-dn"
-	parameterLdapGroupDn                 = "ldap-group-dn"
-	parameterLdapHost                    = "ldap-host"
-	parameterLdapPort                    = "ldap-port"
-	parameterLdapUseSSL                  = "ldap-use-ssl"
-	parameterLdapBindDN                  = "ldap-bind-dn"
-	parameterLdapBindPassword            = "ldap-bind-password"
-	parameterLdapUserFilter              = "ldap-user-filter"
-	parameterLdapGroupFilter             = "ldap-group-filter"
-	parameterCacheTTL                    = "cache-ttl"
-	parameterLdapServerName              = "ldap-servername"
-	parameterSecret                      = "secret"
-	parameterCrowdURL                    = "crowd-url"
-	parameterCrowdAppName                = "crowd-app-name"
-	parameterCrowdAppPassword            = "crowd-app-password"
+	defaultPort               int = 8080
+	parameterPort                 = "port"
+	parameterCacheTTL             = "cache-ttl"
+	parameterSecret               = "secret"
+	parameterTargetAddress        = "target-address"
+	parameterTargetHealthzUrl     = "target-healthz-url"
+	parameterBasicAuthRealm       = "basic-auth-realm"
+	parameterRequiredGroups       = "required-groups"
+	parameterVerifierType         = "verifier"
+	parameterKind                 = "kind"
+	parameterConfig               = "config"
+	// file
+	parameterFileUsers = "file-users"
+	// auth
+	parameterAuthUrl                 = "auth-url"
+	parameterAuthApplicationName     = "auth-application-name"
+	parameterAuthApplicationPassword = "auth-application-password"
+	// ldap
+	parameterLdapBaseDn       = "ldap-base"
+	parameterLdapUserDn       = "ldap-user-dn"
+	parameterLdapGroupDn      = "ldap-group-dn"
+	parameterLdapHost         = "ldap-host"
+	parameterLdapPort         = "ldap-port"
+	parameterLdapUseSSL       = "ldap-use-ssl"
+	parameterLdapBindDN       = "ldap-bind-dn"
+	parameterLdapBindPassword = "ldap-bind-password"
+	parameterLdapUserFilter   = "ldap-user-filter"
+	parameterLdapGroupFilter  = "ldap-group-filter"
+	parameterLdapServerName   = "ldap-servername"
+	// crowd
+	parameterCrowdURL         = "crowd-url"
+	parameterCrowdAppName     = "crowd-app-name"
+	parameterCrowdAppPassword = "crowd-app-password"
 )
 
 var (
 	portPtr             = flag.Int(parameterPort, defaultPort, "port")
-	authUrlPtr          = flag.String(parameterAuthUrl, "", "auth url")
 	basicAuthRealmPtr   = flag.String(parameterBasicAuthRealm, "", "basic auth realm")
 	targetAddressPtr    = flag.String(parameterTargetAddress, "", "target address")
 	targetHealthzUrlPtr = flag.String(parameterTargetHealthzUrl, "", "target healthz address")
@@ -59,10 +62,11 @@ var (
 	// file params
 	fileUseresPtr = flag.String(parameterFileUsers, "", "users")
 	// auth params
+	authUrlPtr                 = flag.String(parameterAuthUrl, "", "auth url")
 	authApplicationNamePtr     = flag.String(parameterAuthApplicationName, "", "auth application name")
 	authApplicationPasswordPtr = flag.String(parameterAuthApplicationPassword, "", "auth application password")
 	// ldap params
-	ldapBasePtr         = flag.String(parameterLdapBase, "", "ldap-base")
+	ldapBaseDnPtr       = flag.String(parameterLdapBaseDn, "", "ldap-base")
 	ldapHostPtr         = flag.String(parameterLdapHost, "", "ldap-host")
 	ldapServerNamePtr   = flag.String(parameterLdapServerName, "", "ldap-servername")
 	ldapPortPtr         = flag.Int(parameterLdapPort, 0, "ldap-port")
@@ -161,8 +165,8 @@ func createConfig() (*model.Config, error) {
 	if len(config.RequiredGroups) == 0 {
 		config.RequiredGroups = model.CreateGroupsFromString(*requiredGroupsPtr)
 	}
-	if len(config.LdapBase) == 0 {
-		config.LdapBase = model.LdapBase(*ldapBasePtr)
+	if len(config.LdapBaseDn) == 0 {
+		config.LdapBaseDn = model.LdapBaseDn(*ldapBaseDnPtr)
 	}
 	if len(config.LdapHost) == 0 {
 		config.LdapHost = model.LdapHost(*ldapHostPtr)

@@ -9,7 +9,7 @@ import (
 const ldapConnectionSize = 5
 
 type auth struct {
-	ldapBase         model.LdapBase
+	ldapBaseDn       model.LdapBaseDn
 	ldapHost         model.LdapHost
 	ldapServerName   model.LdapServerName
 	ldapPort         model.LdapPort
@@ -25,7 +25,7 @@ type auth struct {
 }
 
 func New(
-	ldapBase model.LdapBase,
+	ldapBaseDn model.LdapBaseDn,
 	ldapHost model.LdapHost,
 	ldapServerName model.LdapServerName,
 	ldapPort model.LdapPort,
@@ -39,7 +39,7 @@ func New(
 	requiredGroups ...model.GroupName,
 ) *auth {
 	a := new(auth)
-	a.ldapBase = ldapBase
+	a.ldapBaseDn = ldapBaseDn
 	a.ldapHost = ldapHost
 	a.ldapServerName = ldapServerName
 	a.ldapPort = ldapPort
@@ -61,7 +61,7 @@ func (a *auth) createClient() *ldap.LDAPClient {
 		serverName = a.ldapHost.String()
 	}
 	return &ldap.LDAPClient{
-		Base:         a.ldapBase.String(),
+		Base:         a.ldapBaseDn.String(),
 		Host:         a.ldapHost.String(),
 		ServerName:   serverName,
 		Port:         a.ldapPort.Int(),
