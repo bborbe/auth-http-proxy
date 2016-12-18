@@ -31,17 +31,20 @@ const (
 	parameterAuthApplicationName     = "auth-application-name"
 	parameterAuthApplicationPassword = "auth-application-password"
 	// ldap
-	parameterLdapBaseDn       = "ldap-base"
-	parameterLdapUserDn       = "ldap-user-dn"
-	parameterLdapGroupDn      = "ldap-group-dn"
 	parameterLdapHost         = "ldap-host"
 	parameterLdapPort         = "ldap-port"
 	parameterLdapUseSSL       = "ldap-use-ssl"
+	parameterLdapSkipTls      = "ldap-skip-tls"
 	parameterLdapBindDN       = "ldap-bind-dn"
 	parameterLdapBindPassword = "ldap-bind-password"
+	parameterLdapBaseDn       = "ldap-base-dn"
+	parameterLdapUserDn       = "ldap-user-dn"
+	parameterLdapGroupDn      = "ldap-group-dn"
 	parameterLdapUserFilter   = "ldap-user-filter"
 	parameterLdapGroupFilter  = "ldap-group-filter"
 	parameterLdapServerName   = "ldap-servername"
+	parameterLdapUserField    = "ldap-user-field"
+	parameterLdapGroupField   = "ldap-group-field"
 	// crowd
 	parameterCrowdURL         = "crowd-url"
 	parameterCrowdAppName     = "crowd-app-name"
@@ -71,12 +74,15 @@ var (
 	ldapServerNamePtr   = flag.String(parameterLdapServerName, "", "ldap-servername")
 	ldapPortPtr         = flag.Int(parameterLdapPort, 0, "ldap-port")
 	ldapUseSSLPtr       = flag.Bool(parameterLdapUseSSL, false, "ldap-use-ssl")
+	ldapSkipTlsPtr      = flag.Bool(parameterLdapSkipTls, false, "ldap-skip-tls")
 	ldapBindDNPtr       = flag.String(parameterLdapBindDN, "", "ldap-bind-dn")
 	ldapBindPasswordPtr = flag.String(parameterLdapBindPassword, "", "ldap-bind-password")
 	ldapUserFilterPtr   = flag.String(parameterLdapUserFilter, "", "ldap-user-filter")
 	ldapGroupFilterPtr  = flag.String(parameterLdapGroupFilter, "", "ldap-group-filter")
 	ldapUserDnPtr       = flag.String(parameterLdapUserDn, "", "ldap-user-dn")
 	ldapGroupDnPtr      = flag.String(parameterLdapGroupDn, "", "ldap-group-dn")
+	ldapUserFieldPtr    = flag.String(parameterLdapUserField, "", "ldap-user-field")
+	ldapGroupFieldPtr   = flag.String(parameterLdapGroupField, "", "ldap-group-field")
 	// crowd
 	crowdURLPtr     = flag.String(parameterCrowdURL, "", "crowd url")
 	crowdAppNamePtr = flag.String(parameterCrowdAppName, "", "crowd app name")
@@ -180,6 +186,9 @@ func createConfig() (*model.Config, error) {
 	if !config.LdapUseSSL {
 		config.LdapUseSSL = model.LdapUseSSL(*ldapUseSSLPtr)
 	}
+	if !config.LdapSkipTls {
+		config.LdapSkipTls = model.LdapSkipTls(*ldapSkipTlsPtr)
+	}
 	if len(config.LdapBindDN) == 0 {
 		config.LdapBindDN = model.LdapBindDN(*ldapBindDNPtr)
 	}
@@ -191,6 +200,12 @@ func createConfig() (*model.Config, error) {
 	}
 	if len(config.LdapGroupFilter) == 0 {
 		config.LdapGroupFilter = model.LdapGroupFilter(*ldapGroupFilterPtr)
+	}
+	if len(config.LdapUserField) == 0 {
+		config.LdapUserField = model.LdapUserField(*ldapUserFieldPtr)
+	}
+	if len(config.LdapGroupField) == 0 {
+		config.LdapGroupField = model.LdapGroupField(*ldapGroupFieldPtr)
 	}
 	if len(config.LdapUserDn) == 0 {
 		config.LdapUserDn = model.LdapUserDn(*ldapUserDnPtr)

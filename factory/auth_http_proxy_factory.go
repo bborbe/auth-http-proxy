@@ -160,12 +160,15 @@ func (a *authHttpProxyFactory) createLdapVerifier() verifier.Verifier {
 		a.config.LdapServerName,
 		a.config.LdapPort,
 		a.config.LdapUseSSL,
+		a.config.LdapSkipTls,
 		a.config.LdapBindDN,
 		a.config.LdapBindPassword,
-		a.config.LdapUserFilter,
-		a.config.LdapGroupFilter,
 		a.config.LdapUserDn,
+		a.config.LdapUserFilter,
+		a.config.LdapUserField,
 		a.config.LdapGroupDn,
+		a.config.LdapGroupFilter,
+		a.config.LdapGroupField,
 		a.config.RequiredGroups...,
 	), a.config.CacheTTL)
 }

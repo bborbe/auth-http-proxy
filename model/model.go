@@ -26,17 +26,20 @@ type Config struct {
 	VerifierType            VerifierType            `json:"verifier"`
 	UserFile                UserFile                `json:"file-users"`
 	Kind                    Kind                    `json:"kind"`
-	LdapBaseDn              LdapBaseDn              `json:"ldap-base"`
 	LdapHost                LdapHost                `json:"ldap-host"`
 	LdapServerName          LdapServerName          `json:"ldap-servername"`
 	LdapPort                LdapPort                `json:"ldap-port"`
 	LdapUseSSL              LdapUseSSL              `json:"ldap-use-ssl"`
+	LdapSkipTls             LdapSkipTls             `json:"ldap-skip-tls"`
 	LdapBindDN              LdapBindDN              `json:"ldap-bind-dn"`
 	LdapBindPassword        LdapBindPassword        `json:"ldap-bind-password"`
-	LdapUserFilter          LdapUserFilter          `json:"ldap-user-filter"`
-	LdapGroupFilter         LdapGroupFilter         `json:"ldap-group-filter"`
+	LdapBaseDn              LdapBaseDn              `json:"ldap-base-dn"`
 	LdapUserDn              LdapUserDn              `json:"ldap-user-dn"`
 	LdapGroupDn             LdapGroupDn             `json:"ldap-group-dn"`
+	LdapUserFilter          LdapUserFilter          `json:"ldap-user-filter"`
+	LdapGroupFilter         LdapGroupFilter         `json:"ldap-group-filter"`
+	LdapUserField           LdapUserField           `json:"ldap-user-field"`
+	LdapGroupField          LdapGroupField          `json:"ldap-group-field"`
 	CrowdURL                CrowdURL                `json:"crowd-url"`
 	CrowdAppName            CrowdAppName            `json:"crowd-app-name"`
 	CrowdAppPassword        CrowdAppPassword        `json:"crowd-app-password"`
@@ -269,6 +272,12 @@ func (l LdapUseSSL) Bool() bool {
 	return bool(l)
 }
 
+type LdapSkipTls bool
+
+func (l LdapSkipTls) Bool() bool {
+	return bool(l)
+}
+
 type LdapBindDN string
 
 func (l LdapBindDN) String() string {
@@ -321,4 +330,16 @@ type CrowdAppPassword string
 
 func (c CrowdAppPassword) String() string {
 	return string(c)
+}
+
+type LdapUserField string
+
+func (l LdapUserField) String() string {
+	return string(l)
+}
+
+type LdapGroupField string
+
+func (l LdapGroupField) String() string {
+	return string(l)
 }

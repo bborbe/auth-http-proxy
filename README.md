@@ -83,14 +83,20 @@ auth_http_proxy_server \
 -basic-auth-realm=TestAuth \
 -target-address=localhost:7777 \
 -verifier=ldap \
--ldap-base="dc=example,dc=com" \
 -ldap-host="ldap.example.com" \
 -ldap-port=389 \
 -ldap-use-ssl=false \
--ldap-bind-dn="uid=readonlysuer,ou=People,dc=example,dc=com" \
--ldap-bind-password="readonlypassword" \
+-ldap-skip-tls=true \
+-ldap-bind-dn="cn=root,dc=example,dc=com" \
+-ldap-bind-password="S3CR3T" \
+-ldap-base-dn="dc=example,dc=com" \
+-ldap-user-db="ou=users" \
+-ldap-group-db="ou=groups" \
 -ldap-user-filter="(uid=%s)" \
--ldap-group-filter="(memberUid=%s)"
+-ldap-group-filter="(member=uid=%s,ou=users,dc=example,dc=com)" \
+-ldap-user-field="uid" \
+-ldap-group-field="ou" \
+-required-groups="admin"
 ```
 
 Start auth_http_proxy_server with config
@@ -109,13 +115,18 @@ Start auth_http_proxy_server with config
   "ldap-host": "ldap.example.com",
   "ldap-port": 389,
   "ldap-use-ssl": false,
-  "ldap-base": "dc=example,dc=com",
-  "ldap-user-dn": "ou=People",
-  "ldap-group-dn": "ou=Groups",
-  "ldap-bind-dn": "uid=readonlysuer,ou=People,dc=example,dc=com",
+  "ldap-user-dn": "ou=users",
+  "ldap-group-dn": "ou=groups",
+  "ldap-bind-dn": "cn=root,dc=example,dc=com",
   "ldap-bind-password": "S3CR3T",
+  "ldap-base-dn": "dc=example,dc=com",
+  "ldap-user-dn": "ou=users",
+  "ldap-group-dn": "ou=groups",
   "ldap-user-filter": "(uid=%s)",
-  "ldap-group-filter": "(member=uid=%s,ou=People,dc=example,dc=com)"
+  "ldap-group-filter": "(member=uid=%s,ou=users,dc=example,dc=com)",
+  "ldap-user-field": "uid",
+  "ldap-group-field": "ou",
+  "required-groups": "admin"
 }
 ```
 

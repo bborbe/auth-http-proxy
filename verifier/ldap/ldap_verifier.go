@@ -14,12 +14,15 @@ type auth struct {
 	ldapServerName   model.LdapServerName
 	ldapPort         model.LdapPort
 	ldapUseSSL       model.LdapUseSSL
+	ldapSkipTls      model.LdapSkipTls
 	ldapBindDN       model.LdapBindDN
 	ldapBindPassword model.LdapBindPassword
 	ldapUserFilter   model.LdapUserFilter
 	ldapGroupFilter  model.LdapGroupFilter
 	ldapUserDn       model.LdapUserDn
 	ldapGroupDn      model.LdapGroupDn
+	ldapUserField    model.LdapUserField
+	ldapGroupField   model.LdapGroupField
 	requiredGroups   []model.GroupName
 	ldapClients      chan *ldap.LDAPClient
 }
@@ -30,12 +33,15 @@ func New(
 	ldapServerName model.LdapServerName,
 	ldapPort model.LdapPort,
 	ldapUseSSL model.LdapUseSSL,
+	ldapSkipTls model.LdapSkipTls,
 	ldapBindDN model.LdapBindDN,
 	ldapBindPassword model.LdapBindPassword,
-	ldapUserFilter model.LdapUserFilter,
-	ldapGroupFilter model.LdapGroupFilter,
 	ldapUserDn model.LdapUserDn,
+	ldapUserFilter model.LdapUserFilter,
+	ldapUserField model.LdapUserField,
 	ldapGroupDn model.LdapGroupDn,
+	ldapGroupFilter model.LdapGroupFilter,
+	ldapGroupField model.LdapGroupField,
 	requiredGroups ...model.GroupName,
 ) *auth {
 	a := new(auth)
@@ -44,10 +50,13 @@ func New(
 	a.ldapServerName = ldapServerName
 	a.ldapPort = ldapPort
 	a.ldapUseSSL = ldapUseSSL
+	a.ldapSkipTls = ldapSkipTls
 	a.ldapBindDN = ldapBindDN
 	a.ldapBindPassword = ldapBindPassword
 	a.ldapUserFilter = ldapUserFilter
 	a.ldapGroupFilter = ldapGroupFilter
+	a.ldapUserField = ldapUserField
+	a.ldapGroupField = ldapGroupField
 	a.ldapUserDn = ldapUserDn
 	a.ldapGroupDn = ldapGroupDn
 	a.requiredGroups = requiredGroups
@@ -62,16 +71,19 @@ func (a *auth) createClient() *ldap.LDAPClient {
 	}
 	return &ldap.LDAPClient{
 		Base:         a.ldapBaseDn.String(),
-		Host:         a.ldapHost.String(),
-		ServerName:   serverName,
-		Port:         a.ldapPort.Int(),
-		UseSSL:       a.ldapUseSSL.Bool(),
 		BindDN:       a.ldapBindDN.String(),
 		BindPassword: a.ldapBindPassword.String(),
-		UserFilter:   a.ldapUserFilter.String(),
-		GroupFilter:  a.ldapGroupFilter.String(),
-		UserDN:       a.ldapUserDn.String(),
 		GroupDN:      a.ldapGroupDn.String(),
+		GroupField:   a.ldapGroupField.String(),
+		GroupFilter:  a.ldapGroupFilter.String(),
+		Host:         a.ldapHost.String(),
+		Port:         a.ldapPort.Int(),
+		ServerName:   serverName,
+		SkipTLS:      a.ldapSkipTls.Bool(),
+		UseSSL:       a.ldapUseSSL.Bool(),
+		UserDN:       a.ldapUserDn.String(),
+		UserField:    a.ldapUserField.String(),
+		UserFilter:   a.ldapUserFilter.String(),
 	}
 }
 

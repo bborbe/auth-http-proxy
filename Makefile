@@ -15,6 +15,13 @@ runledis:
 	ledis-server \
 	-addr=localhost:5555 \
 	-databases=1
+runldap:
+	docker run \
+	-p 389:389 -p 636:636 \
+	-e LDAP_SECRET='S3CR3T' \
+	-e LDAP_SUFFIX='dc=example,dc=com' \
+	-e LDAP_ROOTDN='cn=root,dc=example,dc=com' \
+	bborbe/openldap:latest
 runauth:
 	auth_server \
 	-logtostderr \
@@ -51,6 +58,29 @@ runwithfile:
 	-kind=basic \
 	-verifier=file \
 	-file-users=sample_users
+runwithldap:
+	auth_http_proxy_server \
+	-logtostderr \
+	-v=2 \
+	-port=8888 \
+	-kind=basic \
+	-basic-auth-realm=TestAuth \
+	-target-address=localhost:7777 \
+	-verifier=ldap \
+	-ldap-host="localhost" \
+	-ldap-port=389 \
+	-ldap-use-ssl=false \
+	-ldap-skip-tls=true \
+	-ldap-bind-dn="cn=root,dc=example,dc=com" \
+	-ldap-bind-password="S3CR3T" \
+	-ldap-base-dn="dc=example,dc=com" \
+	-ldap-user-filter="(uid=%s)" \
+	-ldap-group-filter="(member=uid=%s,ou=users,dc=example,dc=com)" \
+	-ldap-user-dn="ou=users" \
+	-ldap-group-dn="ou=groups" \
+	-ldap-user-field="uid" \
+	-ldap-group-field="ou" \
+	-required-groups="admins"
 runconfigauth:
 	auth_http_proxy_server \
 	-logtostderr \
