@@ -1,5 +1,5 @@
 hash: 0496ecca050a05308b990007053795ecbc6cb9269ebacd3ff7db8626cf7e506a
-updated: 2016-12-18T12:59:39.253413292+01:00
+updated: 2016-12-18T16:36:10.314990361+01:00
 imports:
 - name: github.com/bborbe/auth
   version: 1874d2ecf723d814e768fccd90ebd18055525283
@@ -47,7 +47,7 @@ imports:
 - name: github.com/gorilla/mux
   version: 757bef944d0f21880861c2dd9c871ca543023cba
 - name: github.com/jtblin/go-ldap-client
-  version: fd05bb11ac91f99733e53846ffebdc897a92050e
+  version: 136eb628f3761ca73e85be5523d407c36ac64b8c
   repo: https://github.com/bborbe/go-ldap-client.git
   vcs: git
 - name: github.com/wunderlist/ttlcache
