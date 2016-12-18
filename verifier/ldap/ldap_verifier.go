@@ -56,10 +56,14 @@ func New(
 }
 
 func (a *auth) createClient() *ldap.LDAPClient {
+	serverName := a.ldapServerName.String()
+	if len(serverName) == 0 {
+		serverName = a.ldapHost.String()
+	}
 	return &ldap.LDAPClient{
 		Base:         a.ldapBase.String(),
 		Host:         a.ldapHost.String(),
-		ServerName:   a.ldapServerName.String(),
+		ServerName:   serverName,
 		Port:         a.ldapPort.Int(),
 		UseSSL:       a.ldapUseSSL.Bool(),
 		BindDN:       a.ldapBindDN.String(),

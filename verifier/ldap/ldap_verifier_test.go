@@ -24,3 +24,12 @@ func TestImplementsVerifier(t *testing.T) {
 		t.Fatal(err)
 	}
 }
+
+func TestServername(t *testing.T) {
+	object := New("", "", "", 0, false, "", "", "", "", "", "")
+	var expected *verifier.Verifier
+	err := AssertThat(object, Implements(expected))
+	if err != nil {
+		t.Fatal(err)
+	}
+}
