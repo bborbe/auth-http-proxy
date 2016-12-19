@@ -1,6 +1,6 @@
 # Auth-Http-Proxy
 
-Is a http-proxy to add authenication to applications without own. You can choose between basic-auth and html-form based. Posible user storages are ldap, file, crowd or [auth](https://github.com/bborbe/auth).  
+Is a http-proxy to add authentication to applications without own. You can choose between basic-auth and html-form based. Posible user storages are ldap, file, crowd or [auth](https://github.com/bborbe/auth).  
 
 ## Install via Debian-Package
 
