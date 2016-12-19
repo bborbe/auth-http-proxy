@@ -36,6 +36,11 @@ runfileserver:
 	-v=2 \
 	-port=7777 \
 	-root=/tmp
+runhttpdumpserver:
+	debug_server \
+	-logtostderr \
+	-v=2 \
+	-port=7777
 runauth:
 	auth_http_proxy_server \
 	-logtostderr \
@@ -94,7 +99,7 @@ runfileconfig:
 runhtml:
 	auth_http_proxy_server \
 	-logtostderr \
-	-v=2 \
+	-v=4 \
 	-port=8888 \
 	-target-address=localhost:7777 \
 	-target-healthz-url=http://localhost:7777 \
@@ -105,7 +110,7 @@ runhtml:
 runbasic:
 	auth_http_proxy_server \
 	-logtostderr \
-	-v=2 \
+	-v=4 \
 	-port=8888 \
 	-target-address=localhost:7777 \
 	-target-healthz-url=http://localhost:7777 \
