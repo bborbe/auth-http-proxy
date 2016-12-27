@@ -192,7 +192,7 @@ auth_http_proxy_server \
 
 ## Continuous integration
 
-[Jenkins](https://www.benjamin-borbe.de/jenkins/job/Go-Auth-Http-Proxy/)
+[Jenkins](https://jenkins.benjamin-borbe.de/job/Go-Auth-Http-Proxy/)
 
 ## Copyright and license
 
