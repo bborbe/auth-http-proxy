@@ -71,7 +71,7 @@ var (
 	authApplicationNamePtr     = flag.String(parameterAuthApplicationName, "", "auth application name")
 	authApplicationPasswordPtr = flag.String(parameterAuthApplicationPassword, "", "auth application password")
 	// ldap params
-	ldapBaseDnPtr       = flag.String(parameterLdapBaseDn, "", "ldap-base")
+	ldapBaseDnPtr       = flag.String(parameterLdapBaseDn, "", "ldap-base-dn")
 	ldapHostPtr         = flag.String(parameterLdapHost, "", "ldap-host")
 	ldapServerNamePtr   = flag.String(parameterLdapServerName, "", "ldap-servername")
 	ldapPortPtr         = flag.Int(parameterLdapPort, 0, "ldap-port")

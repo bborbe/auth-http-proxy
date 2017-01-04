@@ -9,7 +9,7 @@
 	"auth-url": "",
 	"auth-application-name": "",
 	"auth-application-password": "",
-	"ldap-base": "",
+	"ldap-base-dn": "",
 	"ldap-host": "",
 	"ldap-port": 0,
 	"ldap-use-ssl": false,
