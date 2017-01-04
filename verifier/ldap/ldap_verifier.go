@@ -69,6 +69,7 @@ func (a *auth) createClient() *ldap.LDAPClient {
 	if len(serverName) == 0 {
 		serverName = a.ldapHost.String()
 	}
+	glog.V(2).Infof("create new ldap client for %s:%d with servername %s", a.ldapHost, a.ldapPort, serverName)
 	return &ldap.LDAPClient{
 		Base:         a.ldapBaseDn.String(),
 		BindDN:       a.ldapBindDN.String(),
