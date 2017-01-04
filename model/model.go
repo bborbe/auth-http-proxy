@@ -81,16 +81,10 @@ func (c *Config) Validate() error {
 			return fmt.Errorf("parameter LdapBaseDn missing")
 		}
 		if len(c.LdapUserFilter) == 0 {
-			return fmt.Errorf("parameter LdapBindPassword missing")
+			return fmt.Errorf("parameter LdapUserFilter missing")
 		}
 		if len(c.LdapGroupFilter) == 0 {
-			return fmt.Errorf("parameter LdapBindPassword missing")
-		}
-		if len(c.LdapUserField) == 0 {
-			return fmt.Errorf("parameter LdapBindPassword missing")
-		}
-		if len(c.LdapGroupField) == 0 {
-			return fmt.Errorf("parameter LdapBindPassword missing")
+			return fmt.Errorf("parameter LdapGroupFilter missing")
 		}
 	}
 	if c.VerifierType == "crowd" {
