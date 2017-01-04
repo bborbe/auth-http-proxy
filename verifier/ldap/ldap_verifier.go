@@ -70,7 +70,7 @@ func (a *auth) createClient() *ldap.LDAPClient {
 		serverName = a.ldapHost.String()
 	}
 	glog.V(2).Infof("create new ldap client for %s:%d with servername %s", a.ldapHost, a.ldapPort, serverName)
-	return &ldap.LDAPClient{
+	client := &ldap.LDAPClient{
 		Base:         a.ldapBaseDn.String(),
 		BindDN:       a.ldapBindDN.String(),
 		BindPassword: a.ldapBindPassword.String(),
@@ -86,6 +86,10 @@ func (a *auth) createClient() *ldap.LDAPClient {
 		UserField:    a.ldapUserField.String(),
 		UserFilter:   a.ldapUserFilter.String(),
 	}
+	if glog.V(4) {
+		glog.Infof("client %+v", client)
+	}
+	return client
 }
 
 func (a *auth) getClient() *ldap.LDAPClient {
