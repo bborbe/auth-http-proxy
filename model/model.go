@@ -64,7 +64,35 @@ func (c *Config) Validate() error {
 	if c.VerifierType != "auth" && c.VerifierType != "ldap" && c.VerifierType != "file" && c.VerifierType != "crowd" {
 		return fmt.Errorf("parameter VerifierType invalid")
 	}
-
+	if c.VerifierType == "ldap" {
+		if len(c.LdapHost) == 0 {
+			return fmt.Errorf("parameter LdapHost missing")
+		}
+		if c.LdapPort == 0 {
+			return fmt.Errorf("parameter LdapPort missing")
+		}
+		if len(c.LdapBindDN) == 0 {
+			return fmt.Errorf("parameter LdapBindDN missing")
+		}
+		if len(c.LdapBindPassword) == 0 {
+			return fmt.Errorf("parameter LdapBindPassword missing")
+		}
+		if len(c.LdapBaseDn) == 0 {
+			return fmt.Errorf("parameter LdapBaseDn missing")
+		}
+		if len(c.LdapUserFilter) == 0 {
+			return fmt.Errorf("parameter LdapBindPassword missing")
+		}
+		if len(c.LdapGroupFilter) == 0 {
+			return fmt.Errorf("parameter LdapBindPassword missing")
+		}
+		if len(c.LdapUserField) == 0 {
+			return fmt.Errorf("parameter LdapBindPassword missing")
+		}
+		if len(c.LdapGroupField) == 0 {
+			return fmt.Errorf("parameter LdapBindPassword missing")
+		}
+	}
 	if c.VerifierType == "crowd" {
 		if len(c.CrowdAppName) == 0 {
 			return fmt.Errorf("parameter CrowdAppName missing")
