@@ -1,7 +1,7 @@
 package crowd
 
 import (
-	"github.com/bborbe/auth_http_proxy/model"
+	"github.com/bborbe/auth-http-proxy/model"
 	"github.com/golang/glog"
 	"go.jona.me/crowd"
 )

@@ -1,139 +1,72 @@
+REGISTRY ?= docker.io
+IMAGE ?= bborbe/auth-http-proxy
+ifeq ($(VERSION),)
+	VERSION := $(shell git fetch --tags; git describe --tags `git rev-list --tags --max-count=1`)
+endif
+
 all: test install run
+
 install:
-	GOBIN=$(GOPATH)/bin GO15VENDOREXPERIMENT=1 go install bin/auth_http_proxy_server/*.go
+	GOBIN=$(GOPATH)/bin GO15VENDOREXPERIMENT=1 go install *.go
+
 test:
-	GO15VENDOREXPERIMENT=1 go test -cover `glide novendor`
+	go test -cover -race $(shell go list ./... | grep -v /vendor/)
+
 vet:
 	go tool vet .
 	go tool vet --shadow .
+
 lint:
 	golint -min_confidence 1 ./...
+
 errcheck:
 	errcheck -ignore '(Close|Write)' ./...
+
 check: lint vet errcheck
-runledisserver:
-	ledis-server \
-	-addr=localhost:5555 \
-	-databases=1
-runldapserver:
-	docker run \
-	-p 389:389 -p 636:636 \
-	-e LDAP_SECRET='S3CR3T' \
-	-e LDAP_SUFFIX='dc=example,dc=com' \
-	-e LDAP_ROOTDN='cn=root,dc=example,dc=com' \
-	bborbe/openldap:latest
-runauthserver:
-	auth_server \
-	-logtostderr \
-	-v=2 \
-	-port=6666 \
-	-prefix=/auth \
-	-ledisdb-address=localhost:5555 \
-	-auth-application-password=test123
-runfileserver:
-	file_server \
-	-logtostderr \
-	-v=2 \
-	-port=7777 \
-	-root=/tmp
-runhttpdumpserver:
-	debug_server \
-	-logtostderr \
-	-v=2 \
-	-port=7777
-runauth:
-	auth_http_proxy_server \
-	-logtostderr \
-	-v=2 \
-	-port=8888 \
-	-basic-auth-realm=TestAuth \
-	-target-address=localhost:7777 \
-	-kind=basic \
-	-verifier=auth \
-	-auth-url=http://localhost:6666 \
-	-auth-application-name=auth \
-	-auth-application-password=test123
-runfile:
-	auth_http_proxy_server \
-	-logtostderr \
-	-v=2 \
-	-port=8888 \
-	-basic-auth-realm=TestAuth \
-	-target-address=localhost:7777 \
-	-kind=basic \
-	-verifier=file \
-	-file-users=sample_users
-runldap:
-	auth_http_proxy_server \
-	-logtostderr \
-	-v=2 \
-	-port=8888 \
-	-kind=basic \
-	-basic-auth-realm=TestAuth \
-	-target-address=localhost:7777 \
-	-verifier=ldap \
-	-ldap-host="localhost" \
-	-ldap-port=389 \
-	-ldap-use-ssl=false \
-	-ldap-skip-tls=true \
-	-ldap-bind-dn="cn=root,dc=example,dc=com" \
-	-ldap-bind-password="S3CR3T" \
-	-ldap-base-dn="dc=example,dc=com" \
-	-ldap-user-filter="(uid=%s)" \
-	-ldap-group-filter="(member=uid=%s,ou=users,dc=example,dc=com)" \
-	-ldap-user-dn="ou=users" \
-	-ldap-group-dn="ou=groups" \
-	-ldap-user-field="uid" \
-	-ldap-group-field="ou" \
-	-required-groups="admins"
-runauthconfig:
-	auth_http_proxy_server \
-	-logtostderr \
-	-v=2 \
-	-config=sample_config_auth.json
-runfileconfig:
-	auth_http_proxy_server \
-	-logtostderr \
-	-v=2 \
-	-config=sample_config_file.json
-runhtml:
-	auth_http_proxy_server \
-	-logtostderr \
-	-v=4 \
-	-port=8888 \
-	-target-address=localhost:7777 \
-	-target-healthz-url=http://localhost:7777 \
-	-verifier=file \
-	-file-users=sample_users \
-	-kind=html \
-	-secret=AES256Key-32Characters1234567890
-runbasic:
-	auth_http_proxy_server \
-	-logtostderr \
-	-v=4 \
-	-port=8888 \
-	-target-address=localhost:7777 \
-	-target-healthz-url=http://localhost:7777 \
-	-verifier=file \
-	-file-users=sample_users \
-	-kind=basic \
-	-basic-auth-realm="Test Auth"
-run: runhtml
-open:
-	open http://localhost:8888/
-format:
-	find . -name "*.go" -exec gofmt -w "{}" \;
-	goimports -w=true .
+
+goimports:
+	go get golang.org/x/tools/cmd/goimports
+
+format: goimports
+	find . -type f -name '*.go' -not -path './vendor/*' -exec gofmt -w "{}" +
+	find . -type f -name '*.go' -not -path './vendor/*' -exec goimports -w "{}" +
+
 prepare:
-	go get -u github.com/bborbe/server/bin/file_server
-	go get -u github.com/bborbe/auth/bin/auth_server
-	go get -u github.com/siddontang/ledisdb/cmd/ledis-server
 	go get -u golang.org/x/tools/cmd/goimports
-	go get -u github.com/Masterminds/glide
 	go get -u github.com/golang/lint/golint
 	go get -u github.com/kisielk/errcheck
-	glide install
-update:
-	glide up
+	go get -u github.com/bborbe/docker-utils/cmd/docker-remote-tag-exists
+	go get -u github.com/golang/dep/cmd/dep
+
 clean:
-	rm -rf var vendor target node_modules
+	docker rmi $(REGISTRY)/$(IMAGE)-build:$(VERSION)
+	docker rmi $(REGISTRY)/$(IMAGE):$(VERSION)
+
+buildgo:
+	CGO_ENABLED=0 GOOS=linux go build -ldflags "-s" -a -installsuffix cgo -o auth-http-proxy ./go/src/github.com/$(IMAGE)
+
+build:
+	docker build --build-arg VERSION=$(VERSION) --no-cache --rm=true -t $(REGISTRY)/$(IMAGE)-build:$(VERSION) -f ./Dockerfile.build .
+	docker run -t $(REGISTRY)/$(IMAGE)-build:$(VERSION) /bin/true
+	docker cp `docker ps -q -n=1 -f ancestor=$(REGISTRY)/$(IMAGE)-build:$(VERSION) -f status=exited`:/auth-http-proxy .
+	docker rm `docker ps -q -n=1 -f ancestor=$(REGISTRY)/$(IMAGE)-build:$(VERSION) -f status=exited`
+	docker build --no-cache --rm=true --tag=$(REGISTRY)/$(IMAGE):$(VERSION) -f Dockerfile.static .
+	rm auth-http-proxy
+
+upload:
+	docker push $(REGISTRY)/$(IMAGE):$(VERSION)
+
+trigger:
+	@go get github.com/bborbe/docker-utils/cmd/docker-remote-tag-exists
+	@exists=`docker_remote_tag_exists \
+		-registry=${REGISTRY} \
+		-repository="${IMAGE}" \
+		-credentialsfromfile \
+		-tag="${VERSION}" \
+		-alsologtostderr \
+		-v=0`; \
+	trigger="build"; \
+	if [ "$${exists}" = "true" ]; then \
+		trigger="skip"; \
+	fi; \
+	echo $${trigger}

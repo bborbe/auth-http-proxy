@@ -1,8 +1,8 @@
 package cache
 
 import (
-	"github.com/bborbe/auth_http_proxy/model"
-	"github.com/bborbe/auth_http_proxy/verifier"
+	"github.com/bborbe/auth-http-proxy/model"
+	"github.com/bborbe/auth-http-proxy/verifier"
 	"github.com/golang/glog"
 	"github.com/wunderlist/ttlcache"
 )

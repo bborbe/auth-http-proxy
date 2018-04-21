@@ -1,7 +1,7 @@
 package ldap
 
 import (
-	"github.com/bborbe/auth_http_proxy/model"
+	"github.com/bborbe/auth-http-proxy/model"
 	"github.com/golang/glog"
 	ldap "github.com/jtblin/go-ldap-client"
 )

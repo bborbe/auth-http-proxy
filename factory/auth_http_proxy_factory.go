@@ -5,17 +5,13 @@ import (
 	"net"
 	"net/http"
 
-	"github.com/bborbe/auth/client"
-	auth_model "github.com/bborbe/auth/model"
-	"github.com/bborbe/auth/service"
-	"github.com/bborbe/auth_http_proxy/crypter"
-	"github.com/bborbe/auth_http_proxy/model"
-	"github.com/bborbe/auth_http_proxy/verifier"
-	auth_verifier "github.com/bborbe/auth_http_proxy/verifier/auth"
-	"github.com/bborbe/auth_http_proxy/verifier/cache"
-	crowd_verifier "github.com/bborbe/auth_http_proxy/verifier/crowd"
-	file_verifier "github.com/bborbe/auth_http_proxy/verifier/file"
-	ldap_verifier "github.com/bborbe/auth_http_proxy/verifier/ldap"
+	"github.com/bborbe/auth-http-proxy/crypter"
+	"github.com/bborbe/auth-http-proxy/model"
+	"github.com/bborbe/auth-http-proxy/verifier"
+	"github.com/bborbe/auth-http-proxy/verifier/cache"
+	crowd_verifier "github.com/bborbe/auth-http-proxy/verifier/crowd"
+	file_verifier "github.com/bborbe/auth-http-proxy/verifier/file"
+	ldap_verifier "github.com/bborbe/auth-http-proxy/verifier/ldap"
 	http_client_builder "github.com/bborbe/http/client_builder"
 	"github.com/bborbe/http_handler/auth_basic"
 	"github.com/bborbe/http_handler/auth_html"
@@ -103,19 +99,19 @@ func (a *authHttpProxyFactory) createHttpFilter() http.Handler {
 }
 
 func (a *authHttpProxyFactory) createHtmlAuthHttpFilter() http.Handler {
-	verifier := a.createVerifier()
-	check := func(username string, password string) (bool, error) {
-		return verifier.Verify(model.UserName(username), model.Password(password))
+	v := a.createVerifier()
+	c := func(username string, password string) (bool, error) {
+		return v.Verify(model.UserName(username), model.Password(password))
 	}
-	return auth_html.New(a.createForwardHandler().ServeHTTP, check, crypter.New(a.config.Secret.Bytes()))
+	return auth_html.New(a.createForwardHandler().ServeHTTP, c, crypter.New(a.config.Secret.Bytes()))
 }
 
 func (a *authHttpProxyFactory) createBasicAuthHttpFilter() http.Handler {
-	verifier := a.createVerifier()
-	check := func(username string, password string) (bool, error) {
-		return verifier.Verify(model.UserName(username), model.Password(password))
+	v := a.createVerifier()
+	c := func(username string, password string) (bool, error) {
+		return v.Verify(model.UserName(username), model.Password(password))
 	}
-	return auth_basic.New(a.createForwardHandler().ServeHTTP, check, a.config.BasicAuthRealm.String())
+	return auth_basic.New(a.createForwardHandler().ServeHTTP, c, a.config.BasicAuthRealm.String())
 }
 
 func (a *authHttpProxyFactory) createForwardHandler() http.Handler {
@@ -134,8 +130,6 @@ func (a *authHttpProxyFactory) createForwardHandler() http.Handler {
 func (a *authHttpProxyFactory) createVerifier() verifier.Verifier {
 	glog.V(2).Infof("get verifier for: %v", a.config.VerifierType)
 	switch a.config.VerifierType {
-	case "auth":
-		return a.createAuthVerifier()
 	case "ldap":
 		return a.createLdapVerifier()
 	case "file":
@@ -144,13 +138,6 @@ func (a *authHttpProxyFactory) createVerifier() verifier.Verifier {
 		return a.createCrowdVerifier()
 	}
 	return nil
-}
-
-func (a *authHttpProxyFactory) createAuthVerifier() verifier.Verifier {
-	return cache.New(auth_verifier.New(
-		a.authService().VerifyTokenHasGroups,
-		a.config.RequiredGroups...,
-	), a.config.CacheTTL)
 }
 
 func (a *authHttpProxyFactory) createLdapVerifier() verifier.Verifier {
@@ -183,12 +170,4 @@ func (a *authHttpProxyFactory) createCrowdVerifier() verifier.Verifier {
 
 func (a *authHttpProxyFactory) httpClient() *http.Client {
 	return http_client_builder.New().WithoutProxy().Build()
-}
-
-func (a *authHttpProxyFactory) authClient() client.Client {
-	return client.New(a.httpClient().Do, auth_model.Url(a.config.AuthUrl), auth_model.ApplicationName(a.config.AuthApplicationName), auth_model.ApplicationPassword(a.config.AuthApplicationPassword))
-}
-
-func (a *authHttpProxyFactory) authService() service.AuthService {
-	return a.authClient().AuthService()
 }

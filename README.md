@@ -2,27 +2,19 @@
 
 Is a http-proxy to add authentication to applications without own. You can choose between basic-auth and html-form based. Posible user storages are ldap, file, crowd or [auth](https://github.com/bborbe/auth).  
 
-## Install via Debian-Package
-
-```
-echo "deb [arch=amd64] http://aptly.tools.seibert-media.net/stable default main" \
-> /etc/apt/sources.list.d/amd64-stable-aptly.tools.seibert-media.net.list
-apt-get update
-apt-get install auth-http-proxy
-vi /etc/auth_http_proxy/config.json
-systemctl restart auth-http-proxy
-systemctl status auth-http-proxy
-```
-
 ## Install va sources 
 
-`go get github.com/bborbe/auth_http_proxy/bin/auth_http_proxy_server`
+```
+go get github.com/bborbe/auth-http-proxy
+```
 
 ## Usage
 
 Start sample you want protect
 
-`go get github.com/bborbe/server/bin/file_server`
+```
+go get github.com/bborbe/server/bin/file_server
+```
 
 ```
 file_server \
@@ -38,10 +30,10 @@ _only for testing_
 
 `echo 'admin:tester' > sample_users`
 
-Start auth_http_proxy_server
+Start auth-http-proxy
 
 ```
-auth_http_proxy_server \
+auth-http-proxy \
 -logtostderr \
 -v=2 \
 -port=8888 \
@@ -54,10 +46,10 @@ auth_http_proxy_server \
 
 ### With crowd backend
 
-Start auth_http_proxy_server
+Start auth-http-proxy
 
 ```
-auth_http_proxy_server \
+auth-http-proxy \
 -logtostderr \
 -v=2 \
 -port=8888 \
@@ -72,10 +64,10 @@ auth_http_proxy_server \
 
 ### With ldap backend
 
-Start auth_http_proxy_server
+Start auth-http-proxy
 
 ```
-auth_http_proxy_server \
+auth-http-proxy \
 -logtostderr \
 -v=2 \
 -port=8888 \
@@ -99,7 +91,7 @@ auth_http_proxy_server \
 -required-groups="admin"
 ```
 
-Start auth_http_proxy_server with config
+Start auth-http-proxy with config
 
 
 `vi config.json`
@@ -131,7 +123,7 @@ Start auth_http_proxy_server with config
 ```
 
 ```
-auth_http_proxy_server \
+auth-http-proxy \
 -logtostderr \
 -v=2 \
 -config=config.json
@@ -174,10 +166,10 @@ curl \
 http://localhost:6666/api/1.0/user
 ```
 
-Start auth_http_proxy_server
+Start auth-http-proxy
 
 ```
-auth_http_proxy_server \
+auth-http-proxy \
 -logtostderr \
 -v=2 \
 -port=8888 \

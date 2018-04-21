@@ -6,7 +6,7 @@ import (
 	"os"
 
 	. "github.com/bborbe/assert"
-	"github.com/bborbe/auth_http_proxy/verifier"
+	"github.com/bborbe/auth-http-proxy/verifier"
 	"github.com/golang/glog"
 )
 

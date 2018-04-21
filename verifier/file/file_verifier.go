@@ -6,7 +6,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/bborbe/auth_http_proxy/model"
+	"github.com/bborbe/auth-http-proxy/model"
 	"github.com/golang/glog"
 )
 
