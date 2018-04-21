@@ -58,7 +58,7 @@ upload:
 
 trigger:
 	@go get github.com/bborbe/docker-utils/cmd/docker-remote-tag-exists
-	@exists=`docker_remote_tag_exists \
+	@exists=`docker-remote-tag-exists \
 		-registry=${REGISTRY} \
 		-repository="${IMAGE}" \
 		-credentialsfromfile \
