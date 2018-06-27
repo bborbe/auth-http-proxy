@@ -4,6 +4,7 @@ import (
 	"github.com/bborbe/auth-http-proxy/model"
 	"github.com/golang/glog"
 	ldap "github.com/jtblin/go-ldap-client"
+	ldap_authenticator "github.com/bborbe/auth-http-proxy/authenticator/ldap"
 )
 
 const ldapConnectionSize = 5
@@ -25,6 +26,7 @@ type auth struct {
 	ldapGroupField   model.LdapGroupField
 	requiredGroups   []model.GroupName
 	ldapClients      chan *ldap.LDAPClient
+	authenticator    ldap_authenticator.Authenticator
 }
 
 func New(
@@ -103,6 +105,7 @@ func (a *auth) getClient() *ldap.LDAPClient {
 	}
 }
 
+
 func (a *auth) releaseClient(client *ldap.LDAPClient) {
 	select {
 	case a.ldapClients <- client:
@@ -121,20 +124,27 @@ func (a *auth) Close() {
 }
 
 func (a *auth) Verify(username model.UserName, password model.Password) (bool, error) {
+
 	client := a.getClient()
+	authenticator := ldap_authenticator.New(client)
 	defer a.releaseClient(client)
 
 	glog.V(2).Infof("verify user %v is valid and has groups %v", username, a.requiredGroups)
 	glog.V(2).Infof("verify username and password of user %v", username)
-	ok, _, err := client.Authenticate(username.String(), password.String())
+
+
+	ok, _, err := authenticator.Authenticate(username, password)
 	if err != nil {
 		glog.V(0).Infof("authenticate user %v failed %v", username, err)
+			a.releaseClient(client)
 		return false, nil
 	}
 	if !ok {
 		glog.V(1).Infof("authenticate user %v invalid", username)
 		return false, nil
 	}
+
+
 	glog.V(2).Infof("username and password of user %v is valid", username)
 	glog.V(2).Infof("get groups of user %v", username)
 	groupNames, err := client.GetGroupsOfUser(username.String())
