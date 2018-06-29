@@ -21,6 +21,7 @@ import (
 	"github.com/golang/glog"
 	"github.com/gorilla/mux"
 	"go.jona.me/crowd"
+	"github.com/bborbe/auth-http-proxy/ldap"
 )
 
 type authHttpProxyFactory struct {
@@ -141,23 +142,26 @@ func (a *authHttpProxyFactory) createVerifier() verifier.Verifier {
 }
 
 func (a *authHttpProxyFactory) createLdapVerifier() verifier.Verifier {
-	return cache.New(ldap_verifier.New(
-		a.config.LdapBaseDn,
-		a.config.LdapHost,
-		a.config.LdapServerName,
-		a.config.LdapPort,
-		a.config.LdapUseSSL,
-		a.config.LdapSkipTls,
-		a.config.LdapBindDN,
-		a.config.LdapBindPassword,
-		a.config.LdapUserDn,
-		a.config.LdapUserFilter,
-		a.config.LdapUserField,
-		a.config.LdapGroupDn,
-		a.config.LdapGroupFilter,
-		a.config.LdapGroupField,
-		a.config.RequiredGroups...,
-	), a.config.CacheTTL)
+	auth := &ldap_verifier.Auth{
+		Authenticator: ldap.NewAuthenticator(
+			a.config.LdapBaseDn,
+			a.config.LdapHost,
+			a.config.LdapServerName,
+			a.config.LdapPort,
+			a.config.LdapUseSSL,
+			a.config.LdapSkipTls,
+			a.config.LdapBindDN,
+			a.config.LdapBindPassword,
+			a.config.LdapUserDn,
+			a.config.LdapUserFilter,
+			a.config.LdapUserField,
+			a.config.LdapGroupDn,
+			a.config.LdapGroupFilter,
+			a.config.LdapGroupField,
+		),
+		RequiredGroups: a.config.RequiredGroups,
+	}
+	return cache.New(auth, a.config.CacheTTL)
 }
 
 func (a *authHttpProxyFactory) createFileVerifier() verifier.Verifier {
