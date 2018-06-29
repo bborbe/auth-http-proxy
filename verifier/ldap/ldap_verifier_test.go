@@ -17,7 +17,7 @@ func TestMain(m *testing.M) {
 }
 
 func TestImplementsVerifier(t *testing.T) {
-	object := New("", "", "", 0, false, true, "", "", "", "", "", "", "", "")
+	object := &Auth{}
 	var expected *verifier.Verifier
 	err := AssertThat(object, Implements(expected))
 	if err != nil {
@@ -26,7 +26,7 @@ func TestImplementsVerifier(t *testing.T) {
 }
 
 func TestServername(t *testing.T) {
-	object := New("", "", "", 0, false, true, "", "", "", "", "", "", "", "")
+	object := &Auth{}
 	var expected *verifier.Verifier
 	err := AssertThat(object, Implements(expected))
 	if err != nil {
