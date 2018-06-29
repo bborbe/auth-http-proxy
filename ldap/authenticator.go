@@ -3,7 +3,7 @@ package ldap
 import (
 	"github.com/bborbe/auth-http-proxy/model"
 	"github.com/golang/glog"
-	ldap "github.com/jtblin/go-ldap-client"
+	"github.com/jtblin/go-ldap-client"
 )
 
 const ldapConnectionSize = 5
@@ -78,13 +78,17 @@ func (a *ldapAuth) getClient() *ldap.LDAPClient {
 }
 
 func (a *ldapAuth) releaseClient(client *ldap.LDAPClient) {
+	glog.V(2).Infof("release client")
 	select {
 	case a.ldapClients <- client:
 		glog.V(2).Infof("returned client to pool")
 	default:
-		glog.V(2).Infof("closed client")
-		client.Close()
+		a.closeClient(client)
 	}
+}
+func (a *ldapAuth) closeClient(client *ldap.LDAPClient) {
+	glog.V(2).Infof("closed client")
+	client.Close()
 }
 
 func (a *ldapAuth) Close() {
@@ -94,16 +98,32 @@ func (a *ldapAuth) Close() {
 	}
 }
 
-func (a *ldapAuth) Authenticate(username model.UserName, password model.Password) (bool, map[string]string, error) {
-	ldapClient := a.createClient()
-	defer a.releaseClient(ldapClient)
-	return ldapClient.Authenticate(username.String(), password.String())
+func (a *ldapAuth) Authenticate(username model.UserName, password model.Password) (ok bool, data map[string]string, err error) {
+	glog.V(2).Infof("Authenticate user %s", username)
+	ldapClient := a.getClient()
+	ok, data, err = ldapClient.Authenticate(username.String(), password.String())
+	if err != nil {
+		glog.V(1).Infof("Authenticate failed, retry with new connection: %v", err)
+		a.closeClient(ldapClient)
+		ldapClient = a.createClient()
+		ok, data, err = ldapClient.Authenticate(username.String(), password.String())
+	}
+	a.releaseClient(ldapClient)
+	return
 }
 
-func (a *ldapAuth) GetGroupsOfUser(username model.UserName) ([]string, error) {
-	ldapClient := a.createClient()
-	defer a.releaseClient(ldapClient)
-	return ldapClient.GetGroupsOfUser(username.String())
+func (a *ldapAuth) GetGroupsOfUser(username model.UserName) (groups []string, err error) {
+	glog.V(2).Infof("GetGroupsOfUser for user %s", username)
+	ldapClient := a.getClient()
+	groups, err = ldapClient.GetGroupsOfUser(username.String())
+	if err != nil {
+		glog.V(1).Infof("GetGroupsOfUser failed, retry with new connection: %v", err)
+		a.closeClient(ldapClient)
+		ldapClient = a.createClient()
+		groups, err = ldapClient.GetGroupsOfUser(username.String())
+	}
+	a.releaseClient(ldapClient)
+	return
 }
 
 func (a *ldapAuth) createClient() *ldap.LDAPClient {
