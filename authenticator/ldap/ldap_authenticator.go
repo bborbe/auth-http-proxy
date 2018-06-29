@@ -6,15 +6,9 @@ import (
 )
 
 type Authenticator struct {
-	client *ldap.LDAPClient
-}
-
-func New(client *ldap.LDAPClient) *Authenticator {
-	a := new(Authenticator)
-	a.client = client
-	return a
+	Client *ldap.LDAPClient
 }
 
 func (a *Authenticator) Authenticate(username model.UserName, password model.Password) (bool, map[string]string, error) {
-	return a.client.Authenticate(username.String(), password.String())
+	return a.Client.Authenticate(username.String(), password.String())
 }

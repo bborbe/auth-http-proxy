@@ -105,7 +105,6 @@ func (a *auth) getClient() *ldap.LDAPClient {
 	}
 }
 
-
 func (a *auth) releaseClient(client *ldap.LDAPClient) {
 	select {
 	case a.ldapClients <- client:
@@ -126,17 +125,17 @@ func (a *auth) Close() {
 func (a *auth) Verify(username model.UserName, password model.Password) (bool, error) {
 
 	client := a.getClient()
-	authenticator := ldap_authenticator.New(client)
+	authenticator := ldap_authenticator.Authenticator{
+		Client: client,
+	}
 	defer a.releaseClient(client)
 
 	glog.V(2).Infof("verify user %v is valid and has groups %v", username, a.requiredGroups)
 	glog.V(2).Infof("verify username and password of user %v", username)
 
-
 	ok, _, err := authenticator.Authenticate(username, password)
 	if err != nil {
 		glog.V(0).Infof("authenticate user %v failed %v", username, err)
-			a.releaseClient(client)
 		return false, nil
 	}
 	if !ok {
