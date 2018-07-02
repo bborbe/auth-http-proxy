@@ -11,7 +11,7 @@
   branch = "master"
   name = "github.com/bborbe/flagenv"
   packages = ["."]
-  revision = "4bf10dbe62f41ce40353a70225a84decfd16d3ac"
+  revision = "9802daecc09b210cf93fd4cf3d57097663876b0a"
 
 [[projects]]
   branch = "master"
@@ -20,7 +20,7 @@
     "client_builder",
     "header"
   ]
-  revision = "b783a5e87f98911552ef543db3624f3ce52d79c1"
+  revision = "d0d8e291febd74ef570713bd2492380e953afdc1"
 
 [[projects]]
   branch = "master"
@@ -32,7 +32,7 @@
     "debug",
     "forward"
   ]
-  revision = "6bc0de354fca9a13177217df55a32e4e2ba0715f"
+  revision = "7166a791ebfd5ef0f02c5c870c2ceb84e5fadab9"
 
 [[projects]]
   branch = "master"
@@ -70,20 +70,20 @@
 [[projects]]
   name = "github.com/gorilla/context"
   packages = ["."]
-  revision = "1ea25387ff6f684839d82767c1733ff4d4d15d0a"
-  version = "v1.1"
+  revision = "08b5f424b9271eedf6f9f0ce86cb9396ed337a42"
+  version = "v1.1.1"
 
 [[projects]]
   name = "github.com/gorilla/mux"
   packages = ["."]
-  revision = "53c1911da2b537f792e7cafcb446b05ffe33b996"
-  version = "v1.6.1"
+  revision = "e3702bed27f0d39777b0b37b664b6280e8ef8fbf"
+  version = "v1.6.2"
 
 [[projects]]
   branch = "master"
   name = "github.com/jtblin/go-ldap-client"
   packages = ["."]
-  revision = "1d1b0117de0507d82f70ebf37d439647549588f2"
+  revision = "a782336a3b7439a11a727e04af2c3299b51c7846"
   source = "https://github.com/bborbe/go-ldap-client.git"
 
 [[projects]]

@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2.1.1
+
+- Update dependencies
+
 ## 2.1.0
 
 - Close Ldap connections on failure 
