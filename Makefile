@@ -39,19 +39,10 @@ prepare:
 	go get -u github.com/golang/dep/cmd/dep
 
 clean:
-	docker rmi $(REGISTRY)/$(IMAGE)-build:$(VERSION)
 	docker rmi $(REGISTRY)/$(IMAGE):$(VERSION)
 
-buildgo:
-	CGO_ENABLED=0 GOOS=linux go build -ldflags "-s" -a -installsuffix cgo -o auth-http-proxy ./go/src/github.com/$(IMAGE)
-
 build:
-	docker build --build-arg VERSION=$(VERSION) --no-cache --rm=true -t $(REGISTRY)/$(IMAGE)-build:$(VERSION) -f ./Dockerfile.build .
-	docker run -t $(REGISTRY)/$(IMAGE)-build:$(VERSION) /bin/true
-	docker cp `docker ps -q -n=1 -f ancestor=$(REGISTRY)/$(IMAGE)-build:$(VERSION) -f status=exited`:/auth-http-proxy .
-	docker rm `docker ps -q -n=1 -f ancestor=$(REGISTRY)/$(IMAGE)-build:$(VERSION) -f status=exited`
-	docker build --no-cache --rm=true --tag=$(REGISTRY)/$(IMAGE):$(VERSION) -f Dockerfile.static .
-	rm auth-http-proxy
+	docker build --no-cache --rm=true -t $(REGISTRY)/$(IMAGE):$(VERSION) -f ./Dockerfile .
 
 upload:
 	docker push $(REGISTRY)/$(IMAGE):$(VERSION)

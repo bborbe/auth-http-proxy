@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2.1.3
+
+- Use multistage dockerfile
+
 ## 2.1.2
 
 - Fix Security Bug (https://github.com/jtblin/go-ldap-client/issues/16)

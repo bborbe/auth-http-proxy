@@ -1,5 +1,0 @@
-FROM tianon/true
-MAINTAINER Benjamin Borbe <bborbe@rocketnews.de>
-COPY auth-http-proxy /
-COPY files/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
-ENTRYPOINT ["/auth-http-proxy"]
