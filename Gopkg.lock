@@ -83,7 +83,7 @@
   branch = "master"
   name = "github.com/jtblin/go-ldap-client"
   packages = ["."]
-  revision = "a782336a3b7439a11a727e04af2c3299b51c7846"
+  revision = "fc19caea533a2665399d24c1bd14b651bb492c00"
   source = "https://github.com/bborbe/go-ldap-client.git"
 
 [[projects]]
