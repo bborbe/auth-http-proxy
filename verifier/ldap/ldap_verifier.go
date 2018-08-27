@@ -13,7 +13,6 @@ type Auth struct {
 
 func (a *Auth) Verify(username model.UserName, password model.Password) (bool, error) {
 	glog.V(2).Infof("verify user %v is valid and has groups %v", username, a.RequiredGroups)
-	glog.V(2).Infof("verify username and password of user %v", username)
 
 	ok, _, err := a.Authenticator.Authenticate(username, password)
 	if err != nil {

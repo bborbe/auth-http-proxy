@@ -65,7 +65,7 @@ func (a *authHttpProxyFactory) createHealthzCheck() func() error {
 			glog.V(2).Infof("tcp connection to %v failed: %v", a.config.TargetAddress, err)
 			return err
 		}
-		glog.V(2).Infof("tcp connection to %v success", a.config.TargetAddress)
+		glog.V(4).Infof("tcp connection to %v success", a.config.TargetAddress)
 		return conn.Close()
 	}
 }
@@ -82,7 +82,7 @@ func (a *authHttpProxyFactory) Handler() http.Handler {
 	var handler http.Handler = router
 
 	if glog.V(4) {
-		glog.V(2).Infof("add debug handler")
+		glog.Infof("add debug handler")
 		handler = debug_handler.New(handler)
 	}
 	return handler
