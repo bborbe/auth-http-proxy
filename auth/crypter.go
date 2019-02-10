@@ -1,4 +1,4 @@
-package crypter
+package auth
 
 import (
 	"bytes"
@@ -22,7 +22,7 @@ type Crypter interface {
 
 // The key argument should be the AES key, either 16 or 32 bytes
 // to select AES-128 or AES-256.
-func New(key []byte) *crypter {
+func NewCrypter(key []byte) Crypter {
 	c := new(crypter)
 	c.key = key
 	return c

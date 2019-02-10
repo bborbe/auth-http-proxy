@@ -1,24 +1,23 @@
-package crowd
+package auth
 
 import (
-	"github.com/bborbe/auth-http-proxy/model"
 	"github.com/golang/glog"
 	"go.jona.me/crowd"
 )
 
 type crowdAuthenticate func(user string, pass string) (crowd.User, error)
 
-type auth struct {
+type crowdAuth struct {
 	crowdAuthenticate crowdAuthenticate
 }
 
-func New(crowdAuthenticate crowdAuthenticate) *auth {
-	a := new(auth)
-	a.crowdAuthenticate = crowdAuthenticate
-	return a
+func NewCrowdAuth(crowdAuthenticate crowdAuthenticate) Verifier {
+	return &crowdAuth{
+		crowdAuthenticate: crowdAuthenticate,
+	}
 }
 
-func (a *auth) Verify(username model.UserName, password model.Password) (bool, error) {
+func (a *crowdAuth) Verify(username UserName, password Password) (bool, error) {
 	glog.V(2).Infof("verify user %s with password-length %d", username, len(password))
 	_, err := a.crowdAuthenticate(username.String(), password.String())
 	if err != nil {

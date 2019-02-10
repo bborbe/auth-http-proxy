@@ -4,8 +4,8 @@ import (
 	"runtime"
 	"time"
 
-	"github.com/bborbe/auth-http-proxy/factory"
-	"github.com/bborbe/auth-http-proxy/model"
+	"github.com/bborbe/auth-http-proxy/auth"
+	model "github.com/bborbe/auth-http-proxy/auth"
 	flag "github.com/bborbe/flagenv"
 	"github.com/facebookgo/grace/gracehttp"
 	"github.com/golang/glog"
@@ -28,10 +28,6 @@ const (
 	parameterVerifierType = "verifier"
 	// file
 	parameterFileUsers = "file-users"
-	// auth
-	parameterAuthUrl                 = "auth-url"
-	parameterAuthApplicationName     = "auth-application-name"
-	parameterAuthApplicationPassword = "auth-application-password"
 	// ldap
 	parameterLdapHost         = "ldap-host"
 	parameterLdapPort         = "ldap-port"
@@ -66,10 +62,6 @@ var (
 	cacheTTLPtr         = flag.Duration(parameterCacheTTL, 5*time.Minute, "cache ttl")
 	// file params
 	fileUseresPtr = flag.String(parameterFileUsers, "", "users")
-	// auth params
-	authUrlPtr                 = flag.String(parameterAuthUrl, "", "auth url")
-	authApplicationNamePtr     = flag.String(parameterAuthApplicationName, "", "auth application name")
-	authApplicationPasswordPtr = flag.String(parameterAuthApplicationPassword, "", "auth application password")
 	// ldap params
 	ldapBaseDnPtr       = flag.String(parameterLdapBaseDn, "", "ldap-base-dn")
 	ldapHostPtr         = flag.String(parameterLdapHost, "", "ldap-host")
@@ -114,9 +106,8 @@ func do() error {
 		glog.V(2).Infof("create crowd client failed: %v", err)
 		return err
 	}
-	factory := factory.New(*config, crowdClient)
 	glog.V(2).Infof("start server")
-	return gracehttp.Serve(factory.HttpServer())
+	return gracehttp.Serve(auth.NewFactory(*config, crowdClient).HttpServer())
 }
 
 func createConfig() (*model.Config, error) {
@@ -160,15 +151,6 @@ func createConfig() (*model.Config, error) {
 	}
 	if config.CacheTTL.IsEmpty() {
 		config.CacheTTL = model.CacheTTL(*cacheTTLPtr)
-	}
-	if len(config.AuthUrl) == 0 {
-		config.AuthUrl = model.AuthUrl(*authUrlPtr)
-	}
-	if len(config.AuthApplicationName) == 0 {
-		config.AuthApplicationName = model.AuthApplicationName(*authApplicationNamePtr)
-	}
-	if len(config.AuthApplicationPassword) == 0 {
-		config.AuthApplicationPassword = model.AuthApplicationPassword(*authApplicationPasswordPtr)
 	}
 	if len(config.RequiredGroups) == 0 {
 		config.RequiredGroups = model.CreateGroupsFromString(*requiredGroupsPtr)

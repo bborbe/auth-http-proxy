@@ -1,50 +1,42 @@
-package factory
+package auth
 
 import (
 	"fmt"
 	"net"
 	"net/http"
 
-	"github.com/bborbe/auth-http-proxy/crypter"
-	"github.com/bborbe/auth-http-proxy/model"
-	"github.com/bborbe/auth-http-proxy/verifier"
-	"github.com/bborbe/auth-http-proxy/verifier/cache"
-	crowd_verifier "github.com/bborbe/auth-http-proxy/verifier/crowd"
-	file_verifier "github.com/bborbe/auth-http-proxy/verifier/file"
-	ldap_verifier "github.com/bborbe/auth-http-proxy/verifier/ldap"
 	http_client_builder "github.com/bborbe/http/client_builder"
 	"github.com/bborbe/http_handler/auth_basic"
 	"github.com/bborbe/http_handler/auth_html"
 	"github.com/bborbe/http_handler/check"
-	debug_handler "github.com/bborbe/http_handler/debug"
+	"github.com/bborbe/http_handler/debug"
 	"github.com/bborbe/http_handler/forward"
 	"github.com/golang/glog"
 	"github.com/gorilla/mux"
 	"go.jona.me/crowd"
-	"github.com/bborbe/auth-http-proxy/ldap"
 )
 
-type authHttpProxyFactory struct {
-	config      model.Config
+type factory struct {
+	config      Config
 	crowdClient crowd.Crowd
 }
 
-func New(
-	config model.Config,
+func NewFactory(
+	config Config,
 	crowdClient crowd.Crowd,
-) *authHttpProxyFactory {
-	a := new(authHttpProxyFactory)
+) *factory {
+	a := new(factory)
 	a.config = config
 	a.crowdClient = crowdClient
 	return a
 }
 
-func (a *authHttpProxyFactory) HttpServer() *http.Server {
+func (a *factory) HttpServer() *http.Server {
 	glog.V(2).Infof("create http server on %s", a.config.Port.Address())
 	return &http.Server{Addr: a.config.Port.Address(), Handler: a.Handler()}
 }
 
-func (a *authHttpProxyFactory) createHealthzCheck() func() error {
+func (a *factory) createHealthzCheck() func() error {
 	if len(a.config.TargetHealthzUrl) > 0 {
 		return func() error {
 			resp, err := http.Get(a.config.TargetHealthzUrl.String())
@@ -70,7 +62,7 @@ func (a *authHttpProxyFactory) createHealthzCheck() func() error {
 	}
 }
 
-func (a *authHttpProxyFactory) Handler() http.Handler {
+func (a *factory) Handler() http.Handler {
 	glog.V(2).Infof("create handler")
 
 	checkHandler := check.New(a.createHealthzCheck())
@@ -83,12 +75,12 @@ func (a *authHttpProxyFactory) Handler() http.Handler {
 
 	if glog.V(4) {
 		glog.Infof("add debug handler")
-		handler = debug_handler.New(handler)
+		handler = debug.New(handler)
 	}
 	return handler
 }
 
-func (a *authHttpProxyFactory) createHttpFilter() http.Handler {
+func (a *factory) createHttpFilter() http.Handler {
 	glog.V(2).Infof("get auth filter for: %v", a.config.Kind)
 	switch a.config.Kind {
 	case "html":
@@ -99,26 +91,26 @@ func (a *authHttpProxyFactory) createHttpFilter() http.Handler {
 	return nil
 }
 
-func (a *authHttpProxyFactory) createHtmlAuthHttpFilter() http.Handler {
+func (a *factory) createHtmlAuthHttpFilter() http.Handler {
 	v := a.createVerifier()
 	c := func(username string, password string) (bool, error) {
-		return v.Verify(model.UserName(username), model.Password(password))
+		return v.Verify(UserName(username), Password(password))
 	}
-	return auth_html.New(a.createForwardHandler().ServeHTTP, c, crypter.New(a.config.Secret.Bytes()))
+	return auth_html.New(a.createForwardHandler().ServeHTTP, c, NewCrypter(a.config.Secret.Bytes()))
 }
 
-func (a *authHttpProxyFactory) createBasicAuthHttpFilter() http.Handler {
+func (a *factory) createBasicAuthHttpFilter() http.Handler {
 	v := a.createVerifier()
 	c := func(username string, password string) (bool, error) {
-		return v.Verify(model.UserName(username), model.Password(password))
+		return v.Verify(UserName(username), Password(password))
 	}
 	return auth_basic.New(a.createForwardHandler().ServeHTTP, c, a.config.BasicAuthRealm.String())
 }
 
-func (a *authHttpProxyFactory) createForwardHandler() http.Handler {
-	dialer := (&net.Dialer{
+func (a *factory) createForwardHandler() http.Handler {
+	dialer := &net.Dialer{
 		Timeout: http_client_builder.DEFAULT_TIMEOUT,
-	})
+	}
 	return forward.New(a.config.TargetAddress.String(),
 		func(address string, req *http.Request) (resp *http.Response, err error) {
 			return http_client_builder.New().WithoutProxy().WithoutRedirects().WithDialFunc(
@@ -128,22 +120,22 @@ func (a *authHttpProxyFactory) createForwardHandler() http.Handler {
 		})
 }
 
-func (a *authHttpProxyFactory) createVerifier() verifier.Verifier {
+func (a *factory) createVerifier() Verifier {
 	glog.V(2).Infof("get verifier for: %v", a.config.VerifierType)
 	switch a.config.VerifierType {
 	case "ldap":
 		return a.createLdapVerifier()
 	case "file":
-		return a.createFileVerifier()
+		return NewCacheAuth(NewFileAuth(a.config.UserFile), a.config.CacheTTL)
 	case "crowd":
-		return a.createCrowdVerifier()
+		return NewCacheAuth(NewCrowdAuth(a.crowdClient.Authenticate), a.config.CacheTTL)
 	}
 	return nil
 }
 
-func (a *authHttpProxyFactory) createLdapVerifier() verifier.Verifier {
-	auth := &ldap_verifier.Auth{
-		Authenticator: ldap.NewAuthenticator(
+func (a *factory) createLdapVerifier() Verifier {
+	auth := &LdapAuth{
+		Authenticator: NewAuthenticator(
 			a.config.LdapBaseDn,
 			a.config.LdapHost,
 			a.config.LdapServerName,
@@ -161,17 +153,5 @@ func (a *authHttpProxyFactory) createLdapVerifier() verifier.Verifier {
 		),
 		RequiredGroups: a.config.RequiredGroups,
 	}
-	return cache.New(auth, a.config.CacheTTL)
-}
-
-func (a *authHttpProxyFactory) createFileVerifier() verifier.Verifier {
-	return cache.New(file_verifier.New(a.config.UserFile), a.config.CacheTTL)
-}
-
-func (a *authHttpProxyFactory) createCrowdVerifier() verifier.Verifier {
-	return cache.New(crowd_verifier.New(a.crowdClient.Authenticate), a.config.CacheTTL)
-}
-
-func (a *authHttpProxyFactory) httpClient() *http.Client {
-	return http_client_builder.New().WithoutProxy().Build()
+	return NewCacheAuth(auth, a.config.CacheTTL)
 }

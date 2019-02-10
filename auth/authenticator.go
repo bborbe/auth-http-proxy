@@ -1,7 +1,6 @@
-package ldap
+package auth
 
 import (
-	"github.com/bborbe/auth-http-proxy/model"
 	"github.com/golang/glog"
 	"github.com/jtblin/go-ldap-client"
 )
@@ -9,43 +8,43 @@ import (
 const ldapConnectionSize = 5
 
 type Authenticator interface {
-	Authenticate(model.UserName, model.Password) (bool, map[string]string, error)
-	GetGroupsOfUser(model.UserName) ([]string, error)
+	Authenticate(UserName, Password) (bool, map[string]string, error)
+	GetGroupsOfUser(UserName) ([]string, error)
 }
 
 type ldapAuth struct {
-	ldapBaseDn       model.LdapBaseDn
-	ldapHost         model.LdapHost
-	ldapServerName   model.LdapServerName
-	ldapPort         model.LdapPort
-	ldapUseSSL       model.LdapUseSSL
-	ldapSkipTls      model.LdapSkipTls
-	ldapBindDN       model.LdapBindDN
-	ldapBindPassword model.LdapBindPassword
-	ldapUserFilter   model.LdapUserFilter
-	ldapGroupFilter  model.LdapGroupFilter
-	ldapUserDn       model.LdapUserDn
-	ldapGroupDn      model.LdapGroupDn
-	ldapUserField    model.LdapUserField
-	ldapGroupField   model.LdapGroupField
+	ldapBaseDn       LdapBaseDn
+	ldapHost         LdapHost
+	ldapServerName   LdapServerName
+	ldapPort         LdapPort
+	ldapUseSSL       LdapUseSSL
+	ldapSkipTls      LdapSkipTls
+	ldapBindDN       LdapBindDN
+	ldapBindPassword LdapBindPassword
+	ldapUserFilter   LdapUserFilter
+	ldapGroupFilter  LdapGroupFilter
+	ldapUserDn       LdapUserDn
+	ldapGroupDn      LdapGroupDn
+	ldapUserField    LdapUserField
+	ldapGroupField   LdapGroupField
 	ldapClients      chan *ldap.LDAPClient
 }
 
 func NewAuthenticator(
-	ldapBaseDn model.LdapBaseDn,
-	ldapHost model.LdapHost,
-	ldapServerName model.LdapServerName,
-	ldapPort model.LdapPort,
-	ldapUseSSL model.LdapUseSSL,
-	ldapSkipTls model.LdapSkipTls,
-	ldapBindDN model.LdapBindDN,
-	ldapBindPassword model.LdapBindPassword,
-	ldapUserDn model.LdapUserDn,
-	ldapUserFilter model.LdapUserFilter,
-	ldapUserField model.LdapUserField,
-	ldapGroupDn model.LdapGroupDn,
-	ldapGroupFilter model.LdapGroupFilter,
-	ldapGroupField model.LdapGroupField,
+	ldapBaseDn LdapBaseDn,
+	ldapHost LdapHost,
+	ldapServerName LdapServerName,
+	ldapPort LdapPort,
+	ldapUseSSL LdapUseSSL,
+	ldapSkipTls LdapSkipTls,
+	ldapBindDN LdapBindDN,
+	ldapBindPassword LdapBindPassword,
+	ldapUserDn LdapUserDn,
+	ldapUserFilter LdapUserFilter,
+	ldapUserField LdapUserField,
+	ldapGroupDn LdapGroupDn,
+	ldapGroupFilter LdapGroupFilter,
+	ldapGroupField LdapGroupField,
 ) Authenticator {
 	a := new(ldapAuth)
 	a.ldapBaseDn = ldapBaseDn
@@ -98,7 +97,7 @@ func (a *ldapAuth) Close() {
 	}
 }
 
-func (a *ldapAuth) Authenticate(username model.UserName, password model.Password) (ok bool, data map[string]string, err error) {
+func (a *ldapAuth) Authenticate(username UserName, password Password) (ok bool, data map[string]string, err error) {
 	glog.V(2).Infof("Authenticate user %s", username)
 	ldapClient := a.getClient()
 	ok, data, err = ldapClient.Authenticate(username.String(), password.String())
@@ -112,7 +111,7 @@ func (a *ldapAuth) Authenticate(username model.UserName, password model.Password
 	return
 }
 
-func (a *ldapAuth) GetGroupsOfUser(username model.UserName) (groups []string, err error) {
+func (a *ldapAuth) GetGroupsOfUser(username UserName) (groups []string, err error) {
 	glog.V(2).Infof("GetGroupsOfUser for user %s", username)
 	ldapClient := a.getClient()
 	groups, err = ldapClient.GetGroupsOfUser(username.String())

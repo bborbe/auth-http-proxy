@@ -1,4 +1,4 @@
-package model
+package auth
 
 import (
 	"encoding/json"
@@ -13,36 +13,33 @@ import (
 )
 
 type Config struct {
-	Port                    Port                    `json:"port"`
-	CacheTTL                CacheTTL                `json:"cache-ttl"`
-	AuthUrl                 AuthUrl                 `json:"auth-url"`
-	AuthApplicationName     AuthApplicationName     `json:"auth-application-name"`
-	AuthApplicationPassword AuthApplicationPassword `json:"auth-application-password"`
-	TargetAddress           TargetAddress           `json:"target-address"`
-	TargetHealthzUrl        TargetHealthzUrl        `json:"target-healthz-url"`
-	BasicAuthRealm          BasicAuthRealm          `json:"basic-auth-realm"`
-	Secret                  Secret                  `json:"secret"`
-	RequiredGroups          []GroupName             `json:"required-groups"`
-	VerifierType            VerifierType            `json:"verifier"`
-	UserFile                UserFile                `json:"file-users"`
-	Kind                    Kind                    `json:"kind"`
-	LdapHost                LdapHost                `json:"ldap-host"`
-	LdapServerName          LdapServerName          `json:"ldap-servername"`
-	LdapPort                LdapPort                `json:"ldap-port"`
-	LdapUseSSL              LdapUseSSL              `json:"ldap-use-ssl"`
-	LdapSkipTls             LdapSkipTls             `json:"ldap-skip-tls"`
-	LdapBindDN              LdapBindDN              `json:"ldap-bind-dn"`
-	LdapBindPassword        LdapBindPassword        `json:"ldap-bind-password"`
-	LdapBaseDn              LdapBaseDn              `json:"ldap-base-dn"`
-	LdapUserDn              LdapUserDn              `json:"ldap-user-dn"`
-	LdapGroupDn             LdapGroupDn             `json:"ldap-group-dn"`
-	LdapUserFilter          LdapUserFilter          `json:"ldap-user-filter"`
-	LdapGroupFilter         LdapGroupFilter         `json:"ldap-group-filter"`
-	LdapUserField           LdapUserField           `json:"ldap-user-field"`
-	LdapGroupField          LdapGroupField          `json:"ldap-group-field"`
-	CrowdURL                CrowdURL                `json:"crowd-url"`
-	CrowdAppName            CrowdAppName            `json:"crowd-app-name"`
-	CrowdAppPassword        CrowdAppPassword        `json:"crowd-app-password"`
+	Port             Port             `json:"port"`
+	CacheTTL         CacheTTL         `json:"cache-ttl"`
+	TargetAddress    TargetAddress    `json:"target-address"`
+	TargetHealthzUrl TargetHealthzUrl `json:"target-healthz-url"`
+	BasicAuthRealm   BasicAuthRealm   `json:"basic-auth-realm"`
+	Secret           Secret           `json:"secret"`
+	RequiredGroups   []GroupName      `json:"required-groups"`
+	VerifierType     VerifierType     `json:"verifier"`
+	UserFile         UserFile         `json:"file-users"`
+	Kind             Kind             `json:"kind"`
+	LdapHost         LdapHost         `json:"ldap-host"`
+	LdapServerName   LdapServerName   `json:"ldap-servername"`
+	LdapPort         LdapPort         `json:"ldap-port"`
+	LdapUseSSL       LdapUseSSL       `json:"ldap-use-ssl"`
+	LdapSkipTls      LdapSkipTls      `json:"ldap-skip-tls"`
+	LdapBindDN       LdapBindDN       `json:"ldap-bind-dn"`
+	LdapBindPassword LdapBindPassword `json:"ldap-bind-password"`
+	LdapBaseDn       LdapBaseDn       `json:"ldap-base-dn"`
+	LdapUserDn       LdapUserDn       `json:"ldap-user-dn"`
+	LdapGroupDn      LdapGroupDn      `json:"ldap-group-dn"`
+	LdapUserFilter   LdapUserFilter   `json:"ldap-user-filter"`
+	LdapGroupFilter  LdapGroupFilter  `json:"ldap-group-filter"`
+	LdapUserField    LdapUserField    `json:"ldap-user-field"`
+	LdapGroupField   LdapGroupField   `json:"ldap-group-field"`
+	CrowdURL         CrowdURL         `json:"crowd-url"`
+	CrowdAppName     CrowdAppName     `json:"crowd-app-name"`
+	CrowdAppPassword CrowdAppPassword `json:"crowd-app-password"`
 }
 
 func (c *Config) Validate() error {
@@ -101,17 +98,6 @@ func (c *Config) Validate() error {
 	if c.VerifierType == "file" {
 		if len(c.UserFile) == 0 {
 			return fmt.Errorf("parameter UserFile missing")
-		}
-	}
-	if c.VerifierType == "auth" {
-		if len(c.AuthUrl) == 0 {
-			return fmt.Errorf("parameter AuthUrl missing")
-		}
-		if len(c.AuthApplicationName) == 0 {
-			return fmt.Errorf("parameter AuthApplicationName missing")
-		}
-		if len(c.AuthApplicationPassword) == 0 {
-			return fmt.Errorf("parameter AuthApplicationPassword missing")
 		}
 	}
 	if c.Kind == "html" {

@@ -1,4 +1,4 @@
-package file
+package auth
 
 import (
 	"bufio"
@@ -6,25 +6,24 @@ import (
 	"os"
 	"strings"
 
-	"github.com/bborbe/auth-http-proxy/model"
 	"github.com/golang/glog"
 )
 
-type auth struct {
-	userFile model.UserFile
+type fileAuth struct {
+	userFile UserFile
 }
 
-func New(userFile model.UserFile) *auth {
-	a := new(auth)
-	a.userFile = userFile
-	return a
+func NewFileAuth(userFile UserFile) Verifier {
+	return &fileAuth{
+		userFile: userFile,
+	}
 }
 
-func (a *auth) Verify(username model.UserName, password model.Password) (bool, error) {
+func (a *fileAuth) Verify(username UserName, password Password) (bool, error) {
 	glog.V(2).Infof("verify user %s with password-length %d", username, len(password))
 	file, err := os.Open(a.userFile.String())
 	if err != nil {
-		glog.Warningf("open user file %v failed", a.userFile.String(), err)
+		glog.Warningf("open user file %v failed: %v", a.userFile.String(), err)
 		return false, err
 	}
 	reader := bufio.NewReader(file)
