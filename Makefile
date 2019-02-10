@@ -1,7 +1,20 @@
+REGISTRY ?= docker.io
+IMAGE ?= bborbe/auth-http-proxy
+VERSION ?= latest
+
 deps:
 	go get -u github.com/golang/lint/golint
 	go get -u github.com/kisielk/errcheck
 	go get -u golang.org/x/tools/cmd/goimports
+
+build:
+	docker build -t $(REGISTRY)/$(IMAGE):$(VERSION) -f Dockerfile .
+
+upload:
+	docker push $(REGISTRY)/$(IMAGE):$(VERSION)
+
+clean:
+	docker rmi $(REGISTRY)/$(IMAGE):$(VERSION) || true
 
 precommit: ensure format test check
 	@echo "ready to commit"

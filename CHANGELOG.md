@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## 3.2.0
+
+- Add Dockerfile again
+
 ## 3.1.0
 
 - Replace deps with go modules
