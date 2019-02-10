@@ -32,21 +32,21 @@ func NewCacheAuth(
 	}
 }
 
-func (a *cacheAuth) Verify(username UserName, password Password) (bool, error) {
+func (c *cacheAuth) Verify(username UserName, password Password) (bool, error) {
 	glog.V(2).Infof("verify user %s with password-length %d", username, len(password))
-	value, found := a.cache.Get(username.String())
+	value, found := c.cache.Get(username.String())
 	if found && value == password.String() {
 		glog.V(2).Infof("cache hit for user %v", username)
 		return true, nil
 	}
-	result, err := a.Verify(username, password)
+	result, err := c.verifier.Verify(username, password)
 	if err != nil {
 		glog.Warningf("verify user %v failed: %v", username, err)
 		return false, err
 	}
 	if result {
 		glog.V(2).Infof("add user %v to cache", username)
-		a.cache.Set(username.String(), password.String())
+		c.cache.Set(username.String(), password.String())
 	}
 	return result, nil
 }
