@@ -4,15 +4,21 @@ import (
 	"github.com/golang/glog"
 )
 
+type GroupName string
+
+func (g GroupName) String() string {
+	return string(g)
+}
+
 type LdapAuth struct {
-	Authenticator  Authenticator
-	RequiredGroups []GroupName
+	LdapAuthenticator LdapAuthenticator
+	RequiredGroups    []GroupName
 }
 
 func (l *LdapAuth) Verify(username UserName, password Password) (bool, error) {
 	glog.V(2).Infof("verify user %v is valid and has groups %v", username, l.RequiredGroups)
 
-	ok, _, err := l.Authenticator.Authenticate(username, password)
+	ok, _, err := l.LdapAuthenticator.Authenticate(username, password)
 	if err != nil {
 		glog.V(0).Infof("authenticate user %v failed %v", username, err)
 		return false, nil
@@ -24,7 +30,7 @@ func (l *LdapAuth) Verify(username UserName, password Password) (bool, error) {
 
 	glog.V(2).Infof("username and password of user %v is valid", username)
 	glog.V(2).Infof("get groups of user %v", username)
-	groupNames, err := l.Authenticator.GetGroupsOfUser(username)
+	groupNames, err := l.LdapAuthenticator.GetGroupsOfUser(username)
 	if err != nil {
 		glog.Warningf("get groups for user %v failed: %v", username, err)
 		return false, err

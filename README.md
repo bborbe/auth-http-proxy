@@ -28,7 +28,7 @@ file_server \
 
 _only for testing_
 
-`echo 'admin:tester' > sample_users`
+`echo 'admin:tester' > sample/sample_users`
 
 Start auth-http-proxy
 
@@ -41,7 +41,7 @@ auth-http-proxy \
 -basic-auth-realm=TestAuth \
 -target-address=localhost:7777 \
 -verifier=file \
--file-users=sample_users
+-file-users=sample/sample_users
 ```
 
 ### With crowd backend
@@ -126,58 +126,5 @@ Start auth-http-proxy with config
 auth-http-proxy \
 -logtostderr \
 -v=2 \
--config=config.json
-```
-
-### With Auth backend 
-
-Start ledis database
-
-`go get github.com/siddontang/ledisdb/cmd/ledis-server`
-
-```
-ledis-server \
--databases=1 \
--addr=localhost:5555
-```
-
-Start auth-server
-
-`go get github.com/bborbe/auth/bin/auth_server`
-
-```
-auth_server \
--logtostderr \
--v=2 \
--port=6666 \
--ledisdb-address=localhost:5555 \
--auth-application-password=test123
-```
-
-Register user
-
-`echo -n 'tester:secret' | base64`
-
-```
-curl \
--X POST \
--d '{ "authToken":"dGVzdGVyOnNlY3JldA==","user":"tester" }' \
--H "Authorization: Bearer YXV0aDp0ZXN0MTIz" \
-http://localhost:6666/api/1.0/user
-```
-
-Start auth-http-proxy
-
-```
-auth-http-proxy \
--logtostderr \
--v=2 \
--port=8888 \
--kind=basic \
--basic-auth-realm=TestAuth \
--target-address=localhost:7777 \
--verifier=auth \
--auth-url=http://localhost:6666 \
--auth-application-name=auth \
--auth-application-password=test123
+-config=sample/config_ldap.json
 ```

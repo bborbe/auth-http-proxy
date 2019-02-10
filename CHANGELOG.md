@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## 3.1.0
+
+- Replace deps with go modules
+
 ## 3.0.0
 
 - Remove auth support 

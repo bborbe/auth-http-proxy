@@ -9,6 +9,12 @@ import (
 	"github.com/golang/glog"
 )
 
+type UserFile string
+
+func (u UserFile) String() string {
+	return string(u)
+}
+
 type fileAuth struct {
 	userFile UserFile
 }

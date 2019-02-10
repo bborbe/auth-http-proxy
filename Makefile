@@ -1,15 +1,14 @@
 deps:
-	go get -u github.com/golang/dep/cmd/dep
 	go get -u github.com/golang/lint/golint
 	go get -u github.com/kisielk/errcheck
-	go get -u github.com/onsi/ginkgo/ginkgo
 	go get -u golang.org/x/tools/cmd/goimports
 
 precommit: ensure format test check
 	@echo "ready to commit"
 
 ensure:
-	dep ensure
+	go mod tidy
+	go mod vendor
 
 format:
 	@go get golang.org/x/tools/cmd/goimports
