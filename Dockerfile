@@ -1,4 +1,4 @@
-FROM golang:1.11.5 AS build
+FROM golang:1.12.0 AS build
 COPY . /go/src/github.com/bborbe/auth-http-proxy
 RUN CGO_ENABLED=0 GOOS=linux go build -ldflags "-s" -a -installsuffix cgo -o /auth-http-proxy ./src/github.com/bborbe/auth-http-proxy
 CMD ["/bin/bash"]
