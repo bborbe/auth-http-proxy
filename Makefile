@@ -1,20 +1,41 @@
 REGISTRY ?= docker.io
 IMAGE ?= bborbe/auth-http-proxy
-VERSION ?= latest
+VERSION  ?= latest
+VERSIONS = $(VERSION)
+VERSIONS += $(shell git fetch --tags; git tag -l --points-at HEAD)
+
+all: test install
 
 deps:
 	go get -u golang.org/x/lint/golint
 	go get -u github.com/kisielk/errcheck
 	go get -u golang.org/x/tools/cmd/goimports
 
-build:
-	docker build -t $(REGISTRY)/$(IMAGE):$(VERSION) -f Dockerfile .
+install:
+	GOBIN=$(GOPATH)/bin GO15VENDOREXPERIMENT=1 go install *.go
 
-upload:
-	docker push $(REGISTRY)/$(IMAGE):$(VERSION)
+build:
+	@tags=""; \
+	for i in $(VERSIONS); do \
+		tags="$$tags -t $(REGISTRY)/$(IMAGE):$$i"; \
+	done; \
+	echo "docker build --no-cache --rm=true $$tags ."; \
+	docker build --no-cache --rm=true $$tags .
 
 clean:
-	docker rmi $(REGISTRY)/$(IMAGE):$(VERSION) || true
+	@for i in $(VERSIONS); do \
+		echo "docker rmi $(REGISTRY)/$(IMAGE):$$i"; \
+		docker rmi $(REGISTRY)/$(IMAGE):$$i || true; \
+	done
+
+upload:
+	@for i in $(VERSIONS); do \
+		echo "docker push $(REGISTRY)/$(IMAGE):$$i"; \
+		docker push $(REGISTRY)/$(IMAGE):$$i; \
+	done
+
+versions:
+	@for i in $(VERSIONS); do echo $$i; done;
 
 precommit: ensure format test check
 	@echo "ready to commit"
