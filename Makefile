@@ -41,8 +41,8 @@ precommit: ensure format test check
 	@echo "ready to commit"
 
 ensure:
-	go mod tidy
-	go mod vendor
+	GO111MODULE=on go mod tidy
+	GO111MODULE=on go mod vendor
 
 format:
 	@go get golang.org/x/tools/cmd/goimports
