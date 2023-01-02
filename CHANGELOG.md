@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## 3.3.1
+
+- go mod upgrade
+
 ## 3.3.0
 
 - Add multi tags
