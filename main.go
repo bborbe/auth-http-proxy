@@ -14,7 +14,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/bborbe/auth-http-proxy/auth"
 	flag "github.com/bborbe/flagenv"
 	http_client_builder "github.com/bborbe/http/client_builder"
 	"github.com/bborbe/http_handler/auth_basic"
@@ -27,6 +26,8 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/pkg/errors"
 	"go.jona.me/crowd"
+
+	"github.com/bborbe/auth-http-proxy/auth"
 )
 
 var (

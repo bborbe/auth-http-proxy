@@ -5,9 +5,10 @@
 package auth_test
 
 import (
-	"github.com/bborbe/auth-http-proxy/auth"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+
+	"github.com/bborbe/auth-http-proxy/auth"
 )
 
 var _ = Describe("Crypter", func() {
