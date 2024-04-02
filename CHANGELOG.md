@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## 3.4.0
+
+- inline http_handler code 
+- go mod update
+
 ## 3.3.2
 
 - go mod update

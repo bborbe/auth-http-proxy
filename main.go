@@ -5,6 +5,7 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"net"
@@ -15,19 +16,14 @@ import (
 	"time"
 
 	flag "github.com/bborbe/flagenv"
-	http_client_builder "github.com/bborbe/http/client_builder"
-	"github.com/bborbe/http_handler/auth_basic"
-	"github.com/bborbe/http_handler/auth_html"
-	"github.com/bborbe/http_handler/check"
-	"github.com/bborbe/http_handler/debug"
-	"github.com/bborbe/http_handler/forward"
+	libhttp "github.com/bborbe/http"
 	"github.com/facebookgo/grace/gracehttp"
 	"github.com/golang/glog"
 	"github.com/gorilla/mux"
 	"github.com/pkg/errors"
 	"go.jona.me/crowd"
 
-	"github.com/bborbe/auth-http-proxy/auth"
+	"github.com/bborbe/auth-http-proxy/pkg"
 )
 
 var (
@@ -89,33 +85,33 @@ func main() {
 }
 
 type application struct {
-	Port             Port                  `json:"port"`
-	CacheTTL         auth.CacheTTL         `json:"cache-ttl"`
-	TargetAddress    TargetAddress         `json:"target-address"`
-	TargetHealthzUrl TargetHealthzUrl      `json:"target-healthz-url"`
-	BasicAuthRealm   BasicAuthRealm        `json:"basic-auth-realm"`
-	Secret           Secret                `json:"secret"`
-	RequiredGroups   []auth.GroupName      `json:"required-groups"`
-	VerifierType     VerifierType          `json:"verifier"`
-	UserFile         auth.UserFile         `json:"file-users"`
-	Kind             Kind                  `json:"kind"`
-	LdapHost         auth.LdapHost         `json:"ldap-host"`
-	LdapServerName   auth.LdapServerName   `json:"ldap-servername"`
-	LdapPort         auth.LdapPort         `json:"ldap-port"`
-	LdapUseSSL       auth.LdapUseSSL       `json:"ldap-use-ssl"`
-	LdapSkipTls      auth.LdapSkipTls      `json:"ldap-skip-tls"`
-	LdapBindDN       auth.LdapBindDN       `json:"ldap-bind-dn"`
-	LdapBindPassword auth.LdapBindPassword `json:"ldap-bind-password"`
-	LdapBaseDn       auth.LdapBaseDn       `json:"ldap-base-dn"`
-	LdapUserDn       auth.LdapUserDn       `json:"ldap-user-dn"`
-	LdapGroupDn      auth.LdapGroupDn      `json:"ldap-group-dn"`
-	LdapUserFilter   auth.LdapUserFilter   `json:"ldap-user-filter"`
-	LdapGroupFilter  auth.LdapGroupFilter  `json:"ldap-group-filter"`
-	LdapUserField    auth.LdapUserField    `json:"ldap-user-field"`
-	LdapGroupField   auth.LdapGroupField   `json:"ldap-group-field"`
-	CrowdURL         CrowdURL              `json:"crowd-url"`
-	CrowdAppName     CrowdAppName          `json:"crowd-app-name"`
-	CrowdAppPassword CrowdAppPassword      `json:"crowd-app-password"`
+	Port             Port                 `json:"port"`
+	CacheTTL         pkg.CacheTTL         `json:"cache-ttl"`
+	TargetAddress    TargetAddress        `json:"target-address"`
+	TargetHealthzUrl TargetHealthzUrl     `json:"target-healthz-url"`
+	BasicAuthRealm   BasicAuthRealm       `json:"basic-auth-realm"`
+	Secret           Secret               `json:"secret"`
+	RequiredGroups   []pkg.GroupName      `json:"required-groups"`
+	VerifierType     VerifierType         `json:"verifier"`
+	UserFile         pkg.UserFile         `json:"file-users"`
+	Kind             Kind                 `json:"kind"`
+	LdapHost         pkg.LdapHost         `json:"ldap-host"`
+	LdapServerName   pkg.LdapServerName   `json:"ldap-servername"`
+	LdapPort         pkg.LdapPort         `json:"ldap-port"`
+	LdapUseSSL       pkg.LdapUseSSL       `json:"ldap-use-ssl"`
+	LdapSkipTls      pkg.LdapSkipTls      `json:"ldap-skip-tls"`
+	LdapBindDN       pkg.LdapBindDN       `json:"ldap-bind-dn"`
+	LdapBindPassword pkg.LdapBindPassword `json:"ldap-bind-password"`
+	LdapBaseDn       pkg.LdapBaseDn       `json:"ldap-base-dn"`
+	LdapUserDn       pkg.LdapUserDn       `json:"ldap-user-dn"`
+	LdapGroupDn      pkg.LdapGroupDn      `json:"ldap-group-dn"`
+	LdapUserFilter   pkg.LdapUserFilter   `json:"ldap-user-filter"`
+	LdapGroupFilter  pkg.LdapGroupFilter  `json:"ldap-group-filter"`
+	LdapUserField    pkg.LdapUserField    `json:"ldap-user-field"`
+	LdapGroupField   pkg.LdapGroupField   `json:"ldap-group-field"`
+	CrowdURL         CrowdURL             `json:"crowd-url"`
+	CrowdAppName     CrowdAppName         `json:"crowd-app-name"`
+	CrowdAppPassword CrowdAppPassword     `json:"crowd-app-password"`
 }
 
 func (a *application) parseConfig() error {
@@ -136,7 +132,7 @@ func (a *application) parseConfig() error {
 		a.Kind = Kind(*kindPtr)
 	}
 	if len(a.UserFile) == 0 {
-		a.UserFile = auth.UserFile(*fileUseresPtr)
+		a.UserFile = pkg.UserFile(*fileUseresPtr)
 	}
 	if len(a.VerifierType) == 0 {
 		a.VerifierType = VerifierType(*verifierPtr)
@@ -154,57 +150,57 @@ func (a *application) parseConfig() error {
 		a.TargetAddress = TargetAddress(*targetAddressPtr)
 	}
 	if a.CacheTTL.IsEmpty() {
-		a.CacheTTL = auth.CacheTTL(*cacheTTLPtr)
+		a.CacheTTL = pkg.CacheTTL(*cacheTTLPtr)
 	}
 	if len(a.RequiredGroups) == 0 {
 		for _, groupName := range strings.Split(*requiredGroupsPtr, ",") {
 			if len(groupName) > 0 {
-				a.RequiredGroups = append(a.RequiredGroups, auth.GroupName(groupName))
+				a.RequiredGroups = append(a.RequiredGroups, pkg.GroupName(groupName))
 			}
 		}
 		glog.V(1).Infof("required groups: %v", a.RequiredGroups)
 	}
 	if len(a.LdapBaseDn) == 0 {
-		a.LdapBaseDn = auth.LdapBaseDn(*ldapBaseDnPtr)
+		a.LdapBaseDn = pkg.LdapBaseDn(*ldapBaseDnPtr)
 	}
 	if len(a.LdapHost) == 0 {
-		a.LdapHost = auth.LdapHost(*ldapHostPtr)
+		a.LdapHost = pkg.LdapHost(*ldapHostPtr)
 	}
 	if len(a.LdapServerName) == 0 {
-		a.LdapServerName = auth.LdapServerName(*ldapServerNamePtr)
+		a.LdapServerName = pkg.LdapServerName(*ldapServerNamePtr)
 	}
 	if a.LdapPort <= 0 {
-		a.LdapPort = auth.LdapPort(*ldapPortPtr)
+		a.LdapPort = pkg.LdapPort(*ldapPortPtr)
 	}
 	if !a.LdapUseSSL {
-		a.LdapUseSSL = auth.LdapUseSSL(*ldapUseSSLPtr)
+		a.LdapUseSSL = pkg.LdapUseSSL(*ldapUseSSLPtr)
 	}
 	if !a.LdapSkipTls {
-		a.LdapSkipTls = auth.LdapSkipTls(*ldapSkipTlsPtr)
+		a.LdapSkipTls = pkg.LdapSkipTls(*ldapSkipTlsPtr)
 	}
 	if len(a.LdapBindDN) == 0 {
-		a.LdapBindDN = auth.LdapBindDN(*ldapBindDNPtr)
+		a.LdapBindDN = pkg.LdapBindDN(*ldapBindDNPtr)
 	}
 	if len(a.LdapBindPassword) == 0 {
-		a.LdapBindPassword = auth.LdapBindPassword(*ldapBindPasswordPtr)
+		a.LdapBindPassword = pkg.LdapBindPassword(*ldapBindPasswordPtr)
 	}
 	if len(a.LdapUserFilter) == 0 {
-		a.LdapUserFilter = auth.LdapUserFilter(*ldapUserFilterPtr)
+		a.LdapUserFilter = pkg.LdapUserFilter(*ldapUserFilterPtr)
 	}
 	if len(a.LdapGroupFilter) == 0 {
-		a.LdapGroupFilter = auth.LdapGroupFilter(*ldapGroupFilterPtr)
+		a.LdapGroupFilter = pkg.LdapGroupFilter(*ldapGroupFilterPtr)
 	}
 	if len(a.LdapUserField) == 0 {
-		a.LdapUserField = auth.LdapUserField(*ldapUserFieldPtr)
+		a.LdapUserField = pkg.LdapUserField(*ldapUserFieldPtr)
 	}
 	if len(a.LdapGroupField) == 0 {
-		a.LdapGroupField = auth.LdapGroupField(*ldapGroupFieldPtr)
+		a.LdapGroupField = pkg.LdapGroupField(*ldapGroupFieldPtr)
 	}
 	if len(a.LdapUserDn) == 0 {
-		a.LdapUserDn = auth.LdapUserDn(*ldapUserDnPtr)
+		a.LdapUserDn = pkg.LdapUserDn(*ldapUserDnPtr)
 	}
 	if len(a.LdapGroupDn) == 0 {
-		a.LdapGroupDn = auth.LdapGroupDn(*ldapGroupDnPtr)
+		a.LdapGroupDn = pkg.LdapGroupDn(*ldapGroupDnPtr)
 	}
 	if len(a.CrowdURL) == 0 {
 		a.CrowdURL = CrowdURL(*crowdURLPtr)
@@ -296,12 +292,12 @@ func (a *application) run() error {
 	glog.V(2).Infof("create http server on %s", a.Port.Address())
 
 	dialer := &net.Dialer{
-		Timeout: http_client_builder.DEFAULT_TIMEOUT,
+		Timeout: 30 * time.Second,
 	}
-	forwardHandler := forward.New(a.TargetAddress.String(),
+	forwardHandler := pkg.NewForwardHandler(a.TargetAddress.String(),
 		func(address string, req *http.Request) (resp *http.Response, err error) {
-			return http_client_builder.New().WithoutProxy().WithoutRedirects().WithDialFunc(
-				func(network, address string) (net.Conn, error) {
+			return libhttp.NewClientBuilder().WithoutProxy().WithoutRedirects().WithDialFunc(
+				func(ctx context.Context, network, address string) (net.Conn, error) {
 					return dialer.Dial(network, a.TargetAddress.String())
 				}).BuildRoundTripper().RoundTrip(req)
 		})
@@ -314,12 +310,12 @@ func (a *application) run() error {
 	var httpFilter http.Handler
 	switch a.Kind {
 	case "html":
-		httpFilter = auth_html.New(forwardHandler.ServeHTTP, func(username string, password string) (bool, error) {
-			return v.Verify(auth.UserName(username), auth.Password(password))
-		}, auth.NewCrypter(a.Secret.Bytes()))
+		httpFilter = pkg.NewAuthHtmlHandler(forwardHandler.ServeHTTP, func(username string, password string) (bool, error) {
+			return v.Verify(pkg.UserName(username), pkg.Password(password))
+		}, pkg.NewCrypter(a.Secret.Bytes()))
 	case "basic":
-		httpFilter = auth_basic.New(forwardHandler.ServeHTTP, func(username string, password string) (bool, error) {
-			return v.Verify(auth.UserName(username), auth.Password(password))
+		httpFilter = pkg.NewAuthBasicHandler(forwardHandler.ServeHTTP, func(username string, password string) (bool, error) {
+			return v.Verify(pkg.UserName(username), pkg.Password(password))
 		}, a.BasicAuthRealm.String())
 	default:
 		return errors.Errorf("unknown kind %v", a.Kind)
@@ -335,16 +331,16 @@ func (a *application) run() error {
 	var handler http.Handler = router
 	if glog.V(4) {
 		glog.Infof("add debug handler")
-		handler = debug.New(handler)
+		handler = pkg.NewDebugHandler(handler)
 	}
 	return gracehttp.Serve(&http.Server{Addr: a.Port.Address(), Handler: handler})
 }
 
 func (a *application) checkHandler() http.Handler {
 	if len(a.TargetHealthzUrl) > 0 {
-		return check.New(a.checkHttp)
+		return pkg.NewCheckHandler(a.checkHttp)
 	}
-	return check.New(a.checkTcp)
+	return pkg.NewCheckHandler(a.checkTcp)
 }
 
 func (a *application) checkHttp() error {
@@ -371,12 +367,12 @@ func (a *application) checkTcp() error {
 	return conn.Close()
 }
 
-func (a *application) createVerifier() (auth.Verifier, error) {
+func (a *application) createVerifier() (pkg.Verifier, error) {
 	glog.V(2).Infof("get verifier for: %v", a.VerifierType)
 	switch a.VerifierType {
 	case "ldap":
-		return auth.NewCacheAuth(&auth.LdapAuth{
-			LdapAuthenticator: auth.NewLdapAuthenticator(
+		return pkg.NewCacheAuth(&pkg.LdapAuth{
+			LdapAuthenticator: pkg.NewLdapAuthenticator(
 				a.LdapBaseDn,
 				a.LdapHost,
 				a.LdapServerName,
@@ -395,14 +391,14 @@ func (a *application) createVerifier() (auth.Verifier, error) {
 			RequiredGroups: a.RequiredGroups,
 		}, a.CacheTTL), nil
 	case "file":
-		return auth.NewCacheAuth(auth.NewFileAuth(a.UserFile), a.CacheTTL), nil
+		return pkg.NewCacheAuth(pkg.NewFileAuth(a.UserFile), a.CacheTTL), nil
 	case "crowd":
 		crowdClient, err := crowd.New(a.CrowdAppName.String(), a.CrowdAppPassword.String(), a.CrowdURL.String())
 		if err != nil {
 			glog.V(2).Infof("create crowd client failed: %v", err)
 			return nil, errors.Wrap(err, "create crowd client failed")
 		}
-		return auth.NewCacheAuth(auth.NewCrowdAuth(crowdClient.Authenticate), a.CacheTTL), nil
+		return pkg.NewCacheAuth(pkg.NewCrowdAuth(crowdClient.Authenticate), a.CacheTTL), nil
 	default:
 		return nil, errors.Errorf("unknown verifier type: %v", a.VerifierType)
 	}
