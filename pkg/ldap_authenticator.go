@@ -173,6 +173,7 @@ func (a *ldapAuth) releaseClient(client *ldap.LDAPClient) {
 		a.closeClient(client)
 	}
 }
+
 func (a *ldapAuth) closeClient(client *ldap.LDAPClient) {
 	glog.V(2).Infof("closed client")
 	client.Close()

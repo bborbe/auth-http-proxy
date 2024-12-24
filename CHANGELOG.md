@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## 3.4.2
+
+- go mod update
+- update Dockerimages
+
 ## 3.4.1
 
 - go mod update

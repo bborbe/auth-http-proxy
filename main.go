@@ -15,12 +15,12 @@ import (
 	"strings"
 	"time"
 
+	"github.com/bborbe/errors"
 	flag "github.com/bborbe/flagenv"
 	libhttp "github.com/bborbe/http"
 	"github.com/facebookgo/grace/gracehttp"
 	"github.com/golang/glog"
 	"github.com/gorilla/mux"
-	"github.com/pkg/errors"
 	"go.jona.me/crowd"
 
 	"github.com/bborbe/auth-http-proxy/pkg"
@@ -68,10 +68,12 @@ func main() {
 	glog.CopyStandardLogTo("info")
 	runtime.GOMAXPROCS(runtime.NumCPU())
 
+	ctx := context.Background()
+
 	app := &application{}
 	flag.Parse()
 
-	if err := app.parseConfig(); err != nil {
+	if err := app.parseConfig(ctx); err != nil {
 		glog.Exit(err)
 	}
 
@@ -79,7 +81,7 @@ func main() {
 		glog.Exit(err)
 	}
 
-	if err := app.run(); err != nil {
+	if err := app.run(ctx); err != nil {
 		glog.Exit(err)
 	}
 }
@@ -114,15 +116,15 @@ type application struct {
 	CrowdAppPassword CrowdAppPassword     `json:"crowd-app-password"`
 }
 
-func (a *application) parseConfig() error {
+func (a *application) parseConfig(ctx context.Context) error {
 	if len(*configPtr) > 0 {
 		file, err := os.Open(*configPtr)
 		if err != nil {
-			return errors.Wrapf(err, "read config %v failed", *configPtr)
+			return errors.Wrapf(ctx, err, "read config %v failed", *configPtr)
 		}
 		err = json.NewDecoder(file).Decode(a)
 		if err != nil {
-			return errors.Wrap(err, "parse config json failed")
+			return errors.Wrap(ctx, err, "parse config json failed")
 		}
 	}
 	if a.Port <= 0 {
@@ -288,7 +290,7 @@ func (a *application) validate() error {
 	return nil
 }
 
-func (a *application) run() error {
+func (a *application) run(ctx context.Context) error {
 	glog.V(2).Infof("create http server on %s", a.Port.Address())
 
 	dialer := &net.Dialer{
@@ -296,16 +298,20 @@ func (a *application) run() error {
 	}
 	forwardHandler := pkg.NewForwardHandler(a.TargetAddress.String(),
 		func(address string, req *http.Request) (resp *http.Response, err error) {
-			return libhttp.NewClientBuilder().WithoutProxy().WithoutRedirects().WithDialFunc(
+			roundTripper, err := libhttp.NewClientBuilder().WithoutProxy().WithoutRedirects().WithDialFunc(
 				func(ctx context.Context, network, address string) (net.Conn, error) {
 					return dialer.Dial(network, a.TargetAddress.String())
-				}).BuildRoundTripper().RoundTrip(req)
+				}).BuildRoundTripper(ctx)
+			if err != nil {
+				return nil, errors.Wrapf(ctx, err, "build roundtripper failed")
+			}
+			return roundTripper.RoundTrip(req)
 		})
 
 	glog.V(2).Infof("get auth filter for: %v", a.Kind)
-	v, err := a.createVerifier()
+	v, err := a.createVerifier(ctx)
 	if err != nil {
-		return err
+		return errors.Wrapf(ctx, err, "create verifier failed")
 	}
 	var httpFilter http.Handler
 	switch a.Kind {
@@ -318,7 +324,7 @@ func (a *application) run() error {
 			return v.Verify(pkg.UserName(username), pkg.Password(password))
 		}, a.BasicAuthRealm.String())
 	default:
-		return errors.Errorf("unknown kind %v", a.Kind)
+		return errors.Errorf(ctx, "unknown kind %v", a.Kind)
 	}
 
 	router := mux.NewRouter()
@@ -367,7 +373,7 @@ func (a *application) checkTcp() error {
 	return conn.Close()
 }
 
-func (a *application) createVerifier() (pkg.Verifier, error) {
+func (a *application) createVerifier(ctx context.Context) (pkg.Verifier, error) {
 	glog.V(2).Infof("get verifier for: %v", a.VerifierType)
 	switch a.VerifierType {
 	case "ldap":
@@ -396,11 +402,11 @@ func (a *application) createVerifier() (pkg.Verifier, error) {
 		crowdClient, err := crowd.New(a.CrowdAppName.String(), a.CrowdAppPassword.String(), a.CrowdURL.String())
 		if err != nil {
 			glog.V(2).Infof("create crowd client failed: %v", err)
-			return nil, errors.Wrap(err, "create crowd client failed")
+			return nil, errors.Wrap(ctx, err, "create crowd client failed")
 		}
 		return pkg.NewCacheAuth(pkg.NewCrowdAuth(crowdClient.Authenticate), a.CacheTTL), nil
 	default:
-		return nil, errors.Errorf("unknown verifier type: %v", a.VerifierType)
+		return nil, errors.Errorf(ctx, "unknown verifier type: %v", a.VerifierType)
 	}
 }
 

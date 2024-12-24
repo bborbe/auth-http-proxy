@@ -1,12 +1,17 @@
-FROM golang:1.19.4 AS build
-COPY . /go/src/github.com/bborbe/auth-http-proxy
-RUN CGO_ENABLED=0 GOOS=linux go build -ldflags "-s" -a -installsuffix cgo -o /auth-http-proxy ./src/github.com/bborbe/auth-http-proxy
+FROM golang:1.23.4 AS build
+COPY . /workspace
+WORKDIR /workspace
+RUN CGO_ENABLED=0 GOOS=linux go build -mod=vendor -ldflags "-s" -a -installsuffix cgo -o /main
 CMD ["/bin/bash"]
 
-FROM alpine:3.16 as alpine
-RUN apk --no-cache add ca-certificates
-
-FROM scratch
-COPY --from=build /auth-http-proxy /auth-http-proxy
-COPY --from=alpine /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
-ENTRYPOINT ["/auth-http-proxy"]
+FROM alpine:3.21 AS alpine
+RUN apk --no-cache add \
+	ca-certificates \
+	rsync \
+	openssh-client \
+	tzdata \
+	&& rm -rf /var/cache/apk/*
+COPY --from=build /main /main
+COPY --from=build /usr/local/go/lib/time/zoneinfo.zip /
+ENV ZONEINFO=/zoneinfo.zip
+ENTRYPOINT ["/main"]
