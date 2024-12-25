@@ -93,7 +93,6 @@ auth-http-proxy \
 
 Start auth-http-proxy with config
 
-
 `vi config.json`
 
 ```
