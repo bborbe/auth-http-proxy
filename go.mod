@@ -6,6 +6,7 @@ replace github.com/jtblin/go-ldap-client => github.com/bborbe/go-ldap-client v0.
 
 require (
 	github.com/actgardner/gogen-avro/v9 v9.2.0
+	github.com/bborbe/errors v1.3.0
 	github.com/bborbe/flagenv v0.0.0-20181019084341-2956c4545608
 	github.com/bborbe/http v1.7.0
 	github.com/facebookgo/grace v0.0.0-20180706040059-75cf19382434
@@ -16,10 +17,8 @@ require (
 	github.com/jtblin/go-ldap-client v0.0.0-00010101000000-000000000000
 	github.com/kisielk/errcheck v1.8.0
 	github.com/maxbrunsfeld/counterfeiter/v6 v6.11.2
-	github.com/onsi/ginkgo v1.16.5
-	github.com/onsi/ginkgo/v2 v2.22.1
+	github.com/onsi/ginkgo/v2 v2.22.2
 	github.com/onsi/gomega v1.36.2
-	github.com/pkg/errors v0.9.1
 	github.com/wunderlist/ttlcache v0.0.0-20180801091818-7dbceb0d5094
 	go.jona.me/crowd v0.0.0-20180225080536-9c6f17811dc6
 	golang.org/x/lint v0.0.0-20241112194109-818c5a804067
@@ -30,11 +29,10 @@ require (
 require (
 	github.com/bborbe/assert v0.0.0-20181116222016-22a6c6341415 // indirect
 	github.com/bborbe/collection v1.8.0 // indirect
-	github.com/bborbe/errors v1.3.0 // indirect
 	github.com/bborbe/log v1.0.0 // indirect
 	github.com/bborbe/math v1.1.0 // indirect
 	github.com/bborbe/parse v1.5.0 // indirect
-	github.com/bborbe/run v1.5.3 // indirect
+	github.com/bborbe/run v1.5.4 // indirect
 	github.com/bborbe/sentry v1.7.0 // indirect
 	github.com/bborbe/time v1.11.6 // indirect
 	github.com/bborbe/validation v1.2.0 // indirect
@@ -49,7 +47,6 @@ require (
 	github.com/facebookgo/stack v0.0.0-20160209184415-751773369052 // indirect
 	github.com/facebookgo/stats v0.0.0-20151006221625-1b76add642e4 // indirect
 	github.com/facebookgo/subset v0.0.0-20200203212716-c811ad88dec4 // indirect
-	github.com/fsnotify/fsnotify v1.7.0 // indirect
 	github.com/getsentry/raven-go v0.2.0 // indirect
 	github.com/getsentry/sentry-go v0.30.0 // indirect
 	github.com/go-logr/logr v1.4.2 // indirect
@@ -58,7 +55,7 @@ require (
 	github.com/google/pprof v0.0.0-20241210010833-40e02aabc2ad // indirect
 	github.com/incu6us/goimports-reviser v0.1.6 // indirect
 	github.com/munnerz/goautoneg v0.0.0-20191010083416-a7dc8b61c822 // indirect
-	github.com/nxadm/tail v1.4.11 // indirect
+	github.com/pkg/errors v0.9.1 // indirect
 	github.com/prometheus/client_golang v1.20.5 // indirect
 	github.com/prometheus/client_model v0.6.1 // indirect
 	github.com/prometheus/common v0.61.0 // indirect
@@ -74,6 +71,5 @@ require (
 	google.golang.org/protobuf v1.36.1 // indirect
 	gopkg.in/asn1-ber.v1 v1.0.0-20181015200546-f715ec2f112d // indirect
 	gopkg.in/ldap.v2 v2.5.1 // indirect
-	gopkg.in/tomb.v1 v1.0.0-20141024135613-dd632973f1e7 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
