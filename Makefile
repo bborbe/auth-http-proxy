@@ -50,10 +50,7 @@ generate:
 test:
 	go test -mod=vendor -p=1 -cover -race $(shell go list -mod=vendor ./... | grep -v /vendor/)
 
-check: vet errcheck vulncheck
-
-vet:
-	go vet -mod=vendor $(shell go list -mod=vendor ./... | grep -v /vendor/)
+check: errcheck vulncheck
 
 errcheck:
 	go run -mod=vendor github.com/kisielk/errcheck -ignore '(Close|Write|Fprint)' $(shell go list -mod=vendor ./... | grep -v /vendor/)

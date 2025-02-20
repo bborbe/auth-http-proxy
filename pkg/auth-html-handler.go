@@ -19,24 +19,22 @@ const (
 	loginDuration     = 24 * time.Hour
 )
 
-type Check func(username string, password string) (bool, error)
-
-type authHtmlHandler struct {
-	handler http.HandlerFunc
-	check   Check
-	crypter Crypter
-}
-
 func NewAuthHtmlHandler(
-	subhandler http.HandlerFunc,
+	subhandler http.Handler,
 	check Check,
 	crypter Crypter,
-) *authHtmlHandler {
+) http.Handler {
 	h := new(authHtmlHandler)
-	h.handler = subhandler
+	h.subhandler = subhandler
 	h.check = check
 	h.crypter = crypter
 	return h
+}
+
+type authHtmlHandler struct {
+	subhandler http.Handler
+	check      Check
+	crypter    Crypter
 }
 
 func (h *authHtmlHandler) ServeHTTP(responseWriter http.ResponseWriter, request *http.Request) {
@@ -56,7 +54,7 @@ func (h *authHtmlHandler) serveHTTP(responseWriter http.ResponseWriter, request 
 	}
 	if valid {
 		glog.V(4).Infof("login is valid, forward request")
-		h.handler(responseWriter, request)
+		h.subhandler.ServeHTTP(responseWriter, request)
 		return nil
 	}
 	return h.validateLoginParams(responseWriter, request)
@@ -80,11 +78,12 @@ func (h *authHtmlHandler) validateLoginBasic(request *http.Request) (bool, error
 		glog.V(2).Infof("parse basic authorization header failed: %v", err)
 		return false, err
 	}
-	result, err := h.check(user, pass)
+	result, err := h.check.Check(user, pass)
 	if err != nil {
 		glog.Warningf("check auth for user %v failed: %v", user, err)
 		return false, err
 	}
+	request.Header.Set(ForwardForUserHeader, user)
 	glog.V(4).Infof("validate login via basic => %v", result)
 	return result, nil
 }
@@ -106,11 +105,12 @@ func (h *authHtmlHandler) validateLoginCookie(request *http.Request) (bool, erro
 		glog.V(2).Infof("parse cookie failed: %v", err)
 		return false, nil
 	}
-	result, err := h.check(user, pass)
+	result, err := h.check.Check(user, pass)
 	if err != nil {
 		glog.Warningf("check auth for user %v failed: %v", user, err)
 		return false, err
 	}
+	request.Header.Set(ForwardForUserHeader, user)
 	glog.V(4).Infof("validate login via cookie => %v", result)
 	return result, nil
 }
@@ -123,7 +123,7 @@ func (h *authHtmlHandler) validateLoginParams(responseWriter http.ResponseWriter
 		glog.V(4).Infof("login or password empty => skip")
 		return h.loginForm(responseWriter)
 	}
-	valid, err := h.check(login, password)
+	valid, err := h.check.Check(login, password)
 	if err != nil {
 		glog.V(2).Infof("check login failed: %v", err)
 		return err

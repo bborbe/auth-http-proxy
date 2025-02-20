@@ -1,6 +1,6 @@
 module github.com/bborbe/auth-http-proxy
 
-go 1.23.5
+go 1.24.0
 
 replace github.com/jtblin/go-ldap-client => github.com/bborbe/go-ldap-client v0.0.0-20180731150759-fc19caea533a
 
@@ -13,9 +13,9 @@ require (
 	github.com/golang/glog v1.2.4
 	github.com/google/addlicense v1.1.1
 	github.com/gorilla/mux v1.8.1
-	github.com/incu6us/goimports-reviser/v3 v3.8.2
+	github.com/incu6us/goimports-reviser/v3 v3.9.0
 	github.com/jtblin/go-ldap-client v0.0.0-00010101000000-000000000000
-	github.com/kisielk/errcheck v1.8.0
+	github.com/kisielk/errcheck v1.9.0
 	github.com/maxbrunsfeld/counterfeiter/v6 v6.11.2
 	github.com/onsi/ginkgo/v2 v2.22.2
 	github.com/onsi/gomega v1.36.2
@@ -29,11 +29,11 @@ require (
 require (
 	github.com/bborbe/assert v0.0.0-20181116222016-22a6c6341415 // indirect
 	github.com/bborbe/collection v1.8.0 // indirect
-	github.com/bborbe/kv v1.11.5 // indirect
+	github.com/bborbe/kv v1.12.1 // indirect
 	github.com/bborbe/log v1.0.1 // indirect
 	github.com/bborbe/math v1.1.1 // indirect
 	github.com/bborbe/parse v1.6.1 // indirect
-	github.com/bborbe/run v1.5.5 // indirect
+	github.com/bborbe/run v1.5.6 // indirect
 	github.com/bborbe/sentry v1.7.1 // indirect
 	github.com/bborbe/time v1.12.0 // indirect
 	github.com/bborbe/validation v1.2.0 // indirect
@@ -53,23 +53,24 @@ require (
 	github.com/go-logr/logr v1.4.2 // indirect
 	github.com/go-task/slim-sprig/v3 v3.0.0 // indirect
 	github.com/google/go-cmp v0.6.0 // indirect
-	github.com/google/pprof v0.0.0-20250202011525-fc3143867406 // indirect
+	github.com/google/pprof v0.0.0-20250208200701-d0013a598941 // indirect
 	github.com/incu6us/goimports-reviser v0.1.6 // indirect
+	github.com/klauspost/compress v1.18.0 // indirect
 	github.com/munnerz/goautoneg v0.0.0-20191010083416-a7dc8b61c822 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
-	github.com/prometheus/client_golang v1.20.5 // indirect
+	github.com/prometheus/client_golang v1.21.0 // indirect
 	github.com/prometheus/client_model v0.6.1 // indirect
 	github.com/prometheus/common v0.62.0 // indirect
 	github.com/prometheus/procfs v0.15.1 // indirect
-	golang.org/x/exp v0.0.0-20250128182459-e0ece0dbea4c // indirect
-	golang.org/x/mod v0.22.0 // indirect
-	golang.org/x/net v0.34.0 // indirect
-	golang.org/x/sync v0.10.0 // indirect
-	golang.org/x/sys v0.29.0 // indirect
-	golang.org/x/telemetry v0.0.0-20250117155846-04cd7bae618c // indirect
-	golang.org/x/text v0.21.0 // indirect
-	golang.org/x/tools v0.29.0 // indirect
-	google.golang.org/protobuf v1.36.4 // indirect
+	golang.org/x/exp v0.0.0-20250218142911-aa4b98e5adaa // indirect
+	golang.org/x/mod v0.23.0 // indirect
+	golang.org/x/net v0.35.0 // indirect
+	golang.org/x/sync v0.11.0 // indirect
+	golang.org/x/sys v0.30.0 // indirect
+	golang.org/x/telemetry v0.0.0-20250214215356-6f9b61db478c // indirect
+	golang.org/x/text v0.22.0 // indirect
+	golang.org/x/tools v0.30.0 // indirect
+	google.golang.org/protobuf v1.36.5 // indirect
 	gopkg.in/asn1-ber.v1 v1.0.0-20181015200546-f715ec2f112d // indirect
 	gopkg.in/ldap.v2 v2.5.1 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect

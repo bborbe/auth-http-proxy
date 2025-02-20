@@ -13,6 +13,8 @@ import (
 	"github.com/golang/glog"
 )
 
+const ForwardForUserHeader = "X-Forwarded-User"
+
 func CreateAuthorizationToken(name string, value string) string {
 	glog.V(4).Infof("create bearer")
 	return base64.StdEncoding.EncodeToString([]byte(fmt.Sprintf("%s:%s", name, value)))

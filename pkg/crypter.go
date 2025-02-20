@@ -15,10 +15,7 @@ import (
 	"strings"
 )
 
-type crypter struct {
-	key []byte
-}
-
+//counterfeiter:generate -o ../mocks/crypter.go --fake-name Crypter . Crypter
 type Crypter interface {
 	Encrypt(text string) (string, error)
 	Decrypt(text string) (string, error)
@@ -30,6 +27,10 @@ func NewCrypter(key []byte) Crypter {
 	c := new(crypter)
 	c.key = key
 	return c
+}
+
+type crypter struct {
+	key []byte
 }
 
 func (c *crypter) Encrypt(text string) (string, error) {

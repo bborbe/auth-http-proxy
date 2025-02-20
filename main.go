@@ -313,16 +313,17 @@ func (a *application) run(ctx context.Context) error {
 	if err != nil {
 		return errors.Wrapf(ctx, err, "create verifier failed")
 	}
+
+	check := pkg.CheckFunc(func(username string, password string) (bool, error) {
+		return v.Verify(pkg.UserName(username), pkg.Password(password))
+	})
+
 	var httpFilter http.Handler
 	switch a.Kind {
 	case "html":
-		httpFilter = pkg.NewAuthHtmlHandler(forwardHandler.ServeHTTP, func(username string, password string) (bool, error) {
-			return v.Verify(pkg.UserName(username), pkg.Password(password))
-		}, pkg.NewCrypter(a.Secret.Bytes()))
+		httpFilter = pkg.NewAuthHtmlHandler(forwardHandler, check, pkg.NewCrypter(a.Secret.Bytes()))
 	case "basic":
-		httpFilter = pkg.NewAuthBasicHandler(forwardHandler.ServeHTTP, func(username string, password string) (bool, error) {
-			return v.Verify(pkg.UserName(username), pkg.Password(password))
-		}, a.BasicAuthRealm.String())
+		httpFilter = pkg.NewAuthBasicHandler(forwardHandler, check, a.BasicAuthRealm.String())
 	default:
 		return errors.Errorf(ctx, "unknown kind %v", a.Kind)
 	}
@@ -331,15 +332,16 @@ func (a *application) run(ctx context.Context) error {
 	router.Path("/healthz").Handler(a.checkHandler())
 	router.Path("/readiness").Handler(a.checkHandler())
 	router.NotFoundHandler = httpFilter
-	if err != nil {
-		return err
-	}
+
 	var handler http.Handler = router
 	if glog.V(4) {
 		glog.Infof("add debug handler")
 		handler = pkg.NewDebugHandler(handler)
 	}
-	return gracehttp.Serve(&http.Server{Addr: a.Port.Address(), Handler: handler})
+	return gracehttp.Serve(&http.Server{
+		Addr:    a.Port.Address(),
+		Handler: handler,
+	})
 }
 
 func (a *application) checkHandler() http.Handler {

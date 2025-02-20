@@ -19,7 +19,7 @@ type forwardHandler struct {
 	executeRequest executeRequest
 }
 
-func NewForwardHandler(target string, executeRequest executeRequest) *forwardHandler {
+func NewForwardHandler(target string, executeRequest executeRequest) http.Handler {
 	h := new(forwardHandler)
 	h.target = target
 	h.executeRequest = executeRequest

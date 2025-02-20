@@ -11,36 +11,40 @@ import (
 	"github.com/golang/glog"
 )
 
-func NewAuthBasicHandler(subhandler http.HandlerFunc, check Check, realm string) *authHandler {
-	h := new(authHandler)
+func NewAuthBasicHandler(
+	subhandler http.Handler,
+	check Check,
+	realm string,
+) http.Handler {
+	h := new(authBasicHandler)
 	h.handler = subhandler
 	h.check = check
 	h.realm = realm
 	return h
 }
 
-type authHandler struct {
-	handler http.HandlerFunc
+type authBasicHandler struct {
+	handler http.Handler
 	check   Check
 	realm   string
 }
 
-func (h *authHandler) ServeHTTP(responseWriter http.ResponseWriter, request *http.Request) {
+func (a *authBasicHandler) ServeHTTP(responseWriter http.ResponseWriter, request *http.Request) {
 	glog.V(4).Infof("check basic auth")
-	if err := h.serveHTTP(responseWriter, request); err != nil {
-		responseWriter.Header().Add("WWW-Authenticate", fmt.Sprintf("Basic realm=\"%s\"", h.realm))
+	if err := a.serveHTTP(responseWriter, request); err != nil {
+		responseWriter.Header().Add("WWW-Authenticate", fmt.Sprintf("Basic realm=\"%s\"", a.realm))
 		responseWriter.WriteHeader(http.StatusUnauthorized)
 	}
 }
 
-func (h *authHandler) serveHTTP(responseWriter http.ResponseWriter, request *http.Request) error {
+func (a *authBasicHandler) serveHTTP(responseWriter http.ResponseWriter, request *http.Request) error {
 	glog.V(4).Infof("check basic auth")
 	user, pass, err := ParseAuthorizationBasisHttpRequest(request)
 	if err != nil {
 		glog.Warningf("parse header failed: %v", err)
 		return err
 	}
-	valid, err := h.check(user, pass)
+	valid, err := a.check.Check(user, pass)
 	if err != nil {
 		glog.Warningf("check auth for user %v failed: %v", user, err)
 		return err
@@ -49,6 +53,7 @@ func (h *authHandler) serveHTTP(responseWriter http.ResponseWriter, request *htt
 		glog.V(2).Infof("auth invalid for user %v", user)
 		return fmt.Errorf("auth invalid for user %v", user)
 	}
-	h.handler(responseWriter, request)
+	request.Header.Add(ForwardForUserHeader, user)
+	a.handler.ServeHTTP(responseWriter, request)
 	return nil
 }
