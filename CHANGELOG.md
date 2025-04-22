@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## v3.5.2
+
+- remove vendor
+- go mod update
+
 ## v3.5.1
 
 - go mod update
