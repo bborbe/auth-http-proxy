@@ -37,7 +37,10 @@ func (a *authBasicHandler) ServeHTTP(responseWriter http.ResponseWriter, request
 	}
 }
 
-func (a *authBasicHandler) serveHTTP(responseWriter http.ResponseWriter, request *http.Request) error {
+func (a *authBasicHandler) serveHTTP(
+	responseWriter http.ResponseWriter,
+	request *http.Request,
+) error {
 	glog.V(4).Infof("check basic auth")
 	user, pass, err := ParseAuthorizationBasisHttpRequest(request)
 	if err != nil {

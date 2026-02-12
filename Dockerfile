@@ -1,16 +1,21 @@
-FROM golang:1.24.2 AS build
-COPY . /workspace
-WORKDIR /workspace
-RUN CGO_ENABLED=0 GOOS=linux go build -mod=vendor -ldflags "-s" -a -installsuffix cgo -o /main
-CMD ["/bin/bash"]
+# syntax=docker/dockerfile:1
 
-FROM alpine:3.21 AS alpine
+FROM golang:1.26.0 AS build
+WORKDIR /workspace
+COPY go.mod go.sum ./
+RUN --mount=type=cache,target=/go/pkg/mod \
+    go mod download
+COPY . .
+RUN --mount=type=cache,target=/go/pkg/mod \
+    --mount=type=cache,target=/root/.cache/go-build \
+    CGO_ENABLED=0 GOOS=linux go build -ldflags "-s -w" -o /main .
+
+FROM alpine:3.21
 RUN apk --no-cache add \
-	ca-certificates \
-	rsync \
-	openssh-client \
-	tzdata \
-	&& rm -rf /var/cache/apk/*
+    ca-certificates \
+    rsync \
+    openssh-client \
+    tzdata
 COPY --from=build /main /main
 COPY --from=build /usr/local/go/lib/time/zoneinfo.zip /
 ENV ZONEINFO=/zoneinfo.zip

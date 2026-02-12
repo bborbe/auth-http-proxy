@@ -232,7 +232,8 @@ func (a *application) validate() error {
 	if len(a.VerifierType) == 0 {
 		return fmt.Errorf("parameter VerifierType missing")
 	}
-	if a.VerifierType != "auth" && a.VerifierType != "ldap" && a.VerifierType != "file" && a.VerifierType != "crowd" {
+	if a.VerifierType != "auth" && a.VerifierType != "ldap" && a.VerifierType != "file" &&
+		a.VerifierType != "crowd" {
 		return fmt.Errorf("parameter VerifierType invalid")
 	}
 	if a.VerifierType == "ldap" {
@@ -298,10 +299,14 @@ func (a *application) run(ctx context.Context) error {
 	}
 	forwardHandler := pkg.NewForwardHandler(a.TargetAddress.String(),
 		func(address string, req *http.Request) (resp *http.Response, err error) {
-			roundTripper, err := libhttp.NewClientBuilder().WithoutProxy().WithoutRedirects().WithDialFunc(
-				func(ctx context.Context, network, address string) (net.Conn, error) {
-					return dialer.Dial(network, a.TargetAddress.String())
-				}).BuildRoundTripper(ctx)
+			roundTripper, err := libhttp.NewClientBuilder().
+				WithoutProxy().
+				WithoutRedirects().
+				WithDialFunc(
+					func(ctx context.Context, network, address string) (net.Conn, error) {
+						return dialer.Dial(network, a.TargetAddress.String())
+					}).
+				BuildRoundTripper(ctx)
 			if err != nil {
 				return nil, errors.Wrapf(ctx, err, "build roundtripper failed")
 			}
@@ -339,8 +344,9 @@ func (a *application) run(ctx context.Context) error {
 		handler = pkg.NewDebugHandler(handler)
 	}
 	return gracehttp.Serve(&http.Server{
-		Addr:    a.Port.Address(),
-		Handler: handler,
+		Addr:              a.Port.Address(),
+		Handler:           handler,
+		ReadHeaderTimeout: 10 * time.Second,
 	})
 }
 
@@ -401,7 +407,11 @@ func (a *application) createVerifier(ctx context.Context) (pkg.Verifier, error) 
 	case "file":
 		return pkg.NewCacheAuth(pkg.NewFileAuth(a.UserFile), a.CacheTTL), nil
 	case "crowd":
-		crowdClient, err := crowd.New(a.CrowdAppName.String(), a.CrowdAppPassword.String(), a.CrowdURL.String())
+		crowdClient, err := crowd.New(
+			a.CrowdAppName.String(),
+			a.CrowdAppPassword.String(),
+			a.CrowdURL.String(),
+		)
 		if err != nil {
 			glog.V(2).Infof("create crowd client failed: %v", err)
 			return nil, errors.Wrap(ctx, err, "create crowd client failed")

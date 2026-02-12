@@ -45,7 +45,10 @@ func (h *authHtmlHandler) ServeHTTP(responseWriter http.ResponseWriter, request 
 	}
 }
 
-func (h *authHtmlHandler) serveHTTP(responseWriter http.ResponseWriter, request *http.Request) error {
+func (h *authHtmlHandler) serveHTTP(
+	responseWriter http.ResponseWriter,
+	request *http.Request,
+) error {
 	glog.V(4).Infof("check html auth")
 	valid, err := h.validateLogin(request)
 	if err != nil {
@@ -115,7 +118,10 @@ func (h *authHtmlHandler) validateLoginCookie(request *http.Request) (bool, erro
 	return result, nil
 }
 
-func (h *authHtmlHandler) validateLoginParams(responseWriter http.ResponseWriter, request *http.Request) error {
+func (h *authHtmlHandler) validateLoginParams(
+	responseWriter http.ResponseWriter,
+	request *http.Request,
+) error {
 	glog.V(4).Infof("validate login via params")
 	login := request.FormValue(fieldNameLogin)
 	password := request.FormValue(fieldNamePassword)
