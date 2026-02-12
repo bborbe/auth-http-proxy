@@ -186,7 +186,10 @@ func (a *ldapAuth) Close() {
 	}
 }
 
-func (a *ldapAuth) Authenticate(username UserName, password Password) (ok bool, data map[string]string, err error) {
+func (a *ldapAuth) Authenticate(
+	username UserName,
+	password Password,
+) (ok bool, data map[string]string, err error) {
 	glog.V(2).Infof("Authenticate user %s", username)
 	ldapClient := a.getClient()
 	ok, data, err = ldapClient.Authenticate(username.String(), password.String())
@@ -219,7 +222,8 @@ func (a *ldapAuth) createClient() *ldap.LDAPClient {
 	if len(serverName) == 0 {
 		serverName = a.ldapHost.String()
 	}
-	glog.V(2).Infof("create new ldap client for %s:%d with servername %s", a.ldapHost, a.ldapPort, serverName)
+	glog.V(2).
+		Infof("create new ldap client for %s:%d with servername %s", a.ldapHost, a.ldapPort, serverName)
 	client := &ldap.LDAPClient{
 		Base:         a.ldapBaseDn.String(),
 		BindDN:       a.ldapBindDN.String(),

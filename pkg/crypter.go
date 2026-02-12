@@ -54,7 +54,10 @@ func encrypt(key []byte, text string) (string, error) {
 		return "", err
 	}
 
-	cfb := cipher.NewCFBEncrypter(block, iv)
+	cfb := cipher.NewCFBEncrypter(
+		block,
+		iv,
+	) // #nosec G407 -- iv is randomly generated above, not hardcoded
 	cfb.XORKeyStream(ciphertext[aes.BlockSize:], []byte(msg))
 	finalMsg := removeBase64Padding(base64.URLEncoding.EncodeToString(ciphertext))
 	return finalMsg, nil
@@ -113,7 +116,9 @@ func Unpad(src []byte) ([]byte, error) {
 	unpadding := int(src[length-1])
 
 	if unpadding > length {
-		return nil, errors.New("unpad error. This could happen when incorrect encryption key is used")
+		return nil, errors.New(
+			"unpad error. This could happen when incorrect encryption key is used",
+		)
 	}
 
 	return src[:(length - unpadding)], nil

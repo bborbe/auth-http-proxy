@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## v3.6.0
+
+- Update Go to 1.26.0
+- Update all dependencies (errors v1.5.2, http v1.26.1, etc.)
+- Modernize Dockerfile with BuildKit cache mounts
+- Remove vendor mode from build
+- Add OSV scanner to CI
+
 ## v3.5.2
 
 - remove vendor
