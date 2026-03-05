@@ -5,9 +5,9 @@
 package pkg
 
 import (
-	"fmt"
 	"io"
 	"net/http"
+	"net/url"
 
 	"github.com/golang/glog"
 )
@@ -38,11 +38,20 @@ func (h *forwardHandler) ServeHTTP(resp http.ResponseWriter, req *http.Request) 
 
 func (h *forwardHandler) serveHTTP(resp http.ResponseWriter, req *http.Request) error {
 	glog.V(4).Infof("%v", req)
-	urlStr := fmt.Sprintf("http://%s%s", req.Host, req.RequestURI)
-	glog.V(4).Infof("forward request %s %s", req.Method, urlStr)
-	subreq, err := http.NewRequest(req.Method, urlStr, req.Body)
+	targetURL := &url.URL{
+		Scheme:   "http",
+		Host:     h.target,
+		Path:     req.URL.Path,
+		RawQuery: req.URL.RawQuery,
+	}
+	glog.V(4).Infof("forward request %s %s", req.Method, targetURL.String())
+	subreq, err := http.NewRequest(
+		req.Method,
+		targetURL.String(),
+		req.Body,
+	) // #nosec G704 -- proxy forwards to trusted target
 	if err != nil {
-		glog.V(2).Infof("create request to %v failed: %v", urlStr, err)
+		glog.V(2).Infof("create request to %s failed: %v", targetURL, err)
 		return err
 	}
 	subreq.Header = req.Header

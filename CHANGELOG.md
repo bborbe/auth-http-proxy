@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## v3.6.1
+
+- Fix SSRF vulnerability in forward handler (gosec G704)
+- Update Alpine to 3.23
+- Update dependencies
+
 ## v3.6.0
 
 - Update Go to 1.26.0
