@@ -123,6 +123,7 @@ func (h *authHtmlHandler) validateLoginParams(
 	request *http.Request,
 ) error {
 	glog.V(4).Infof("validate login via params")
+	request.Body = http.MaxBytesReader(responseWriter, request.Body, 1<<20)
 	login := request.FormValue(fieldNameLogin)
 	password := request.FormValue(fieldNamePassword)
 	if len(login) == 0 || len(password) == 0 {

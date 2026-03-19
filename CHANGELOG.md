@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## v3.6.2
+- Update Go to 1.26.1
+- Update dependencies (grpc v1.79.3, gosec v2.24.7, openai-go v3.23.0, etc.)
+- Fix G120: limit request body size before form parsing
+
 ## v3.6.1
 
 - Fix SSRF vulnerability in forward handler (gosec G704)
