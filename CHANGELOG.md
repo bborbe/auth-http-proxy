@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## v3.6.3
+
+- Add SameSite=Lax attribute to auth cookie for CSRF protection
+- Suppress gosec G124 false positive on cookie setup
+- Update bborbe/errors to v1.5.8 and bborbe/http to v1.26.8
+- Update indirect dependencies (deps.dev, cloud.google.com, charm.land)
+
 ## v3.6.2
 - Update Go to 1.26.1
 - Update dependencies (grpc v1.79.3, gosec v2.24.7, openai-go v3.23.0, etc.)

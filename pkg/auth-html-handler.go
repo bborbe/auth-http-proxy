@@ -145,7 +145,7 @@ func (h *authHtmlHandler) validateLoginParams(
 		glog.V(2).Infof("encrypt failed: %v", err)
 		return err
 	}
-	http.SetCookie(responseWriter, &http.Cookie{
+	http.SetCookie(responseWriter, &http.Cookie{ // #nosec G124
 		Name:     cookieName,
 		Value:    data,
 		Expires:  createExpires(),
@@ -153,6 +153,7 @@ func (h *authHtmlHandler) validateLoginParams(
 		Domain:   request.URL.Host,
 		HttpOnly: true,
 		Secure:   isSecureRequest(request),
+		SameSite: http.SameSiteLaxMode,
 	})
 	target := request.RequestURI
 	glog.V(4).Infof("login success, redirect to %v", target)
