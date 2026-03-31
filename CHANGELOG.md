@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## v3.6.4
+
+- Update go-git/go-git to v5.17.1 (fix security vulnerabilities)
+
 ## v3.6.3
 
 - Add SameSite=Lax attribute to auth cookie for CSRF protection
