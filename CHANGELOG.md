@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## Unreleased
+
+- Update dependencies to fix security vulnerabilities (go-git/v5 v5.17.2, buildkit v0.29.0, go-sdk v1.4.1)
+
 ## v3.6.4
 
 - Update go-git/go-git to v5.17.1 (fix security vulnerabilities)
