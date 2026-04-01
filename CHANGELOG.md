@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## v3.6.7
+
+- update go dependencies
+
 ## v3.6.6
 
 - downgrade multiple Go dependencies to resolve compatibility issues

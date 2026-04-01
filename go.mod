@@ -4,13 +4,20 @@ go 1.26.1
 
 replace github.com/jtblin/go-ldap-client => github.com/bborbe/go-ldap-client v0.0.0-20180731150759-fc19caea533a
 
-replace github.com/opencontainers/runtime-spec => github.com/opencontainers/runtime-spec v1.2.0
+replace (
+	github.com/anthropics/anthropic-sdk-go => github.com/anthropics/anthropic-sdk-go v1.26.0
+	github.com/charmbracelet/x/cellbuf => github.com/charmbracelet/x/cellbuf v0.0.15
+	github.com/denis-tingaikin/go-header => github.com/denis-tingaikin/go-header v0.5.0
+	github.com/diskfs/go-diskfs => github.com/diskfs/go-diskfs v1.7.0
+	github.com/nunnatsa/ginkgolinter/types => github.com/nunnatsa/ginkgolinter v0.19.1
+	github.com/opencontainers/runtime-spec => github.com/opencontainers/runtime-spec v1.2.0
+)
 
 require (
 	github.com/actgardner/gogen-avro/v9 v9.2.0
-	github.com/bborbe/errors v1.5.8
+	github.com/bborbe/errors v1.5.9
 	github.com/bborbe/flagenv v0.0.0-20181019084341-2956c4545608
-	github.com/bborbe/http v1.26.8
+	github.com/bborbe/http v1.26.9
 	github.com/facebookgo/grace v0.0.0-20180706040059-75cf19382434
 	github.com/golang/glog v1.2.5
 	github.com/google/addlicense v1.2.0
@@ -459,5 +466,3 @@ require (
 	www.velocidex.com/golang/go-ntfs v0.2.0 // indirect
 	www.velocidex.com/golang/regparser v0.0.0-20250203141505-31e704a67ef7 // indirect
 )
-
-replace github.com/denis-tingaikin/go-header => github.com/denis-tingaikin/go-header v0.5.0
