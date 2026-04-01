@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## v3.6.6
+
+- downgrade multiple Go dependencies to resolve compatibility issues
+- add replace directive for github.com/denis-tingaikin/go-header v0.5.0
+
 ## v3.6.5
 
 - Update dependencies to fix security vulnerabilities (go-git/v5 v5.17.2, buildkit v0.29.0, go-sdk v1.4.1)
