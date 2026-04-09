@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## v3.6.8
+
+- Update Go 1.26.2
+- Update counterfeiter v6.12.2
+
 ## v3.6.7
 
 - update go dependencies
