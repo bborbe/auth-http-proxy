@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## v3.6.9
+
+- Update go dependencies (bborbe/errors, bborbe/http, golang.org/x stdlib)
+- Bump golang.org/x/vuln v1.2.0, golangci-lint v2.11.4, getsentry v0.45.0
+- Simplify vulncheck Makefile target with inline OSV ignore list
+
 ## v3.6.8
 
 - Update Go 1.26.2
