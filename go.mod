@@ -5,7 +5,6 @@ go 1.26.2
 replace github.com/jtblin/go-ldap-client => github.com/bborbe/go-ldap-client v0.0.0-20180731150759-fc19caea533a
 
 replace (
-	github.com/anthropics/anthropic-sdk-go => github.com/anthropics/anthropic-sdk-go v1.26.0
 	github.com/charmbracelet/x/cellbuf => github.com/charmbracelet/x/cellbuf v0.0.15
 	github.com/denis-tingaikin/go-header => github.com/denis-tingaikin/go-header v0.5.0
 	github.com/diskfs/go-diskfs => github.com/diskfs/go-diskfs v1.7.0
@@ -26,12 +25,12 @@ require (
 	github.com/jtblin/go-ldap-client v0.0.0-00010101000000-000000000000
 	github.com/kisielk/errcheck v1.10.0
 	github.com/maxbrunsfeld/counterfeiter/v6 v6.12.2
-	github.com/onsi/ginkgo/v2 v2.28.1
+	github.com/onsi/ginkgo/v2 v2.28.2
 	github.com/onsi/gomega v1.39.1
 	github.com/wunderlist/ttlcache v0.0.0-20180801091818-7dbceb0d5094
 	go.jona.me/crowd v0.0.0-20180225080536-9c6f17811dc6
 	golang.org/x/lint v0.0.0-20241112194109-818c5a804067
-	golang.org/x/vuln v1.2.0
+	golang.org/x/vuln v1.3.0
 )
 
 require (
@@ -443,7 +442,7 @@ require (
 	golang.org/x/oauth2 v0.34.0 // indirect
 	golang.org/x/sync v0.20.0 // indirect
 	golang.org/x/sys v0.43.0 // indirect
-	golang.org/x/telemetry v0.0.0-20260409153401-be6f6cb8b1fa // indirect
+	golang.org/x/telemetry v0.0.0-20260421165255-392afab6f40e // indirect
 	golang.org/x/term v0.42.0 // indirect
 	golang.org/x/text v0.36.0 // indirect
 	golang.org/x/tools v0.44.0 // indirect

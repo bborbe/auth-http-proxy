@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## v3.6.10
+
+- Update ginkgo/v2 to v2.28.2
+- Update golang.org/x/vuln to v1.3.0
+- Update golang.org/x/telemetry
+- Remove pinned anthropic-sdk-go replace directive
+
 ## v3.6.9
 
 - Update go dependencies (bborbe/errors, bborbe/http, golang.org/x stdlib)
