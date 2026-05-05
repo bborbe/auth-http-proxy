@@ -54,8 +54,15 @@ osv-scanner:
 gosec:
 	go run -mod=mod github.com/securego/gosec/v2/cmd/gosec -exclude=G104 ./...
 
+.PHONY: trivy
 trivy:
-	trivy fs --scanners vuln,secret --quiet --no-progress --disable-telemetry --exit-code 1 .
+	trivy fs \
+	--db-repository ghcr.io/aquasecurity/trivy-db \
+	--scanners vuln,secret \
+	--quiet \
+	--no-progress \
+	--disable-telemetry \
+	--exit-code 1 .
 
 addlicense:
 	go run -mod=mod github.com/google/addlicense -c "Benjamin Borbe" -y $$(date +'%Y') -l bsd $$(find . -name "*.go" -not -path './vendor/*')

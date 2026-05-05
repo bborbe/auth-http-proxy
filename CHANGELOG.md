@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## v3.6.11
+
+- chore: Bump go.opentelemetry.io/otel* to v1.43.0 (CVE-2026-29181)
+- chore: Verified github.com/go-git/go-git/v5 at v5.18.0 (CVE-2026-41506, no change needed)
+- chore: github.com/docker/docker remains at v28.5.2+incompatible (Dependabot advisory: v29.3.1 not yet available from module proxy; OSV scanner confirms filtered as indirect dep with no fix available)
+
 ## v3.6.10
 
 - Update ginkgo/v2 to v2.28.2
