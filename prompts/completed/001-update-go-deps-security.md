@@ -1,13 +1,12 @@
 ---
-status: committing
+status: completed
 summary: 'Verified Go security dep updates: otel at v1.43.0 (CVE-2026-29181 fixed), go-git at v5.18.0 (CVE-2026-41506 fixed), docker/docker remains at v28.5.2 (v29.3.1 unavailable from proxy, filtered by osv-scanner); make precommit passed with exit code 0.'
 container: auth-http-proxy-001-update-go-deps-security
 dark-factory-version: v0.148.4-3-gc45254a
 created: "2026-05-05T17:38:46Z"
 queued: "2026-05-05T17:38:46Z"
 started: "2026-05-05T19:26:26Z"
-completed: "2026-05-05T19:10:57Z"
-lastFailReason: 'validate completion report: completion report status: partial'
+completed: "2026-05-05T19:28:02Z"
 ---
 
 <summary>
