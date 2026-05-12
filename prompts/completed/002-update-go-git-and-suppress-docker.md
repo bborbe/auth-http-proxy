@@ -1,13 +1,12 @@
 ---
-status: committing
+status: completed
 summary: Bumped go-git/v5 to v5.19.0, Go to 1.26.3, removed 6 stale osv-scanner ignore entries, and confirmed docker/docker suppression entries are still valid; make precommit exits 0.
 container: auth-http-proxy-002-update-go-git-and-suppress-docker
 dark-factory-version: v0.156.1-1-g04f3863-dirty
 created: "2026-05-12T13:00:00Z"
 queued: "2026-05-12T17:14:40Z"
 started: "2026-05-12T19:41:59Z"
-completed: "2026-05-12T17:54:07Z"
-lastFailReason: 'execute prompt: docker run failed: wait command: exit status 1'
+completed: "2026-05-12T19:44:58Z"
 ---
 
 <summary>
