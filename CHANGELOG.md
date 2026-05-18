@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## v3.6.13
+
+- security: suppress docker/docker CVE-2026-41567 / CVE-2026-42306 / CVE-2026-41568 / GHSA-x86f-5xw2-fm2r / GHSA-rg2x-37c3-w2rh / GHSA-vp62-88p7-qqf5 in .trivyignore/.osv-scanner.toml (no upstream fix; docker/docker module path unpatched, latest is v28.5.2)
+
 ## v3.6.12
 
 - security: bump github.com/go-git/go-git/v5 to v5.19.0 (CVE-2026-45022)
