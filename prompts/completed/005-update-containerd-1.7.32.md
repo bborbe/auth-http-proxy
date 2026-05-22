@@ -1,13 +1,12 @@
 ---
-status: committing
+status: completed
 summary: Bumped containerd to v1.7.32 and golang.org/x/net to v0.55.0 to patch CVE-2026-46680
 container: auth-http-proxy-exec-005-update-containerd-1-7-32
 dark-factory-version: v0.164.0
 created: "2026-05-22T18:00:00Z"
 queued: "2026-05-22T17:11:43Z"
 started: "2026-05-22T17:39:27Z"
-completed: "2026-05-22T17:19:59Z"
-lastFailReason: 'validate completion report: completion report status: failed'
+completed: "2026-05-22T17:40:58Z"
 ---
 
 <summary>
