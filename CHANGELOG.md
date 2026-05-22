@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## v3.6.15
+
+- security: bump github.com/containerd/containerd to v1.7.32 (CVE-2026-46680, GHSA-fqw6-gf59-qr4w)
+- security: bump golang.org/x/net to v0.55.0 (GO-2026-5025..5030)
+
 ## v3.6.14
 
 - security: bump github.com/go-git/go-git/v5 to v5.19.1 (CVE-2026-45570, CVE-2026-45571)
