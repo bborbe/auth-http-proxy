@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## v3.6.16
+
+- Update bborbe/errors to v1.5.13, bborbe/http to v1.26.12
+- Update onsi/ginkgo/v2 to v2.29.0 and gomega to v1.41.0
+- Update kisielk/errcheck to v1.20.0 and sentry-go to v0.46.2
+- Security: bump golang.org/x/net to v0.55.0 (CVE-2026-46680)
+- Clean up unused indirect dependencies from go.mod
+
 ## v3.6.15
 
 - security: bump github.com/containerd/containerd to v1.7.32 (CVE-2026-46680, GHSA-fqw6-gf59-qr4w)
