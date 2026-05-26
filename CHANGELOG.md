@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+Please choose versions by [Semantic Versioning](http://semver.org/).
+
+* MAJOR version when you make incompatible API changes,
+* MINOR version when you add functionality in a backwards-compatible manner, and
+* PATCH version when you make backwards-compatible bug fixes.
+
+## v3.6.17
+
+- security: bump github.com/bborbe/kv to v1.21.1; transitively removes vulnerable github.com/containerd/containerd v1.7.29 (CVE-2026-46680 / GHSA-fqw6-gf59-qr4w) and github.com/google/osv-scanner/v2 v2.3.4 from the dep tree
+
 ## v3.6.16
 
 - Update bborbe/errors to v1.5.13, bborbe/http to v1.26.12

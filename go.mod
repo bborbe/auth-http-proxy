@@ -37,14 +37,14 @@ require (
 	github.com/Masterminds/semver/v3 v3.4.0 // indirect
 	github.com/bborbe/assert v0.0.0-20181116222016-22a6c6341415 // indirect
 	github.com/bborbe/collection v1.20.12 // indirect
-	github.com/bborbe/kv v1.19.6 // indirect
+	github.com/bborbe/kv v1.21.1 // indirect
 	github.com/bborbe/log v1.6.13 // indirect
 	github.com/bborbe/math v1.3.10 // indirect
-	github.com/bborbe/parse v1.10.11 // indirect
+	github.com/bborbe/parse v1.10.12 // indirect
 	github.com/bborbe/run v1.9.24 // indirect
 	github.com/bborbe/sentry v1.9.17 // indirect
-	github.com/bborbe/time v1.25.11 // indirect
-	github.com/bborbe/validation v1.4.12 // indirect
+	github.com/bborbe/time v1.27.0 // indirect
+	github.com/bborbe/validation v1.4.13 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/bmatcuk/doublestar/v4 v4.9.1 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
@@ -56,10 +56,10 @@ require (
 	github.com/facebookgo/stats v0.0.0-20151006221625-1b76add642e4 // indirect
 	github.com/facebookgo/subset v0.0.0-20200203212716-c811ad88dec4 // indirect
 	github.com/getsentry/sentry-go v0.46.2 // indirect
+	github.com/gkampitakis/go-snaps v0.5.21 // indirect
 	github.com/go-logr/logr v1.4.3 // indirect
 	github.com/go-task/slim-sprig/v3 v3.0.0 // indirect
 	github.com/google/go-cmp v0.7.0 // indirect
-	github.com/google/osv-scanner/v2 v2.3.4 // indirect
 	github.com/google/pprof v0.0.0-20260402051712-545e8a4df936 // indirect
 	github.com/munnerz/goautoneg v0.0.0-20191010083416-a7dc8b61c822 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
@@ -67,8 +67,6 @@ require (
 	github.com/prometheus/client_model v0.6.2 // indirect
 	github.com/prometheus/common v0.67.5 // indirect
 	github.com/prometheus/procfs v0.20.1 // indirect
-	github.com/securego/gosec/v2 v2.25.0 // indirect
-	github.com/segmentio/golines v0.13.0 // indirect
 	go.yaml.in/yaml/v2 v2.4.4 // indirect
 	go.yaml.in/yaml/v3 v3.0.4 // indirect
 	golang.org/x/exp v0.0.0-20260410095643-746e56fc9e2f // indirect
