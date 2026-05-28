@@ -8,6 +8,11 @@ Please choose versions by [Semantic Versioning](http://semver.org/).
 * MINOR version when you add functionality in a backwards-compatible manner, and
 * PATCH version when you make backwards-compatible bug fixes.
 
+## v3.6.18
+
+- Add osv-scanner, gosec, golines as indirect dependencies
+- Add Makefile fix target for batch dependency updates
+
 ## v3.6.17
 
 - security: bump github.com/bborbe/kv to v1.21.1; transitively removes vulnerable github.com/containerd/containerd v1.7.29 (CVE-2026-46680 / GHSA-fqw6-gf59-qr4w) and github.com/google/osv-scanner/v2 v2.3.4 from the dep tree
