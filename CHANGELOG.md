@@ -11,6 +11,9 @@ Please choose versions by [Semantic Versioning](http://semver.org/).
 ## Unreleased
 
 - update Go to 1.26.6 and update dependencies (GO-2026-5970, GO-2026-6180, GO-2026-6179, GO-2026-5942)
+## v3.6.19
+
+- Update Go to 1.26.6 and update dependencies (fixes GO-2026-5026, GO-2026-5037, GO-2026-5039, GO-2026-5856, GO-2026-5972, GO-2026-6088, GO-2026-6089, GO-2026-6090, GO-2026-6091, GO-2026-6218, GO-2026-5942, GO-2026-5970, GO-2026-6179, GO-2026-6180)
 
 ## v3.6.18
 
