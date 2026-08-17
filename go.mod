@@ -38,13 +38,13 @@ require (
 	github.com/bborbe/assert v0.0.0-20181116222016-22a6c6341415 // indirect
 	github.com/bborbe/collection v1.20.20 // indirect
 	github.com/bborbe/kv v1.21.9 // indirect
-	github.com/bborbe/log v1.6.22 // indirect
+	github.com/bborbe/log v1.6.21 // indirect
 	github.com/bborbe/math v1.3.18 // indirect
 	github.com/bborbe/parse v1.10.19 // indirect
 	github.com/bborbe/run v1.9.34 // indirect
 	github.com/bborbe/sentry v1.9.24 // indirect
 	github.com/bborbe/time v1.27.8 // indirect
-	github.com/bborbe/validation v1.4.19 // indirect
+	github.com/bborbe/validation v1.4.18 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/bmatcuk/doublestar/v4 v4.10.0 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
