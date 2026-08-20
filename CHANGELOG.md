@@ -8,7 +8,7 @@ Please choose versions by [Semantic Versioning](http://semver.org/).
 * MINOR version when you add functionality in a backwards-compatible manner, and
 * PATCH version when you make backwards-compatible bug fixes.
 
-## Unreleased
+## v3.6.21
 
 - Migrate to tools.env + Makefile @version pattern; remove tools.go and obsolete replace block. go.mod reduced.
 
