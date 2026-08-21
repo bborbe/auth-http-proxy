@@ -8,6 +8,11 @@ Please choose versions by [Semantic Versioning](http://semver.org/).
 * MINOR version when you add functionality in a backwards-compatible manner, and
 * PATCH version when you make backwards-compatible bug fixes.
 
+## Unreleased
+
+- chore: Pin golangci-lint to v2.13.1 and errcheck to v1.20.0 in tools.env (Go 1.27 toolchain compatibility)
+- chore: Run gofmt -w last in the format target so golines wrapping is normalized before the gofmt lint check
+
 ## v3.6.21
 
 - Migrate to tools.env + Makefile @version pattern; remove tools.go and obsolete replace block. go.mod reduced.
