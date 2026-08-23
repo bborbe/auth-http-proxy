@@ -77,7 +77,11 @@ build:
 		tags="$$tags -t $(REGISTRY)/$(IMAGE):$$i"; \
 	done; \
 	echo "docker build --rm=true $$tags ."; \
-	DOCKER_BUILDKIT=1 docker build --rm=true --platform=linux/amd64 $$tags .
+	DOCKER_BUILDKIT=1 docker build --rm=true --platform=linux/amd64 \
+		--build-arg BUILD_GIT_VERSION=$$(git describe --tags --always --dirty) \
+		--build-arg BUILD_GIT_COMMIT=$$(git rev-parse --short HEAD) \
+		--build-arg BUILD_DATE=$$(date -u +%Y-%m-%dT%H:%M:%SZ) \
+		$$tags .
 
 .PHONY: upload
 upload:

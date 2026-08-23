@@ -8,6 +8,10 @@ Please choose versions by [Semantic Versioning](http://semver.org/).
 * MINOR version when you add functionality in a backwards-compatible manner, and
 * PATCH version when you make backwards-compatible bug fixes.
 
+## Unreleased
+
+- fix: add BUILD_GIT_VERSION / BUILD_GIT_COMMIT / BUILD_DATE build args (three-args-required rule) — Dockerfile ARG/ENV/OCI labels + Makefile --build-arg pass-through
+
 ## v3.6.22
 
 - chore: Pin golangci-lint to v2.13.1 and errcheck to v1.20.0 in tools.env (Go 1.27 toolchain compatibility)
