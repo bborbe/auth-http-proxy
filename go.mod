@@ -3,13 +3,13 @@ module github.com/bborbe/auth-http-proxy
 go 1.27.0
 
 require (
-	github.com/bborbe/errors v1.5.19
+	github.com/bborbe/errors v1.5.21
 	github.com/bborbe/flagenv v0.0.0-20181019084341-2956c4545608
-	github.com/bborbe/http v1.26.22
+	github.com/bborbe/http v1.26.24
 	github.com/facebookgo/grace v0.0.0-20180706040059-75cf19382434
 	github.com/golang/glog v1.2.5
 	github.com/gorilla/mux v1.8.1
-	github.com/jtblin/go-ldap-client v0.0.0-00010101000000-000000000000
+	github.com/jtblin/go-ldap-client v1.0.0
 	github.com/onsi/ginkgo/v2 v2.32.1
 	github.com/onsi/gomega v1.42.1
 	github.com/wunderlist/ttlcache v0.0.0-20180801091818-7dbceb0d5094
@@ -19,15 +19,15 @@ require (
 require (
 	github.com/Masterminds/semver/v3 v3.5.0 // indirect
 	github.com/bborbe/assert v0.0.0-20181116222016-22a6c6341415 // indirect
-	github.com/bborbe/collection v1.20.20 // indirect
-	github.com/bborbe/kv v1.21.9 // indirect
-	github.com/bborbe/log v1.6.22 // indirect
-	github.com/bborbe/math v1.3.18 // indirect
-	github.com/bborbe/parse v1.10.19 // indirect
-	github.com/bborbe/run v1.9.35 // indirect
-	github.com/bborbe/sentry v1.9.24 // indirect
-	github.com/bborbe/time v1.27.8 // indirect
-	github.com/bborbe/validation v1.4.19 // indirect
+	github.com/bborbe/collection v1.20.24 // indirect
+	github.com/bborbe/kv v1.21.11 // indirect
+	github.com/bborbe/log v1.6.25 // indirect
+	github.com/bborbe/math v1.4.7 // indirect
+	github.com/bborbe/parse v1.10.21 // indirect
+	github.com/bborbe/run v1.9.37 // indirect
+	github.com/bborbe/sentry v1.9.27 // indirect
+	github.com/bborbe/time v1.27.10 // indirect
+	github.com/bborbe/validation v1.4.22 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
 	github.com/facebookgo/clock v0.0.0-20150410010913-600d898af40a // indirect
@@ -41,7 +41,7 @@ require (
 	github.com/go-logr/logr v1.4.4 // indirect
 	github.com/go-task/slim-sprig/v3 v3.0.0 // indirect
 	github.com/google/go-cmp v0.7.0 // indirect
-	github.com/google/pprof v0.0.0-20260802141513-ef3492d7dac3 // indirect
+	github.com/google/pprof v0.0.0-20260825171938-4d453200e7d9 // indirect
 	github.com/munnerz/goautoneg v0.0.0-20191010083416-a7dc8b61c822 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/prometheus/client_golang v1.24.1 // indirect
