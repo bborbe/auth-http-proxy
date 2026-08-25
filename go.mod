@@ -1,6 +1,6 @@
 module github.com/bborbe/auth-http-proxy
 
-go 1.26.6
+go 1.27.0
 
 require (
 	github.com/bborbe/errors v1.5.19
