@@ -8,7 +8,7 @@ Please choose versions by [Semantic Versioning](http://semver.org/).
 * MINOR version when you add functionality in a backwards-compatible manner, and
 * PATCH version when you make backwards-compatible bug fixes.
 
-## Unreleased
+## v3.6.25
 
 - chore: update github.com/bborbe/errors to v1.5.21, github.com/bborbe/http to v1.26.24, github.com/jtblin/go-ldap-client to v1.0.0
 
