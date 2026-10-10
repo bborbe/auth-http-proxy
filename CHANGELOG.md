@@ -8,7 +8,7 @@ Please choose versions by [Semantic Versioning](http://semver.org/).
 * MINOR version when you add functionality in a backwards-compatible manner, and
 * PATCH version when you make backwards-compatible bug fixes.
 
-## Unreleased
+## v3.6.29
 
 - chore: update github.com/bborbe/errors to v1.6.1, github.com/bborbe/http to v1.26.26, github.com/onsi/ginkgo/v2 to v2.33.0, github.com/onsi/gomega to v1.44.0
 
